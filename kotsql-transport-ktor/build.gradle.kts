@@ -31,4 +31,8 @@ kotlin {
 }
 
 // A hang in the driver can be out of reach of a test's own timeout: it should fail the build, not keep it waiting.
-tasks.withType<Test>().configureEach { timeout.set(Duration.ofMinutes(20)) }
+tasks.withType<Test>().configureEach {
+    // A soak test runs for as long as it's told to, for each database.
+    val soak = System.getenv("KOTSQL_SOAK_SECONDS")?.toLongOrNull() ?: 0
+    timeout.set(Duration.ofMinutes(20).plusSeconds(soak * 2))
+}
