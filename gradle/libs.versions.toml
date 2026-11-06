@@ -15,8 +15,10 @@ flyway = "13.12.0"
 jooq = "3.19.28"
 pgjdbc = "42.7.14"
 jmh = "1.37"
+sqlite = "2.7.1"
 
 [libraries]
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }

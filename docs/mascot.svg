@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 340" role="img" aria-labelledby="title desc">
+  <title id="title">kotsql</title>
+  <desc id="desc">A ginger cat sitting on a database cylinder, with its tail hanging over the side and a paw on the word SQL.</desc>
+  <defs>
+    <linearGradient id="disc" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#2F6F8F"/>
+      <stop offset="0.55" stop-color="#3F8FB0"/>
+      <stop offset="1" stop-color="#2A6280"/>
+    </linearGradient>
+  </defs>
+
+  <!-- The database -->
+  <g>
+    <path d="M60 196v96c0 18 45 32 100 32s100-14 100-32v-96z" fill="url(#disc)"/>
+    <path d="M60 228c0 18 45 32 100 32s100-14 100-32" fill="none" stroke="#1E4E66" stroke-width="4"/>
+    <path d="M60 260c0 18 45 32 100 32s100-14 100-32" fill="none" stroke="#1E4E66" stroke-width="4"/>
+    <ellipse cx="160" cy="196" rx="100" ry="32" fill="#6FB7D2"/>
+    <text x="160" y="284" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="34" font-weight="700" fill="#F4FAFD">SQL</text>
+  </g>
+
+  <!-- The tail, over the edge of the cylinder -->
+  <path d="M222 190c34 2 52 22 48 54-3 20-20 28-30 18" fill="none" stroke="#E08A3C" stroke-width="20" stroke-linecap="round"/>
+  <path d="M262 214c6 10 8 20 6 30" fill="none" stroke="#B9651F" stroke-width="20" stroke-linecap="butt" opacity="0.55"/>
+
+  <!-- The body -->
+  <path d="M104 192c-6-46 18-82 56-82s62 36 56 82c-1 10-28 16-56 16s-55-6-56-16z" fill="#F0A04B"/>
+  <path d="M132 208c-3-26 8-50 28-50s31 24 28 50c-8 3-48 3-56 0z" fill="#FBE3C4"/>
+
+  <!-- The head -->
+  <path d="M92 62 84 12l44 26c10-3 21-5 32-5s22 2 32 5l44-26-8 50c8 11 12 24 12 37 0 36-36 57-80 57s-80-21-80-57c0-13 4-26 12-37z" fill="#F0A04B"/>
+  <path d="M95 50l-3-21 20 12zM225 50l3-21-20 12z" fill="#F7B6A0"/>
+  <!-- Stripes -->
+  <path d="M160 38v20M142 40l3 16M178 40l-3 16" stroke="#B9651F" stroke-width="6" stroke-linecap="round"/>
+  <path d="M84 96h16M88 112l14-4M236 96h-16M232 112l-14-4" stroke="#B9651F" stroke-width="5" stroke-linecap="round"/>
+  <!-- Muzzle -->
+  <ellipse cx="160" cy="124" rx="34" ry="24" fill="#FBE3C4"/>
+  <!-- Eyes -->
+  <ellipse cx="126" cy="92" rx="14" ry="16" fill="#FFFDF5"/>
+  <ellipse cx="194" cy="92" rx="14" ry="16" fill="#FFFDF5"/>
+  <ellipse cx="129" cy="94" rx="7" ry="12" fill="#23303A"/>
+  <ellipse cx="197" cy="94" rx="7" ry="12" fill="#23303A"/>
+  <circle cx="132" cy="88" r="2.6" fill="#FFFFFF"/>
+  <circle cx="200" cy="88" r="2.6" fill="#FFFFFF"/>
+  <!-- Nose and mouth -->
+  <path d="M152 112h16l-8 9z" fill="#D9626B"/>
+  <path d="M160 121v6M160 127c-3 7-13 7-16 1M160 127c3 7 13 7 16 1" fill="none" stroke="#7A4A2A" stroke-width="3" stroke-linecap="round"/>
+  <!-- Whiskers -->
+  <path d="M116 120 72 112M116 128l-44 2M204 120l44-8M204 128l44 2" stroke="#7A4A2A" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Paws, over the edge -->
+  <g fill="#F7B765" stroke="#B9651F" stroke-width="2.5">
+    <ellipse cx="132" cy="212" rx="20" ry="13"/>
+    <ellipse cx="188" cy="212" rx="20" ry="13"/>
+  </g>
+  <path d="M125 208v8M132 207v9M139 208v8M181 208v8M188 207v9M195 208v8" stroke="#B9651F" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

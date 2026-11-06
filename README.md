@@ -1,15 +1,22 @@
-# ksql
+<p align="center"><img src="docs/mascot.svg" alt="The kotsql cat, sitting on a database" width="220"></p>
 
-Kotlin Multiplatform SQL drivers with one common API, for PostgreSQL and MySQL. The JDBC and R2DBC adapters know nothing
-about either and work with any driver that implements the SPI.
+# kotsql
+
+*Kot* is Russian for a cat, and this one sits on your database.
+
+Kotlin Multiplatform SQL drivers with one common API, for PostgreSQL, MySQL and SQLite. The JDBC and R2DBC adapters know nothing
+about any of them and work with any driver that implements the SPI.
 
 ```
-ksql-core             API (SqlConnection, SqlCursor, SqlRow) and SPI (SqlDriver, SqlDialect, Transport)    JVM, Native
-ksql-postgres         PostgreSQL wire protocol                                                             JVM, Native
-ksql-mysql            MySQL wire protocol                                                                  JVM, Native
-ksql-transport-ktor   Non-blocking sockets                                                                 JVM, Native
-ksql-jdbc             java.sql adapter, blocking                                                           JVM
-ksql-r2dbc            R2DBC SPI adapter, reactive                                                          JVM
+kotsql-core             API (SqlConnection, SqlCursor, SqlRow) and SPI (SqlDriver, SqlDialect), nothing else  JVM, Native
+kotsql-transport        For databases behind a socket: Transport, NetworkSqlDriver, wire primitives, failover JVM, Native
+kotsql-postgres         PostgreSQL wire protocol                                                             JVM, Native
+kotsql-mysql            MySQL wire protocol                                                                  JVM, Native
+kotsql-sqlite           SQLite, embedded, through androidx.sqlite's bundled build                            JVM, Native
+kotsql-transport-ktor   Non-blocking sockets                                                                 JVM, Native
+kotsql-jvm-values       What the JVM adapters share: conversions to and from java.sql and java.time           JVM
+kotsql-jdbc             java.sql adapter, blocking                                                           JVM
+kotsql-r2dbc            R2DBC SPI adapter, reactive                                                          JVM
 ```
 
 ## Usage
@@ -17,28 +24,40 @@ ksql-r2dbc            R2DBC SPI adapter, reactive                               
 JDBC, including through pools and tools such as HikariCP, Flyway and jOOQ:
 
 ```kotlin
-DriverManager.getConnection("jdbc:ksql:postgresql://localhost:5432/app?sslmode=verify-full", "user", "secret")
+DriverManager.getConnection("jdbc:kotsql:postgresql://localhost:5432/app?sslmode=verify-full", "user", "secret")
 ```
 
 R2DBC:
 
 ```kotlin
-ConnectionFactories.get("r2dbc:ksql:postgresql://user:secret@localhost:5432/app?sslmode=verify-full")
+ConnectionFactories.get("r2dbc:kotsql:postgresql://user:secret@localhost:5432/app?sslmode=verify-full")
 ```
 
 Kotlin, on any target:
 
 ```kotlin
 Drivers.register(PostgresDriver()) // automatic on the JVM
-val db = dev.ksql.ktor.connect("postgresql://user:secret@localhost/app?sslmode=disable")
+val db = ru.ttraum.kotsql.ktor.connect("postgresql://user:secret@localhost/app?sslmode=disable")
 db.query("SELECT id, name FROM users WHERE age > $1", listOf(18), fetchSize = 500).collect { println(it["name"]) }
 db.transaction { update("UPDATE users SET age = age + 1") }
 db.close()
 ```
 
 URL settings: `user`, `password`, `sslmode` (`disable`, `prefer`, `require`, `verify-ca`, `verify-full`), `sslrootcert`,
-`connectTimeout` and `socketTimeout` (milliseconds), `applicationName`, `prepareThreshold`. Other keys are sent to
-PostgreSQL as session settings.
+`connectTimeout` and `socketTimeout` (milliseconds), `applicationName`, `prepareThreshold`, `binaryTransfer`, `targetServerType`,
+`loadBalanceHosts`. Other keys are sent to PostgreSQL as session settings.
+
+`sslcert` and `sslkey` name PEM files with a client certificate and its key, for both databases. On the JVM the key has to be
+in PKCS#8, or PKCS#1 for RSA, and `KtorTransport`, the JVM's default for the Kotlin client, takes only RSA keys (the JDBC and
+R2DBC adapters use transports that take EC keys too). `channel_binding` (PostgreSQL) is `prefer` by default, `disable` or `require`: over TLS, SCRAM then
+covers the server's certificate, so that even a server authenticated by nothing else can't be impersonated by someone who has
+got hold of a hash of the password. With `require` no password is sent to a server that won't do that.
+
+A URL can name several servers, `postgresql://user:pw@one:5432,two:5432/db?targetServerType=primary`, which are tried in order
+(or in a random one with `loadBalanceHosts=true`). `targetServerType` is `any` (the default), `primary`, `secondary` or
+`preferSecondary`. A server that's down or full is skipped, but a refused password ends the attempt. Failover comes from
+replacing a lost connection: a connection in use when its server fails reports that, and `ConnectionPool` makes the next one
+through the same search. Each server gets its own `connectTimeout`.
 
 A statement executed `prepareThreshold` times (5 by default) on a connection is prepared on the server, with up to 256 kept
 per connection. If the server then rejects it, say after `ALTER TABLE` or `DEALLOCATE ALL`, it is parsed again and retried
@@ -49,19 +68,43 @@ doesn't keep a client on one server connection, such as PgBouncer in transaction
 
 Implement three interfaces in a new module; no adapter code changes.
 
-1. `SqlDriver`: URL schemes and `connect`. On the JVM, list it in `META-INF/services/dev.ksql.spi.SqlDriver`.
-2. `SqlConnection` (with `SqlCursor` and `SqlRow`): the protocol, as ordinary suspending code that does all I/O through
-   `Transport`. It must not suspend on anything else (no dispatchers, locks or delays).
-3. `SqlDialect`: what differs from standard SQL, such as parameter markers and `DatabaseMetaData` queries.
+1. `SqlDriver`: URL schemes and `connect`. On the JVM, list it in `META-INF/services/ru.ttraum.kotsql.spi.SqlDriver`. A database behind a
+   socket implements `NetworkSqlDriver` of `kotsql-transport` instead, which is handed a transport to connect with. One in this
+   process, like SQLite, needs nothing but `kotsql-core`.
+2. `SqlConnection` (with `SqlCursor` and `SqlRow`): as ordinary suspending code. Over a network it does all I/O through
+   `Transport`, and must not suspend on anything else (no dispatchers, locks or delays).
+3. `SqlDialect`: what differs from standard SQL, such as parameter markers, `SqlSyntax` (the quotes and comments that a statement
+   has to be read by), `CallSyntax` and `DatabaseMetaData` queries.
+
+`checkModuleBoundaries`, part of `check`, keeps modules from reaching where they shouldn't, and `FakeDriverTest` shows that a
+driver of nothing but `kotsql-core` works through the adapters.
 
 The same code serves both worlds thanks to that rule. JDBC plugs in the blocking `SocketTransport`, so the coroutine never
 actually suspends and `runUnsuspended` completes it on the calling thread, with no `runBlocking` and no extra threads.
 R2DBC plugs in `AsyncSocketTransport`, where it suspends for real. The Kotlin client's `connect(url)` takes `DefaultTransport`:
 `EpollTransport` on Linux, which is several times faster than ktor's native sockets under load, and `KtorTransport` elsewhere.
 
+## SQLite
+
+URLs are `sqlite:///relative.db`, `sqlite:////absolute/path.db` and `sqlite:///:memory:`, also after `jdbc:kotsql:`, for `ru.ttraum.kotsql.connect(url)`
+with no transport, or just `connectSqlite(path)`. For R2DBC, set the `database` option. `mode` is `rwc` by default, `rw` or `ro`, and any other key becomes a
+`PRAGMA`, as in `?foreign_keys=ON&journal_mode=WAL`. `busy_timeout` is 5000 milliseconds unless set.
+
+It differs from the others by being in this process:
+
+- Calls block the thread they run on, including with R2DBC, which has no other thread to run them on here. In coroutines, use
+  `withContext(Dispatchers.IO)`. So a `withTimeout` can't interrupt a statement, and neither can `cancel()` or a JDBC query timeout, for
+  which this build of SQLite has no API.
+- Values come as what the database holds: `Long`, `Double`, `String`, `ByteArray` or null, also for a column declared otherwise. A
+  column's type in `ColumnInfo` comes from its value in the first row. Through JDBC the getters convert them, reading dates and times
+  from text in ISO format, which is how parameters are stored too, but not from Unix or Julian day numbers.
+- Every transaction is serializable. `:memory:` is private to each connection, so a pool of them needs a file.
+- SQLite doesn't enforce foreign keys unless told to, and the driver leaves that as it is. `CallableStatement` only works for
+  functions, as `{? = call f(?)}`, as it has no procedures. `describe` doesn't know types.
+
 ## MySQL
 
-URLs are `jdbc:ksql:mysql://...`, `r2dbc:ksql:mysql://...` and `mysql://...`, with the same settings, for MySQL 5.7.5 and later.
+URLs are `jdbc:kotsql:mysql://...`, `r2dbc:kotsql:mysql://...` and `mysql://...`, with the same settings, for MySQL 5.7.5 and later.
 Authentication is `caching_sha2_password` or `mysql_native_password`. The former needs the full password the first time it sees
 a user: that takes TLS, or `allowPublicKeyRetrieval=true`, which trusts a public key received over an unprotected connection.
 
@@ -89,11 +132,18 @@ Building the `macosArm64` target needs a full Xcode, because of the OpenSSL bind
 
 ## Limitations
 
-- Values travel in the text format.
+- Parameters travel in the text format, and results too until a statement has been prepared on the server. From then on the
+  columns of the types that convert to text without loss come in binary: `bool`, the integers, `oid`, `bytea`, `uuid`, `date`,
+  `time` and `timestamp`. `binaryTransfer=false` turns that off.
 - On macOS the Kotlin client uses ktor's sockets, which are built on one `pselect` thread, so they don't scale with connections
   and can't use descriptors above 1024. A `kqueue` counterpart of `EpollTransport` is yet to be written.
-- Not implemented: `COPY`, `LISTEN/NOTIFY`, multi-host URLs, client certificates, SCRAM channel binding, SASLprep,
-  JDBC updatable result sets, `CallableStatement` (and so JPA's `@Procedure`), JDBC `{fn}` escapes.
+- Not implemented: password-protected client keys,
+  a `CallableStatement`'s parameters by name, batches of calls.
+- An updatable JDBC result set takes a plain query of one table with a primary key, whose columns it has to select, and holds
+  its rows in memory. Inserted rows don't show up in it. Any other query yields a read-only result set.
+- With MySQL, a `CallableStatement` with out parameters drops any result sets of the procedure.
+- SASLprep for SCRAM leaves out the bidirectional check. On native Linux it also leaves out normalization, for lack of a
+  platform API, so a password that isn't in normal form, such as a decomposed `é`, doesn't match there.
 - A JDBC scrollable result set (`TYPE_SCROLL_INSENSITIVE`) and `Clob`/`Blob` values are held in memory in full.
 - A JDBC query timeout covers the wait for the first row, not the iteration over the rest.
 - R2DBC streams a result's rows only if its `Result` is subscribed to while the statement publisher is emitting it, as
@@ -169,7 +219,7 @@ rs.getObject(1, Email.class)     // JDBC
 row.get(1, Email.class)          // R2DBC
 ```
 
-The registry is `CodecRegistry.Global` unless you give another: `connect(url, codecs)`, `KsqlDataSource(url, user, password, codecs)`,
+The registry is `CodecRegistry.Global` unless you give another: `connect(url, codecs)`, `KotsqlDataSource(url, user, password, codecs)`,
 or the `codecs` option of R2DBC's `ConnectionFactoryOptions`. `HstoreCodec` for PostgreSQL's `hstore` comes with the driver. Enums
 need no codec to be sent, as they go by name, and an unmatched value of the column fails with `22023`.
 
@@ -198,16 +248,16 @@ that already exists, so take care where it gets logged.
 
 ## Compatibility
 
-`ksql-compat-tests` runs one application against both databases, with no official driver on the classpath: Spring Boot 3.5,
+`kotsql-compat-tests` runs one application against both databases, with no official driver on the classpath: Spring Boot 3.5,
 Spring Data JPA and Hibernate 6, `JdbcTemplate`, and Spring Data R2DBC with `r2dbc-pool`.
 
 ## Benchmarks
 
-`tools/run-benchmarks.sh` compares `ksql-jdbc` with pgjdbc and `ksql-r2dbc` with r2dbc-postgresql using JMH, and writes `benchmarks/RESULTS.md`.
+`tools/run-benchmarks.sh` compares `kotsql-jdbc` with pgjdbc and `kotsql-r2dbc` with r2dbc-postgresql using JMH, and writes `benchmarks/RESULTS.md`.
 Docker must be running. Pass JMH options to change what runs, e.g. a name filter and `-f 1 -wi 1 -i 1 -r 1s -w 1s`.
 
 JMH waits for each R2DBC query with `block()`, which adds thread switches that a reactive application doesn't have, so those
-numbers understate R2DBC. Throughput also suffers on a busy machine. `dev.ksql.benchmark.CostProbe` reports what a busy machine
+numbers understate R2DBC. Throughput also suffers on a busy machine. `ru.ttraum.kotsql.benchmark.CostProbe` reports what a busy machine
 disturbs less: median latency, client CPU time and context switches per query, and has a `reactive` mode without `block()`.
 
 `tools/run-client-benchmarks.sh` measures the Kotlin client with the same code on the JVM and as a native release binary, and
@@ -222,7 +272,7 @@ writes `benchmarks/RESULTS-native.md`.
 The JDBC and R2DBC suites start PostgreSQL through Testcontainers, so Docker must be running. The R2DBC suite includes the
 official `r2dbc-spi-test` TCK.
 
-The client and TLS tests in `ksql-transport-ktor` run on every target against the database of `compose.yaml`, and skip
+The client and TLS tests in `kotsql-transport-ktor` run on every target against the database of `compose.yaml`, and skip
 themselves without it. This script runs them on the JVM and in a Linux container, on the architecture of this machine:
 
 ```bash
@@ -231,5 +281,14 @@ tools/run-client-tests.sh
 
 On a Mac with a full Xcode it runs them natively on macOS as well.
 
-`ksql-jdbc/src/jvmMain/kotlin/dev/ksql/jdbc/JdbcBases.kt` is generated by `tools/GenerateJdbcBases.java`. After changing
+`ProtocolFuzzTest` needs no server, and feeds both drivers mutated server responses. `KOTSQL_FUZZ_ITERATIONS` and
+`KOTSQL_FUZZ_SEED` take it further than its default. `NetworkFaultTest` makes the network fail at each position of an exchange
+with a real server. To look for what only shows over time, such as leaks, `tools/run-soak.sh` runs a mixed load for the given
+number of seconds per database:
+
+```bash
+tools/run-soak.sh 3600
+```
+
+`kotsql-jdbc/src/jvmMain/kotlin/ru/ttraum/kotsql/jdbc/JdbcBases.kt` is generated by `tools/GenerateJdbcBases.java`. After changing
 the OpenSSL bindings or upgrading OpenSSL, run `tools/check-openssl-decls.sh`.
