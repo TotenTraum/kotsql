@@ -1,0 +1,29 @@
+# Postgres with TLS for the client tests that run on every target. See "Tests" in README.md.
+services:
+  # Only with --profile mysql, so as not to add an idle server to the benchmarks.
+  mysql:
+    image: mysql:8.4
+    profiles: [mysql]
+    command: --mysql-native-password=ON
+    environment: { MYSQL_ROOT_PASSWORD: ksql, MYSQL_DATABASE: ksql }
+    ports: ["53306:3306"]
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -pksql --silent
+      interval: 2s
+      retries: 60
+  postgres:
+    image: postgres:17
+    command:
+      - postgres
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+      - -c
+      - ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+    environment: { POSTGRES_USER: ksql, POSTGRES_PASSWORD: ksql, POSTGRES_DB: ksql }
+    ports: ["55432:5432"]
+    healthcheck:
+      test: pg_isready -U ksql
+      interval: 1s
+      retries: 30

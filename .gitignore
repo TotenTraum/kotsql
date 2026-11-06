@@ -1,0 +1,11 @@
+.gradle/
+build/
+.idea/
+.kotlin/
+*.iml
+local.properties
+.DS_Store
+benchmarks/results.json
+benchmarks/server-version.txt
+benchmarks/jfr/
+benchmarks/client-*.txt
