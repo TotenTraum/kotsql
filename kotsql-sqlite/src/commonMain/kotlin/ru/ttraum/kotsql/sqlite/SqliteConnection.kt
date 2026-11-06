@@ -1,0 +1,538 @@
+package ru.ttraum.kotsql.sqlite
+
+import androidx.sqlite.SQLITE_DATA_BLOB
+import androidx.sqlite.SQLITE_DATA_FLOAT
+import androidx.sqlite.SQLITE_DATA_INTEGER
+import androidx.sqlite.SQLITE_DATA_NULL
+import androidx.sqlite.SQLITE_DATA_TEXT
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.SQLiteException
+import androidx.sqlite.SQLiteStatement
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.driver.bundled.SQLITE_OPEN_CREATE
+import androidx.sqlite.driver.bundled.SQLITE_OPEN_READONLY
+import androidx.sqlite.driver.bundled.SQLITE_OPEN_READWRITE
+import ru.ttraum.kotsql.BatchItem
+import ru.ttraum.kotsql.CodecRegistry
+import ru.ttraum.kotsql.ColumnInfo
+import ru.ttraum.kotsql.ConnectionConfig
+import ru.ttraum.kotsql.ConstraintViolation
+import ru.ttraum.kotsql.ExecuteOptions
+import ru.ttraum.kotsql.ServerInfo
+import ru.ttraum.kotsql.SqlBatchException
+import ru.ttraum.kotsql.SqlConnection
+import ru.ttraum.kotsql.SqlCursor
+import ru.ttraum.kotsql.SqlDecimal
+import ru.ttraum.kotsql.SqlDialect
+import ru.ttraum.kotsql.SqlErrorDetails
+import ru.ttraum.kotsql.SqlErrorKind
+import ru.ttraum.kotsql.SqlException
+import ru.ttraum.kotsql.SqlOffsetDateTime
+import ru.ttraum.kotsql.SqlOffsetTime
+import ru.ttraum.kotsql.SqlResult
+import ru.ttraum.kotsql.SqlRow
+import ru.ttraum.kotsql.SqlType
+import ru.ttraum.kotsql.StatementDescription
+import ru.ttraum.kotsql.TransactionState
+import ru.ttraum.kotsql.TypedNull
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
+
+private const val DEFAULT_BUSY_TIMEOUT = "5000"
+private const val MODE = "mode"
+private val PRAGMA_NAME = Regex("""[A-Za-z_]+""")
+private val PRAGMA_VALUE = Regex("""[\w.-]+""")
+private val ERROR_FORMAT = Regex("""^Error code: (\d+)(?:, message: (.*))?$""", RegexOption.DOT_MATCHES_ALL)
+
+// SQLite's result codes.
+private const val SQLITE_ERROR = 1
+private const val SQLITE_ABORT = 4
+private const val SQLITE_BUSY = 5
+private const val SQLITE_LOCKED = 6
+private const val SQLITE_READONLY = 8
+private const val SQLITE_INTERRUPT = 9
+private const val SQLITE_CORRUPT = 11
+private const val SQLITE_FULL = 13
+private const val SQLITE_CANTOPEN = 14
+private const val SQLITE_CONSTRAINT = 19
+private const val SQLITE_TOOBIG = 18
+private const val SQLITE_MISMATCH = 20
+private const val SQLITE_RANGE = 25
+private const val SQLITE_NOTADB = 26
+
+private fun translate(e: SQLiteException): SqlException {
+    val match = ERROR_FORMAT.find(e.message.orEmpty())
+    val code = match?.groupValues?.get(1)?.toIntOrNull() ?: 0
+    val text = match?.groupValues?.get(2)?.ifEmpty { null } ?: e.message ?: "SQLite failed"
+    fun failure(state: String, kind: SqlErrorKind = SqlErrorKind.ofSqlState(state), details: SqlErrorDetails = SqlErrorDetails.NONE) =
+        SqlException(text, state, code, kind, e, details)
+    // An extended code has the primary one in its low byte. The whole of it goes to the vendor code, for those who look.
+    return when (code and 0xFF) {
+        SQLITE_CONSTRAINT -> {
+            val on = text.substringAfter("failed: ", "").ifEmpty { null }
+            when {
+                text.startsWith("UNIQUE") -> failure("23505", details = SqlErrorDetails(ConstraintViolation.UNIQUE, table = on?.substringBefore('.'), column = on?.substringAfter('.')))
+                text.startsWith("NOT NULL") -> failure("23502", details = SqlErrorDetails(ConstraintViolation.NOT_NULL, table = on?.substringBefore('.'), column = on?.substringAfter('.')))
+                text.startsWith("FOREIGN KEY") -> failure("23503", details = SqlErrorDetails(ConstraintViolation.FOREIGN_KEY))
+                text.startsWith("CHECK") -> failure("23514", details = SqlErrorDetails(ConstraintViolation.CHECK, constraint = on))
+                else -> failure("23000")
+            }
+        }
+        SQLITE_ERROR -> when {
+            text.startsWith("no such table") -> failure("42P01", details = SqlErrorDetails(table = text.substringAfterLast(": ")))
+            text.startsWith("no such column") -> failure("42703", details = SqlErrorDetails(column = text.substringAfterLast(": ")))
+            "syntax error" in text -> failure("42601")
+            else -> failure("42000")
+        }
+        SQLITE_ABORT -> failure("40000")
+        // Not the kind that a retry of the transaction is known to help, but another connection holding the database for too long.
+        SQLITE_BUSY, SQLITE_LOCKED -> failure("55P03", SqlErrorKind.TIMEOUT)
+        SQLITE_READONLY -> failure("25006")
+        SQLITE_INTERRUPT -> failure("57014")
+        SQLITE_CORRUPT, SQLITE_NOTADB -> failure("XX001", SqlErrorKind.OTHER)
+        SQLITE_FULL -> failure("53100", SqlErrorKind.OTHER)
+        SQLITE_CANTOPEN -> failure("08001")
+        SQLITE_TOOBIG -> failure("22001")
+        SQLITE_MISMATCH -> failure("22023")
+        SQLITE_RANGE -> failure("07009", SqlErrorKind.OTHER)
+        else -> failure("HY000", SqlErrorKind.OTHER)
+    }
+}
+
+private inline fun <T> sqlite(block: () -> T): T = try {
+    block()
+} catch (e: SQLiteException) {
+    throw translate(e)
+}
+
+private fun nativeType(storageClass: Int) = when (storageClass) {
+    SQLITE_DATA_INTEGER -> "INTEGER"
+    SQLITE_DATA_FLOAT -> "REAL"
+    SQLITE_DATA_TEXT -> "TEXT"
+    SQLITE_DATA_BLOB -> "BLOB"
+    else -> "NULL"
+}
+
+private fun sqlType(storageClass: Int) = when (storageClass) {
+    SQLITE_DATA_INTEGER -> SqlType.BIGINT
+    SQLITE_DATA_FLOAT -> SqlType.DOUBLE
+    SQLITE_DATA_TEXT -> SqlType.TEXT
+    SQLITE_DATA_BLOB -> SqlType.BINARY
+    else -> SqlType.OTHER
+}
+
+/**
+ * Values are what the database holds them as: [Long], [Double], [String], [ByteArray] or null. A value's type in SQLite is its
+ * own rather than its column's, and [ColumnInfo.type] says what the first row has there, as the driver can't see a declaration.
+ */
+private class SqliteRow(override val columns: List<ColumnInfo>, private val values: Array<Any?>, override val codecs: CodecRegistry) : SqlRow {
+    override fun get(index: Int): Any? {
+        if (index !in values.indices) throw IndexOutOfBoundsException("Column index $index, row has ${values.size} columns")
+        return values[index]
+    }
+
+    override fun getText(index: Int): String? = when (val value = get(index)) {
+        null -> null
+        is ByteArray -> value.decodeToString()
+        else -> value.toString()
+    }
+
+    override fun longValue(index: Int): Long = when (val value = get(index)) {
+        null -> 0
+        is Number -> value.toLong()
+        is String -> value.trim().toLongOrNull() ?: throw SqlException("Cannot convert '$value' to an integer", "22018")
+        else -> throw SqlException("Cannot convert a BLOB to an integer", "22018")
+    }
+
+    override fun booleanValue(index: Int): Boolean = longValue(index) != 0L
+}
+
+private fun readRow(statement: SQLiteStatement, columns: List<ColumnInfo>, codecs: CodecRegistry): SqliteRow {
+    val values = arrayOfNulls<Any?>(columns.size)
+    for (i in values.indices) {
+        values[i] = when (statement.getColumnType(i)) {
+            SQLITE_DATA_INTEGER -> statement.getLong(i)
+            SQLITE_DATA_FLOAT -> statement.getDouble(i)
+            SQLITE_DATA_TEXT -> statement.getText(i)
+            SQLITE_DATA_BLOB -> statement.getBlob(i)
+            SQLITE_DATA_NULL -> null
+            else -> statement.getText(i)
+        }
+    }
+    return SqliteRow(columns, values, codecs)
+}
+
+/** The keys of the rows of one INSERT: SQLite gives the last one, and they are consecutive for the rows of a statement. */
+private class InsertedKeys(private val last: Long, override val size: Int) : AbstractList<Long>() {
+    override fun get(index: Int): Long {
+        if (index !in 0 until size) throw IndexOutOfBoundsException("Index $index, size $size")
+        return last - size + 1 + index
+    }
+}
+
+private fun bind(statement: SQLiteStatement, position: Int, value: Any?) {
+    val i = position + 1
+    when (value) {
+        null, is TypedNull -> statement.bindNull(i)
+        is Boolean -> statement.bindLong(i, if (value) 1 else 0)
+        is Byte -> statement.bindLong(i, value.toLong())
+        is Short -> statement.bindLong(i, value.toLong())
+        is Int -> statement.bindLong(i, value.toLong())
+        is Long -> statement.bindLong(i, value)
+        is Float -> statement.bindDouble(i, value.toDouble())
+        is Double -> statement.bindDouble(i, value)
+        is String -> statement.bindText(i, value)
+        is ByteArray -> statement.bindBlob(i, value)
+        // Everything else as the text that SQLite's own date functions and NUMERIC columns understand.
+        is SqlDecimal -> statement.bindText(i, value.text)
+        is LocalDate -> statement.bindText(i, value.toString())
+        is LocalTime -> statement.bindText(i, value.toString())
+        is LocalDateTime -> statement.bindText(i, "${value.date} ${value.time}")
+        is SqlOffsetDateTime -> statement.bindText(i, "${value.dateTime.date} ${value.dateTime.time}")
+        is SqlOffsetTime -> statement.bindText(i, "${value.time}${value.offset}")
+        is Instant -> statement.bindText(i, value.toString())
+        is Uuid -> statement.bindText(i, value.toString())
+        else -> throw SqlException("Unsupported parameter type ${value::class.simpleName}", "22023")
+    }
+}
+
+internal class SqliteConnection private constructor(private val config: ConnectionConfig, private val db: SQLiteConnection) : SqlConnection {
+    private var closed = false
+    private var active: SqliteCursor? = null
+    override val dialect: SqlDialect get() = SqliteDialect
+    override val codecs: CodecRegistry get() = config.codecs
+    override val isClosed get() = closed
+    override lateinit var serverInfo: ServerInfo
+        private set
+    override val transactionState: TransactionState
+        get() = if (!closed && sqlite { db.inTransaction() }) TransactionState.ACTIVE else TransactionState.IDLE
+
+    private fun checkOpen() { if (closed) throw SqlException("The connection is closed", "08003") }
+
+    /** Whatever is unread of the last execution goes to memory, as a statement may need the database to itself. */
+    private fun beginOperation() {
+        checkOpen()
+        active?.detach()
+        active = null
+    }
+
+    private fun checkedStatement(sql: String, params: List<Any?>): SQLiteStatement {
+        val count = SqliteDialect.parameterCount(sql)
+        if (count != params.size) throw SqlException("The statement has $count parameters, but ${params.size} were given", "07001")
+        val statement = sqlite { db.prepare(sql) }
+        try {
+            sqlite { params.forEachIndexed { i, value -> bind(statement, i, value) } }
+        } catch (e: Throwable) {
+            statement.close()
+            throw e
+        }
+        return statement
+    }
+
+    private fun scalar(sql: String): Long {
+        val statement = sqlite { db.prepare(sql) }
+        try {
+            sqlite { statement.step() }
+            return statement.getLong(0)
+        } finally {
+            statement.close()
+        }
+    }
+
+    private fun changedRows(verb: String) = if (verb == "INSERT" || verb == "UPDATE" || verb == "DELETE" || verb == "REPLACE" || verb == "WITH") scalar("SELECT changes()") else 0
+
+    override suspend fun execute(sql: String, params: List<Any?>, options: ExecuteOptions): SqlCursor {
+        beginOperation()
+        val statements = SqliteDialect.splitStatements(sql)
+        if (statements.size > 1 && params.isNotEmpty()) throw SqlException("Parameters take a single statement", "0A000")
+        return SqliteCursor(statements, params.map(config.codecs::encode)).also { active = it }
+    }
+
+    override suspend fun executeScript(sql: String): SqlCursor = execute(sql, emptyList())
+
+    override suspend fun executeBatch(items: List<BatchItem>): LongArray {
+        beginOperation()
+        val counts = LongArray(items.size)
+        var done = 0
+        val ownTransaction = transactionState == TransactionState.IDLE
+        fun simple(sql: String) {
+            val statement = sqlite { db.prepare(sql) }
+            try { sqlite { statement.step() } } finally { statement.close() }
+        }
+        var statement: SQLiteStatement? = null
+        var preparedSql: String? = null
+        try {
+            if (ownTransaction) simple("BEGIN")
+            for (item in items) {
+                val encoded = item.params.map(config.codecs::encode)
+                val count = SqliteDialect.parameterCount(item.sql)
+                if (count != encoded.size) throw SqlException("The statement has $count parameters, but ${encoded.size} were given", "07001")
+                val reusable = statement?.takeIf { item.sql == preparedSql }
+                if (reusable == null) statement?.close()
+                statement = null
+                val current = reusable ?: sqlite { db.prepare(item.sql) }
+                statement = current
+                preparedSql = item.sql
+                sqlite {
+                    current.reset()
+                    current.clearBindings()
+                    encoded.forEachIndexed { i, value -> bind(current, i, value) }
+                    while (current.step()) { /* the rows of RETURNING are of no interest */ }
+                    current.reset()
+                }
+                counts[done++] = changedRows(SqliteDialect.verb(item.sql))
+            }
+            statement?.close()
+            statement = null
+            if (ownTransaction) simple("COMMIT")
+        } catch (e: SqlException) {
+            statement?.close()
+            if (ownTransaction && !closed) runCatching { simple("ROLLBACK") }
+            throw SqlBatchException(counts.copyOf(done), e)
+        }
+        return counts
+    }
+
+    override suspend fun describe(sql: String): StatementDescription {
+        beginOperation()
+        val statement = sqlite { db.prepare(sql) }
+        try {
+            val columns = List(statement.getColumnCount()) { i ->
+                ColumnInfo(statement.getColumnName(i), SqlType.OTHER, "", codec = null)
+            }
+            return StatementDescription(List(SqliteDialect.parameterCount(sql)) { SqlType.OTHER }, columns)
+        } finally {
+            statement.close()
+        }
+    }
+
+    /** This API of SQLite has no way to interrupt a statement, which runs on the caller's thread anyway. */
+    override suspend fun cancel() {}
+
+    override suspend fun ping(): Boolean = !closed
+
+    override fun setReadTimeout(millis: Long) {}
+    override fun drainWarnings(): List<String> = emptyList()
+
+    override suspend fun close() {
+        if (closed) return
+        closed = true
+        try {
+            active?.release()
+        } finally {
+            active = null
+            sqlite { db.close() }
+        }
+    }
+
+    private inner class SqliteCursor(statements: List<String>, private val params: List<Any?>) : SqlCursor {
+        private val remaining = ArrayDeque(statements)
+
+        /** Results that have been run ahead of being asked for. A failure among them comes up in its turn. */
+        private val ahead = ArrayDeque<Any>()
+        private var current: StatementRows? = null
+        private var finished = false
+
+        private fun run(sql: String): SqlResult {
+            val verb = SqliteDialect.verb(sql)
+            val statement = checkedStatement(sql, params)
+            var keep = false
+            try {
+                val columnCount = statement.getColumnCount()
+                if (columnCount > 0) {
+                    val hasRow = sqlite { statement.step() }
+                    val names = List(columnCount) { statement.getColumnName(it) }
+                    val columns = names.mapIndexed { i, name ->
+                        val storageClass = if (hasRow) statement.getColumnType(i) else SQLITE_DATA_NULL
+                        ColumnInfo(name, sqlType(storageClass), nativeType(storageClass))
+                    }
+                    val first = if (hasRow) sqlite { readRow(statement, columns, config.codecs) } else null
+                    keep = true
+                    return StatementRows(statement, columns, first, verb)
+                }
+                sqlite { statement.step() }
+                val count = changedRows(verb)
+                val keys = if ((verb == "INSERT" || verb == "REPLACE") && count > 0) {
+                    InsertedKeys(scalar("SELECT last_insert_rowid()"), count.coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
+                } else {
+                    emptyList()
+                }
+                return SqlResult.UpdateCount(count, keys)
+            } finally {
+                if (!keep) statement.close()
+            }
+        }
+
+        private fun nextFromAhead(): SqlResult? {
+            val item = ahead.removeFirstOrNull() ?: return null
+            if (item is SqlException) {
+                ahead.clear()
+                remaining.clear()
+                throw item
+            }
+            return item as SqlResult
+        }
+
+        override suspend fun nextResult(): SqlResult? {
+            current?.drain()
+            current = null
+            nextFromAhead()?.let { return it }
+            checkOpen()
+            val sql = remaining.removeFirstOrNull()
+            if (sql == null) {
+                finished = true
+                if (active === this) active = null
+                return null
+            }
+            val result = try {
+                run(sql)
+            } catch (e: SqlException) {
+                remaining.clear() // as a server would stop at the first statement of a script to fail
+                throw e
+            }
+            if (result is StatementRows) current = result
+            return result
+        }
+
+        /** Runs what's left, since a statement of a script is supposed to happen whether its result gets read or not. */
+        fun detach() {
+            current?.load()
+            current = null
+            while (true) {
+                val sql = remaining.removeFirstOrNull() ?: break
+                try {
+                    val result = run(sql)
+                    (result as? StatementRows)?.load()
+                    ahead.addLast(result)
+                } catch (e: SqlException) {
+                    ahead.addLast(e)
+                    remaining.clear()
+                }
+            }
+        }
+
+        override suspend fun close() {
+            if (finished) return
+            finished = true
+            current?.drain()
+            current = null
+            if (!closed) {
+                ahead.clear()
+                while (true) {
+                    val sql = remaining.removeFirstOrNull() ?: break
+                    val result = try {
+                        run(sql)
+                    } catch (e: SqlException) {
+                        remaining.clear()
+                        if (active === this) active = null
+                        throw e
+                    }
+                    (result as? StatementRows)?.drain()
+                }
+            }
+            if (active === this) active = null
+        }
+
+        /** With the connection closing: nothing more runs, but the statements have to go first. */
+        fun release() {
+            current?.release()
+            current = null
+            remaining.clear()
+        }
+    }
+
+    private inner class StatementRows(
+        private var statement: SQLiteStatement?,
+        override val columns: List<ColumnInfo>,
+        private var first: SqliteRow?,
+        private val verb: String,
+    ) : SqlResult.Rows {
+        private var loaded: ArrayDeque<SqlRow>? = null
+        override var updateCount: Long? = null
+            private set
+
+        private fun finish() {
+            statement?.close()
+            statement = null
+            updateCount = if (verb == "SELECT") null else changedRows(verb).takeIf { verb != "PRAGMA" && verb != "EXPLAIN" && verb != "VALUES" }
+        }
+
+        private fun take(): SqlRow? {
+            loaded?.let { return it.removeFirstOrNull() }
+            first?.let {
+                first = null
+                return it
+            }
+            val open = statement ?: return null
+            if (closed) throw SqlException("The connection is closed", "08003")
+            if (sqlite { open.step() }) return sqlite { readRow(open, columns, config.codecs) }
+            finish()
+            return null
+        }
+
+        override suspend fun next(): SqlRow? = take()
+        override fun nextBuffered(): SqlRow? = take()
+
+        fun load() {
+            if (loaded != null) return
+            val rows = ArrayDeque<SqlRow>()
+            while (true) rows.addLast(take() ?: break)
+            loaded = rows
+        }
+
+        fun drain() {
+            while (take() != null) { /* unread rows */ }
+        }
+
+        fun release() {
+            statement?.close()
+            statement = null
+        }
+    }
+
+    companion object {
+        fun open(config: ConnectionConfig): SqliteConnection {
+            val path = config.database?.ifEmpty { null }
+                ?: throw SqlException("SQLite takes a path, as in sqlite:///file.db, sqlite:////absolute/file.db or sqlite:///:memory:", "08001")
+            if (config.host != "localhost") throw SqlException("SQLite has no server: '${config.host}' can't be reached, only a local file", "08001")
+            val flags = when (val mode = config.properties[MODE] ?: "rwc") {
+                "ro" -> SQLITE_OPEN_READONLY
+                "rw" -> SQLITE_OPEN_READWRITE
+                "rwc" -> SQLITE_OPEN_READWRITE or SQLITE_OPEN_CREATE
+                else -> throw SqlException("Invalid value of $MODE: '$mode'; expected ro, rw or rwc", "08001")
+            }
+            val pragmas = linkedMapOf("busy_timeout" to DEFAULT_BUSY_TIMEOUT)
+            for ((name, value) in config.properties) {
+                if (name == MODE) continue
+                // These go into the text of a statement.
+                if (!PRAGMA_NAME.matches(name) || !PRAGMA_VALUE.matches(value)) throw SqlException("Invalid setting $name=$value", "08001")
+                pragmas[name] = value
+            }
+            val db = sqlite { BundledSQLiteDriver().open(path, flags) }
+            try {
+                val connection = SqliteConnection(config, db)
+                for ((name, value) in pragmas) {
+                    val statement = sqlite { db.prepare("PRAGMA $name = $value") }
+                    try { sqlite { while (statement.step()) { /* some of them report the new value */ } } } finally { statement.close() }
+                }
+                val version = db.prepare("SELECT sqlite_version()").let { statement ->
+                    try {
+                        sqlite { statement.step() }
+                        statement.getText(0)
+                    } finally {
+                        statement.close()
+                    }
+                }
+                val numbers = version.split('.')
+                connection.serverInfo = ServerInfo("SQLite", version, numbers.getOrNull(0)?.toIntOrNull() ?: 0, numbers.getOrNull(1)?.toIntOrNull() ?: 0)
+                return connection
+            } catch (e: Throwable) {
+                db.close()
+                throw e
+            }
+        }
+    }
+}

@@ -20,21 +20,21 @@ pg=$(docker compose ps -q postgres)
 # Not localhost, which the official image trusts without a password.
 ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$pg")
 
-./gradlew ":ksql-benchmark-client:linkReleaseExecutable$target" :ksql-benchmark-client:installJvm -q
-binary=ksql-benchmark-client/build/bin/$dir/releaseExecutable
+./gradlew ":kotsql-benchmark-client:linkReleaseExecutable$target" :kotsql-benchmark-client:installJvm -q
+binary=kotsql-benchmark-client/build/bin/$dir/releaseExecutable
 env="--network container:$pg -e BENCH_HOST=$ip -e BENCH_PORT=5432"
 
 native() {
   docker run --rm --platform "$platform" $env -v "$PWD/$binary:/b:ro" debian:stable-slim \
-    /b/ksql-benchmark-client.kexe "$@" | grep RESULT
+    /b/kotsql-benchmark-client.kexe "$@" | grep RESULT
 }
 jvm() {
-  docker run --rm $env -v "$PWD/ksql-benchmark-client/build/install/jvm:/lib-bench:ro" eclipse-temurin:17-jdk \
-    java -Xmx1g -cp '/lib-bench/*' dev.ksql.benchmark.client.MainKt "$@" | grep RESULT
+  docker run --rm $env -v "$PWD/kotsql-benchmark-client/build/install/jvm:/lib-bench:ro" eclipse-temurin:17-jdk \
+    java -Xmx1g -cp '/lib-bench/*' ru.ttraum.kotsql.benchmark.client.MainKt "$@" | grep RESULT
 }
 
 : > "$out"
-echo "RESULT size native binaryBytes $(wc -c < "$binary/ksql-benchmark-client.kexe")" >> "$out"
+echo "RESULT size native binaryBytes $(wc -c < "$binary/kotsql-benchmark-client.kexe")" >> "$out"
 round=0
 while [ "$round" -lt "$rounds" ]; do
   round=$((round + 1))

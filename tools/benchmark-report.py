@@ -17,9 +17,9 @@ for r in results:
     cls, name = r["benchmark"].rsplit(".", 2)[-2:]
     params = r.get("params", {})
     if cls == "JdbcBenchmark":
-        driver = {"pgjdbc": "pgjdbc", "ksql": "ksql-jdbc"}[params["driver"]]
+        driver = {"pgjdbc": "pgjdbc", "kotsql": "kotsql-jdbc"}[params["driver"]]
     else:
-        driver = {"ksql": "ksql-r2dbc", "postgresql": "r2dbc-postgresql"}[params.get("driver", "ksql")]
+        driver = {"kotsql": "kotsql-r2dbc", "postgresql": "r2dbc-postgresql"}[params.get("driver", "kotsql")]
     key = (name, params.get("sslmode", "disable"))
     if key not in order:
         order.append(key)
@@ -64,19 +64,19 @@ lines = [
     "",
     "Median over all iterations, with the slowest and the fastest in parentheses. Ratios compare medians.",
     "",
-    "| Scenario | pgjdbc | ksql-jdbc | ksql-jdbc / pgjdbc | ksql-r2dbc | r2dbc-postgresql | ksql-r2dbc / r2dbc-postgresql |",
+    "| Scenario | pgjdbc | kotsql-jdbc | kotsql-jdbc / pgjdbc | kotsql-r2dbc | r2dbc-postgresql | kotsql-r2dbc / r2dbc-postgresql |",
     "|---|---:|---:|---:|---:|---:|---:|",
 ]
 for key in order:
-    lines.append(f"| {label(key)} | {cell(key, 'pgjdbc')} | {cell(key, 'ksql-jdbc')} | {ratio(key, 'ksql-jdbc')} | {cell(key, 'ksql-r2dbc')} | {cell(key, 'r2dbc-postgresql')} | {ratio(key, 'ksql-r2dbc', 'r2dbc-postgresql')} |")
+    lines.append(f"| {label(key)} | {cell(key, 'pgjdbc')} | {cell(key, 'kotsql-jdbc')} | {ratio(key, 'kotsql-jdbc')} | {cell(key, 'kotsql-r2dbc')} | {cell(key, 'r2dbc-postgresql')} | {ratio(key, 'kotsql-r2dbc', 'r2dbc-postgresql')} |")
 lines += [
     "",
     "## Allocation, KB per operation (lower is better)",
     "",
-    "| Scenario | pgjdbc | ksql-jdbc | ksql-r2dbc | r2dbc-postgresql |",
+    "| Scenario | pgjdbc | kotsql-jdbc | kotsql-r2dbc | r2dbc-postgresql |",
     "|---|---:|---:|---:|---:|",
 ]
 for key in order:
-    lines.append(f"| {label(key)} | {alloc(key, 'pgjdbc')} | {alloc(key, 'ksql-jdbc')} | {alloc(key, 'ksql-r2dbc')} | {alloc(key, 'r2dbc-postgresql')} |")
+    lines.append(f"| {label(key)} | {alloc(key, 'pgjdbc')} | {alloc(key, 'kotsql-jdbc')} | {alloc(key, 'kotsql-r2dbc')} | {alloc(key, 'r2dbc-postgresql')} |")
 (out / "RESULTS.md").write_text("\n".join(lines) + "\n")
 print("\n".join(lines))

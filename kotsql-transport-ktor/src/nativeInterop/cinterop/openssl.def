@@ -1,0 +1,64 @@
+# The part of OpenSSL that the TLS transport uses. The implementation comes from com.ensody.nativebuilds, the same
+# static libraries that cryptography-kotlin links, so a binary contains exactly one libcrypto.
+#
+# Declaring the functions here saves extracting headers for each target in the build. tools/check-openssl-decls.sh
+# compiles these declarations against the real headers: run it when changing this file or upgrading OpenSSL.
+package = ru.ttraum.kotsql.ktor.openssl
+---
+typedef struct ssl_ctx_st SSL_CTX;
+typedef struct ssl_st SSL;
+typedef struct ssl_method_st SSL_METHOD;
+typedef struct bio_st BIO;
+typedef struct bio_method_st BIO_METHOD;
+typedef struct x509_st X509;
+typedef struct X509_VERIFY_PARAM_st X509_VERIFY_PARAM;
+typedef struct x509_store_ctx_st X509_STORE_CTX;
+typedef struct evp_md_st EVP_MD;
+typedef int (*SSL_verify_cb)(int preverify_ok, X509_STORE_CTX *x509_ctx);
+
+const char *OpenSSL_version(int type);
+
+const SSL_METHOD *TLS_client_method(void);
+SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth);
+void SSL_CTX_free(SSL_CTX *ctx);
+long SSL_CTX_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg);
+void SSL_CTX_set_verify(SSL_CTX *ctx, int mode, SSL_verify_cb callback);
+int SSL_CTX_load_verify_file(SSL_CTX *ctx, const char *CAfile);
+int SSL_CTX_set_default_verify_paths(SSL_CTX *ctx);
+int SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx, const char *file);
+int SSL_CTX_use_PrivateKey_file(SSL_CTX *ctx, const char *file, int type);
+int SSL_CTX_check_private_key(const SSL_CTX *ctx);
+
+SSL *SSL_new(SSL_CTX *ctx);
+void SSL_free(SSL *ssl);
+void SSL_set_connect_state(SSL *s);
+void SSL_set_bio(SSL *s, BIO *rbio, BIO *wbio);
+long SSL_ctrl(SSL *ssl, int cmd, long larg, void *parg);
+int SSL_set1_host(SSL *s, const char *host);
+void SSL_set_hostflags(SSL *s, unsigned int flags);
+X509_VERIFY_PARAM *SSL_get0_param(SSL *ssl);
+int X509_VERIFY_PARAM_set1_ip_asc(X509_VERIFY_PARAM *param, const char *ipasc);
+int SSL_do_handshake(SSL *s);
+int SSL_read(SSL *ssl, void *buf, int num);
+int SSL_write(SSL *ssl, const void *buf, int num);
+int SSL_get_error(const SSL *s, int ret_code);
+long SSL_get_verify_result(const SSL *ssl);
+const char *X509_verify_cert_error_string(long n);
+X509 *SSL_get1_peer_certificate(const SSL *s);
+void X509_free(X509 *a);
+int X509_get_signature_nid(const X509 *x);
+int OBJ_find_sigid_algs(int signid, int *pdig_nid, int *ppkey_nid);
+const EVP_MD *EVP_get_digestbyname(const char *name);
+const char *OBJ_nid2sn(int n);
+const EVP_MD *EVP_sha256(void);
+int X509_digest(const X509 *data, const EVP_MD *type, unsigned char *md, unsigned int *len);
+
+const BIO_METHOD *BIO_s_mem(void);
+BIO *BIO_new(const BIO_METHOD *type);
+int BIO_read(BIO *b, void *data, int dlen);
+int BIO_write(BIO *b, const void *data, int dlen);
+unsigned long BIO_ctrl_pending(BIO *b);
+
+unsigned long ERR_get_error(void);
+void ERR_clear_error(void);
+void ERR_error_string_n(unsigned long e, char *buf, unsigned long len);
