@@ -26,6 +26,9 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v4
+      # The wrapper downloads Gradle on a fresh runner, which can time out while several jobs do it at once.
+      - name: Download Gradle
+        run: for attempt in 1 2 3; do echo "Attempt $attempt"; ./gradlew --version -q && exit 0; sleep 15; done; exit 1
       # The JDBC, R2DBC and compatibility suites start their databases through Testcontainers.
       - run: ./gradlew jvmTest :kotsql-compat-tests:test checkModuleBoundaries --continue
       - if: failure()
@@ -43,6 +46,9 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v4
+      # The wrapper downloads Gradle on a fresh runner, which can time out while several jobs do it at once.
+      - name: Download Gradle
+        run: for attempt in 1 2 3; do echo "Attempt $attempt"; ./gradlew --version -q && exit 0; sleep 15; done; exit 1
       - uses: actions/cache@v4
         with:
           path: ~/.konan
@@ -63,6 +69,9 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v4
+      # The wrapper downloads Gradle on a fresh runner, which can time out while several jobs do it at once.
+      - name: Download Gradle
+        run: for attempt in 1 2 3; do echo "Attempt $attempt"; ./gradlew --version -q && exit 0; sleep 15; done; exit 1
       - uses: actions/cache@v4
         with:
           path: ~/.konan
@@ -87,6 +96,9 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v4
+      # The wrapper downloads Gradle on a fresh runner, which can time out while several jobs do it at once.
+      - name: Download Gradle
+        run: for attempt in 1 2 3; do echo "Attempt $attempt"; ./gradlew --version -q && exit 0; sleep 15; done; exit 1
       - uses: actions/cache@v4
         with:
           path: ~/.konan
