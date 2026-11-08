@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+jobs:
+  jvm:
+    name: JVM, compatibility and module boundaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+      # The JDBC, R2DBC and compatibility suites start their databases through Testcontainers.
+      - run: ./gradlew jvmTest :kotsql-compat-tests:test checkModuleBoundaries --continue
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jvm-test-reports
+          path: '**/build/reports/tests/'
+
+  client-linux:
+    name: Client and TLS tests, JVM and linuxX64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      - run: tools/run-client-tests.sh
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-test-reports
+          path: '**/build/reports/tests/'
+
+  macos:
+    name: macosArm64, without a database
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      # No Docker on these runners: the tests that need a server skip themselves, and SQLite, the fuzzing and the rest run.
+      - run: ./gradlew macosArm64Test --continue
+
+  openssl:
+    name: OpenSSL declarations against the headers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/check-openssl-decls.sh
+
+  soak:
+    name: Short soak, JVM and linuxX64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      - run: tools/run-soak.sh 120

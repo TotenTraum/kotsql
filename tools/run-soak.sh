@@ -31,7 +31,8 @@ if [ "$(uname -s)" = Darwin ] && [ "$(uname -m)" = arm64 ] && xcodebuild -versio
   results kotsql-transport-ktor/build/bin/macosArm64/debugTest/test.kexe --ktest_filter='*SoakTest*'
 fi
 
-case "$(uname -m)" in
+# KOTSQL_LINUX_ARCH=x86_64 tests the other Linux target, where the machine can run its containers.
+case "${KOTSQL_LINUX_ARCH:-$(uname -m)}" in
   arm64|aarch64) target=LinuxArm64; dir=linuxArm64; platform=linux/arm64 ;;
   *) target=LinuxX64; dir=linuxX64; platform=linux/amd64 ;;
 esac
