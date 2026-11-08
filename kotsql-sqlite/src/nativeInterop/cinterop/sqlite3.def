@@ -1,0 +1,15 @@
+# SQLite's C API, for Windows, where androidx.sqlite has no build. The amalgamation that build.gradle.kts downloads is compiled
+# into this library with the options that androidx.sqlite's build of the same version reports in PRAGMA compile_options.
+package = ru.ttraum.kotsql.sqlite.c
+headers = sqlite3.h
+headerFilter = sqlite3.h
+# Takes the bytes of a string, which may hold a NUL, rather than a converted String.
+noStringConversion = kotsql_bind_text
+---
+// SQLITE_TRANSIENT is a cast that the bindings can't express: SQLite copies the value before the call returns.
+static inline int kotsql_bind_text(sqlite3_stmt *statement, int index, const char *text, int bytes) {
+    return sqlite3_bind_text(statement, index, text, bytes, SQLITE_TRANSIENT);
+}
+static inline int kotsql_bind_blob(sqlite3_stmt *statement, int index, const void *data, int bytes) {
+    return sqlite3_bind_blob(statement, index, data, bytes, SQLITE_TRANSIENT);
+}

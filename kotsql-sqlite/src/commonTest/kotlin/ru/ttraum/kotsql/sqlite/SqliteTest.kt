@@ -167,6 +167,16 @@ class SqliteTest {
         cursor.close()
     }
 
+    /** The same SQLite on every platform: androidx.sqlite's build, and on Windows the driver's own of the same version. */
+    @Test fun sameSqliteEverywhere() = memory {
+        assertEquals("3.50.1", one("SELECT sqlite_version()"))
+        val options = query("PRAGMA compile_options").toList().map { it[0] as String }.toSet()
+        for (option in listOf("THREADSAFE=2", "ENABLE_FTS5", "ENABLE_RTREE", "ENABLE_MATH_FUNCTIONS", "ENABLE_STAT4", "MAX_VARIABLE_NUMBER=32766")) {
+            assertTrue(option in options, "$option in $options")
+        }
+        assertEquals(1.0, one("SELECT sin(pi() / 2)"))
+    }
+
     @Test fun cachedStatements() = memory {
         update("CREATE TABLE t (a)")
         update("INSERT INTO t VALUES (1), (2)")

@@ -12,14 +12,14 @@ kotsql-core             API (SqlConnection, SqlCursor, SqlRow) and SPI (SqlDrive
 kotsql-transport        For databases behind a socket: Transport, NetworkSqlDriver, wire primitives, failover JVM, Native
 kotsql-postgres         PostgreSQL wire protocol                                                             JVM, Native
 kotsql-mysql            MySQL wire protocol                                                                  JVM, Native
-kotsql-sqlite           SQLite, embedded, through androidx.sqlite's bundled build                            JVM, Native but Windows
+kotsql-sqlite           SQLite, embedded: androidx.sqlite's bundled build, on Windows its own of the same    JVM, Native
 kotsql-transport-ktor   Non-blocking sockets                                                                 JVM, Native
 kotsql-jvm-values       What the JVM adapters share: conversions to and from java.sql and java.time           JVM
 kotsql-jdbc             java.sql adapter, blocking                                                           JVM
 kotsql-r2dbc            R2DBC SPI adapter, reactive                                                          JVM
 ```
 
-Native means `linuxX64`, `linuxArm64`, `macosArm64` and `mingwX64` (Windows), except that SQLite has no Windows build.
+Native means `linuxX64`, `linuxArm64`, `macosArm64` and `mingwX64` (Windows).
 
 ## Usage
 
@@ -92,6 +92,11 @@ URLs are `sqlite:///relative.db`, `sqlite:////absolute/path.db` and `sqlite:///:
 with no transport, or just `connectSqlite(path)`. For R2DBC, set the `database` option. `mode` is `rwc` by default, `rw` or `ro`, and any other key becomes a
 `PRAGMA`, as in `?foreign_keys=ON&journal_mode=WAL`. `busy_timeout` is 5000 milliseconds unless set. Each connection keeps its 64 most
 recently used prepared statements, by their text: `statement_cache_size` changes that, and `0` turns the cache off.
+
+SQLite is 3.50.1 everywhere. On the JVM, Linux and macOS it is androidx.sqlite's bundled build. androidx.sqlite has none for
+Windows, so there the build downloads the same version's amalgamation from sqlite.org, checks its SHA-256 and compiles it into
+the library with the options that androidx.sqlite's build reports; `SqliteTest.sameSqliteEverywhere` checks that they agree.
+Upgrading SQLite means changing the version and checksum in `kotsql-sqlite/build.gradle.kts` along with androidx.sqlite.
 
 It differs from the others by being in this process:
 

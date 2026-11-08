@@ -72,7 +72,9 @@ if [ "$(uname -s)" = Darwin ] && [ "$(uname -m)" = arm64 ] && xcodebuild -versio
   ./gradlew :kotsql-sqlite:macosArm64Test -q
 fi
 ./gradlew ":kotsql-sqlite:linkDebugTest$target" -q
-docker run --rm --platform "$platform" -v "$PWD/kotsql-sqlite/build/bin/$dir/debugTest:/t:ro" debian:stable-slim /t/test.kexe | tail -1
+# Into a variable first, so that a failure fails the script rather than being hidden by the pipe.
+out=$(docker run --rm --platform "$platform" -v "$PWD/kotsql-sqlite/build/bin/$dir/debugTest:/t:ro" debian:stable-slim /t/test.kexe)
+echo "$out" | tail -1
 
 echo "== JVM"
 KOTSQL_TEST_URL='postgresql://kotsql:kotsql@localhost:55432/kotsql?sslmode=disable' \
@@ -118,6 +120,10 @@ FROM debian:stable-slim
 RUN apt-get -o Acquire::Retries=3 update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -qq -y --no-install-recommends wine64 \
  && rm -rf /var/lib/apt/lists/* && WINEDEBUG=-all /usr/lib/wine/wine64 wineboot --init 2>/dev/null || true
 DOCKERFILE
+  ./gradlew :kotsql-sqlite:linkDebugTestMingwX64 -q
+  out=$(docker run --rm --platform linux/amd64 -e WINEDEBUG=-all -w /tmp -v "$PWD/kotsql-sqlite/build/bin/mingwX64/debugTest:/t:ro" \
+    kotsql-wine /usr/lib/wine/wine64 /t/test.exe)
+  echo "$out" | tail -1
   new_standby
   standby_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$(docker compose --profile replica ps -q postgres-standby)")
   # Windows paths for the certificates, through Wine's Z: drive.

@@ -1,17 +1,5 @@
 package ru.ttraum.kotsql.sqlite
 
-import androidx.sqlite.SQLITE_DATA_BLOB
-import androidx.sqlite.SQLITE_DATA_FLOAT
-import androidx.sqlite.SQLITE_DATA_INTEGER
-import androidx.sqlite.SQLITE_DATA_NULL
-import androidx.sqlite.SQLITE_DATA_TEXT
-import androidx.sqlite.SQLiteConnection
-import androidx.sqlite.SQLiteException
-import androidx.sqlite.SQLiteStatement
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import androidx.sqlite.driver.bundled.SQLITE_OPEN_CREATE
-import androidx.sqlite.driver.bundled.SQLITE_OPEN_READONLY
-import androidx.sqlite.driver.bundled.SQLITE_OPEN_READWRITE
 import ru.ttraum.kotsql.BatchItem
 import ru.ttraum.kotsql.CodecRegistry
 import ru.ttraum.kotsql.ColumnInfo
@@ -47,7 +35,6 @@ private const val STATEMENT_CACHE = "statement_cache_size"
 private const val DEFAULT_STATEMENT_CACHE = 64
 private val PRAGMA_NAME = Regex("""[A-Za-z_]+""")
 private val PRAGMA_VALUE = Regex("""[\w.-]+""")
-private val ERROR_FORMAT = Regex("""^Error code: (\d+)(?:, message: (.*))?$""", RegexOption.DOT_MATCHES_ALL)
 
 // SQLite's result codes.
 private const val SQLITE_ERROR = 1
@@ -65,10 +52,9 @@ private const val SQLITE_MISMATCH = 20
 private const val SQLITE_RANGE = 25
 private const val SQLITE_NOTADB = 26
 
-private fun translate(e: SQLiteException): SqlException {
-    val match = ERROR_FORMAT.find(e.message.orEmpty())
-    val code = match?.groupValues?.get(1)?.toIntOrNull() ?: 0
-    val text = match?.groupValues?.get(2)?.ifEmpty { null } ?: e.message ?: "SQLite failed"
+private fun translate(e: SqliteFailure): SqlException {
+    val code = e.code
+    val text = e.message ?: "SQLite failed"
     fun failure(state: String, kind: SqlErrorKind = SqlErrorKind.ofSqlState(state), details: SqlErrorDetails = SqlErrorDetails.NONE) =
         SqlException(text, state, code, kind, e, details)
     // An extended code has the primary one in its low byte. The whole of it goes to the vendor code, for those who look.
@@ -106,7 +92,7 @@ private fun translate(e: SQLiteException): SqlException {
 
 private inline fun <T> sqlite(block: () -> T): T = try {
     block()
-} catch (e: SQLiteException) {
+} catch (e: SqliteFailure) {
     throw translate(e)
 }
 
@@ -153,10 +139,10 @@ private class SqliteRow(override val columns: List<ColumnInfo>, private val valu
     override fun booleanValue(index: Int): Boolean = longValue(index) != 0L
 }
 
-private fun readRow(statement: SQLiteStatement, columns: List<ColumnInfo>, codecs: CodecRegistry) =
+private fun readRow(statement: NativeStatement, columns: List<ColumnInfo>, codecs: CodecRegistry) =
     SqliteRow(columns, readValues(statement, columns.size), codecs)
 
-private fun readValues(statement: SQLiteStatement, count: Int): Array<Any?> {
+private fun readValues(statement: NativeStatement, count: Int): Array<Any?> {
     val values = arrayOfNulls<Any?>(count)
     for (i in values.indices) {
         values[i] = when (statement.getColumnType(i)) {
@@ -190,7 +176,7 @@ private fun timeText(time: LocalTime): String {
     return text + "." + time.nanosecond.toString().padStart(9, '0').trimEnd('0')
 }
 
-private fun bind(statement: SQLiteStatement, position: Int, value: Any?) {
+private fun bind(statement: NativeStatement, position: Int, value: Any?) {
     val i = position + 1
     when (value) {
         null, is TypedNull -> statement.bindNull(i)
@@ -218,7 +204,7 @@ private fun bind(statement: SQLiteStatement, position: Int, value: Any?) {
 
 internal class SqliteConnection private constructor(
     private val config: ConnectionConfig,
-    private val db: SQLiteConnection,
+    private val db: NativeDatabase,
     private val cacheSize: Int,
 ) : SqlConnection {
     private var closed = false
@@ -229,7 +215,7 @@ internal class SqliteConnection private constructor(
      */
     private val cache = LinkedHashMap<String, Prepared>()
 
-    private class Prepared(val statement: SQLiteStatement, val parameters: Int, val verb: String)
+    private class Prepared(val statement: NativeStatement, val parameters: Int, val verb: String)
 
     private fun acquire(sql: String): Prepared {
         cache.remove(sql)?.let { return it }
@@ -253,7 +239,7 @@ internal class SqliteConnection private constructor(
         }
     }
 
-    private inline fun <T> using(sql: String, block: (SQLiteStatement) -> T): T {
+    private inline fun <T> using(sql: String, block: (NativeStatement) -> T): T {
         val prepared = acquire(sql)
         try {
             return block(prepared.statement)
@@ -555,9 +541,9 @@ internal class SqliteConnection private constructor(
                 ?: throw SqlException("SQLite takes a path, as in sqlite:///file.db, sqlite:////absolute/file.db or sqlite:///:memory:", "08001")
             if (config.host != "localhost") throw SqlException("SQLite has no server: '${config.host}' can't be reached, only a local file", "08001")
             val flags = when (val mode = config.properties[MODE] ?: "rwc") {
-                "ro" -> SQLITE_OPEN_READONLY
-                "rw" -> SQLITE_OPEN_READWRITE
-                "rwc" -> SQLITE_OPEN_READWRITE or SQLITE_OPEN_CREATE
+                "ro" -> OPEN_READONLY
+                "rw" -> OPEN_READWRITE
+                "rwc" -> OPEN_READWRITE or OPEN_CREATE
                 else -> throw SqlException("Invalid value of $MODE: '$mode'; expected ro, rw or rwc", "08001")
             }
             val pragmas = linkedMapOf("busy_timeout" to DEFAULT_BUSY_TIMEOUT)
@@ -570,7 +556,7 @@ internal class SqliteConnection private constructor(
             val cacheSize = config.properties[STATEMENT_CACHE]?.let { text ->
                 text.toIntOrNull()?.takeIf { it >= 0 } ?: throw SqlException("Invalid value of $STATEMENT_CACHE: '$text'; expected a count, 0 for none", "08001")
             } ?: DEFAULT_STATEMENT_CACHE
-            val db = sqlite { BundledSQLiteDriver().open(path, flags) }
+            val db = sqlite { openDatabase(path, flags) }
             try {
                 val connection = SqliteConnection(config, db, cacheSize)
                 for ((name, value) in pragmas) {

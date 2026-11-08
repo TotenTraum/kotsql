@@ -36,11 +36,9 @@ kotlin {
             implementation(kotlin("test"))
             implementation(project(":kotsql-postgres"))
             implementation(project(":kotsql-mysql"))
+            implementation(project(":kotsql-sqlite"))
             implementation(libs.coroutines.test)
         }
-        // SQLite has no build for Windows.
-        jvmTest.dependencies { implementation(project(":kotsql-sqlite")) }
-        getByName("unixTest").dependencies { implementation(project(":kotsql-sqlite")) }
     }
 }
 
