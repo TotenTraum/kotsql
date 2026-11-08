@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -52,7 +53,11 @@ class SqliteTest {
         assertEquals("text", row[2])
         assertContentEquals(byteArrayOf(1, 2), row[3] as ByteArray)
         assertNull(row[4])
-        assertEquals(listOf(SqlType.BIGINT, SqlType.DOUBLE, SqlType.TEXT, SqlType.BINARY, SqlType.OTHER), row.columns.map { it.type })
+        assertEquals(listOf(SqlType.INTEGER, SqlType.DOUBLE, SqlType.TEXT, SqlType.BINARY, SqlType.OTHER), row.columns.map { it.type })
+        assertEquals(SqlType.BIGINT, query("SELECT 5000000000").first().columns[0].type)
+        // Whole seconds and fractions alike as the same text that SQLite's own functions give.
+        val times = query("SELECT ?, ?, ?", listOf(LocalTime(12, 0), LocalDateTime(2024, 6, 1, 12, 0), LocalTime(1, 2, 3, 500_000_000))).first()
+        assertEquals(listOf<Any?>("12:00:00", "2024-06-01 12:00:00", "01:02:03.5"), List(3) { times[it] })
         assertEquals("1", row.getText(0))
         assertEquals(1L, row.longValue(0))
         assertTrue(row.isNull(4))
@@ -68,7 +73,7 @@ class SqliteTest {
         assertContentEquals(byteArrayOf(1), one("SELECT ?", byteArrayOf(1)) as ByteArray)
         assertNull(one("SELECT ?", null))
         assertEquals("2024-02-03", one("SELECT ?", LocalDate(2024, 2, 3)))
-        assertEquals("2024-02-03 04:05", one("SELECT ?", LocalDateTime(2024, 2, 3, 4, 5)))
+        assertEquals("2024-02-03 04:05:00", one("SELECT ?", LocalDateTime(2024, 2, 3, 4, 5)))
         assertEquals("1.50", one("SELECT ?", SqlDecimal("1.50")))
         val id = Uuid.random()
         assertEquals(id.toString(), one("SELECT ?", id))
@@ -160,6 +165,40 @@ class SqliteTest {
         assertEquals(3L, rows.next()!![0])
         assertNull(rows.next())
         cursor.close()
+    }
+
+    @Test fun cachedStatements() = memory {
+        update("CREATE TABLE t (a)")
+        update("INSERT INTO t VALUES (1), (2)")
+        // The same text twice at once: the second can't have the statement that the first is still reading.
+        val first = execute("SELECT a FROM t ORDER BY a").nextResult() as SqlResult.Rows
+        assertEquals(1L, first.next()!![0])
+        assertEquals(listOf(1L, 2L), query("SELECT a FROM t ORDER BY a").toList().map { it[0] })
+        assertEquals(2L, first.next()!![0])
+        assertNull(first.next())
+        // A cached statement after the schema changes under it.
+        update("DROP TABLE t")
+        update("CREATE TABLE t (b, a)")
+        update("INSERT INTO t VALUES ('x', 3)")
+        assertEquals(listOf(3L), query("SELECT a FROM t ORDER BY a").toList().map { it[0] })
+        // A failed statement is fit for the next use, with nothing left bound.
+        update("CREATE TABLE u (a NOT NULL)")
+        repeat(2) { assertFailsWith<SqlException> { update("INSERT INTO u VALUES (?)", listOf(null)) } }
+        assertEquals(1L, update("INSERT INTO u VALUES (?)", listOf(1)))
+        // More texts than the cache holds.
+        repeat(200) { assertEquals(it.toLong(), one("SELECT $it")) }
+        assertEquals(5L, one("SELECT 5"))
+    }
+
+    @Test fun noStatementCache() = runTest {
+        val driver = SqliteDriver()
+        assertEquals("08001", assertFailsWith<SqlException> { driver.connect(ConnectionConfig.parse("sqlite:///:memory:?statement_cache_size=-1")) }.sqlState)
+        val connection = driver.connect(ConnectionConfig.parse("sqlite:///:memory:?statement_cache_size=0"))
+        try {
+            repeat(3) { assertEquals(1L, connection.query("SELECT 1").first()[0]) }
+        } finally {
+            connection.close()
+        }
     }
 
     @Test fun partOfAResult() = memory {

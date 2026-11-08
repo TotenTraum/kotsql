@@ -70,6 +70,12 @@ object JvmValues {
             throw SqlException("Unsupported parameter type ${value.javaClass.name}", "22023")
     }
 
+    /**
+     * The value of an INTEGER column as JDBC and R2DBC give it by default: an Integer. A database whose integers are all of
+     * 64 bits, as SQLite's, says INTEGER for those that fit, and a larger one later in the column stays a Long.
+     */
+    fun integer(value: Any?): Any? = if (value is Long && value in Int.MIN_VALUE..Int.MAX_VALUE) value.toInt() else value
+
     /** Converts a canonical value to the natural Java type (`java.time`, `BigDecimal`, `UUID`, ...). */
     fun toJava(value: Any?): Any? = when (value) {
         is SqlDecimal -> decimal(value)
@@ -151,6 +157,9 @@ object JvmValues {
         LocalDate::class.java, LocalTime::class.java, LocalDateTime::class.java, OffsetDateTime::class.java, ZonedDateTime::class.java, Instant::class.java,
         java.sql.Date::class.java, java.sql.Time::class.java, java.sql.Timestamp::class.java, java.util.Date::class.java,
     )
+
+    /** Whether [text] is a date and time with no offset, which a time zone has to be taken from elsewhere for. */
+    fun isLocalDateTimeText(text: String): Boolean = runCatching { parseTemporal(text) }.getOrNull() is LocalDateTime
 
     /** Dates and times held as text, as they are where the database has no type for them. */
     private fun parseTemporal(text: String): Any {

@@ -88,7 +88,8 @@ R2DBC plugs in `AsyncSocketTransport`, where it suspends for real. The Kotlin cl
 
 URLs are `sqlite:///relative.db`, `sqlite:////absolute/path.db` and `sqlite:///:memory:`, also after `jdbc:kotsql:`, for `ru.ttraum.kotsql.connect(url)`
 with no transport, or just `connectSqlite(path)`. For R2DBC, set the `database` option. `mode` is `rwc` by default, `rw` or `ro`, and any other key becomes a
-`PRAGMA`, as in `?foreign_keys=ON&journal_mode=WAL`. `busy_timeout` is 5000 milliseconds unless set.
+`PRAGMA`, as in `?foreign_keys=ON&journal_mode=WAL`. `busy_timeout` is 5000 milliseconds unless set. Each connection keeps its 64 most
+recently used prepared statements, by their text: `statement_cache_size` changes that, and `0` turns the cache off.
 
 It differs from the others by being in this process:
 
@@ -96,8 +97,10 @@ It differs from the others by being in this process:
   `withContext(Dispatchers.IO)`. So a `withTimeout` can't interrupt a statement, and neither can `cancel()` or a JDBC query timeout, for
   which this build of SQLite has no API.
 - Values come as what the database holds: `Long`, `Double`, `String`, `ByteArray` or null, also for a column declared otherwise. A
-  column's type in `ColumnInfo` comes from its value in the first row. Through JDBC the getters convert them, reading dates and times
-  from text in ISO format, which is how parameters are stored too, but not from Unix or Julian day numbers.
+  column's type in `ColumnInfo` comes from its value in the first row: `INTEGER` if that integer fits in 32 bits, `BIGINT` if not.
+  JDBC's `getObject` and R2DBC's `get` give such an `INTEGER` value as an `Integer`, as other SQLite drivers do, and a larger one as a `Long`.
+  The getters convert values, reading dates and times from text in ISO format, which is how parameters are stored too
+  (`2024-06-01 12:00:00`, with the seconds always), but not from Unix or Julian day numbers.
 - Every transaction is serializable. `:memory:` is private to each connection, so a pool of them needs a file.
 - SQLite doesn't enforce foreign keys unless told to, and the driver leaves that as it is. `CallableStatement` only works for
   functions, as `{? = call f(?)}`, as it has no procedures. `describe` doesn't know types.
@@ -248,12 +251,15 @@ that already exists, so take care where it gets logged.
 
 ## Compatibility
 
-`kotsql-compat-tests` runs one application against both databases, with no official driver on the classpath: Spring Boot 3.5,
-Spring Data JPA and Hibernate 6, `JdbcTemplate`, and Spring Data R2DBC with `r2dbc-pool`.
+`kotsql-compat-tests` runs one application against each database, with no official driver on the classpath: Spring Boot 3.5,
+Spring Data JPA and Hibernate 6, `JdbcTemplate`, and Spring Data R2DBC with `r2dbc-pool`. On SQLite, with Hibernate's community
+dialect, three of its tests are changed for what SQLite or that dialect can't do: Hibernate's schema validation, numbers of more
+than 15 digits in a NUMERIC column, and a scrollable result by default.
 
 ## Benchmarks
 
-`tools/run-benchmarks.sh` compares `kotsql-jdbc` with pgjdbc and `kotsql-r2dbc` with r2dbc-postgresql using JMH, and writes `benchmarks/RESULTS.md`.
+`tools/run-benchmarks.sh` compares `kotsql-jdbc` with pgjdbc and `kotsql-r2dbc` with r2dbc-postgresql using JMH, and SQLite through
+`kotsql-jdbc` with xerial's sqlite-jdbc, and writes `benchmarks/RESULTS.md`.
 Docker must be running. Pass JMH options to change what runs, e.g. a name filter and `-f 1 -wi 1 -i 1 -r 1s -w 1s`.
 
 JMH waits for each R2DBC query with `block()`, which adds thread switches that a reactive application doesn't have, so those
@@ -269,8 +275,8 @@ writes `benchmarks/RESULTS-native.md`.
 ./gradlew jvmTest
 ```
 
-The JDBC and R2DBC suites start PostgreSQL through Testcontainers, so Docker must be running. The R2DBC suite includes the
-official `r2dbc-spi-test` TCK.
+The JDBC and R2DBC suites start PostgreSQL through Testcontainers, so Docker must be running. The R2DBC suite runs the
+official `r2dbc-spi-test` TCK on PostgreSQL, MySQL and SQLite.
 
 The client and TLS tests in `kotsql-transport-ktor` run on every target against the database of `compose.yaml`, and skip
 themselves without it. This script runs them on the JVM and in a Linux container, on the architecture of this machine:

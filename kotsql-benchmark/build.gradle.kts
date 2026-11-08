@@ -11,7 +11,9 @@ dependencies {
     implementation(project(":kotsql-jdbc"))
     implementation(project(":kotsql-r2dbc"))
     implementation(project(":kotsql-postgres"))
+    implementation(project(":kotsql-sqlite"))
     implementation(libs.pgjdbc)
+    implementation(libs.xerial.sqlite)
     implementation(libs.r2dbc.postgresql)
     // Netty's native epoll, which reactor-netty brings for x86_64 only. Without it r2dbc-postgresql would run on plain NIO
     // on ARM and be measured below its best.

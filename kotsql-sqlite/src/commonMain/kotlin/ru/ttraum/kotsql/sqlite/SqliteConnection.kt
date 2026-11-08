@@ -43,6 +43,8 @@ import kotlin.uuid.Uuid
 
 private const val DEFAULT_BUSY_TIMEOUT = "5000"
 private const val MODE = "mode"
+private const val STATEMENT_CACHE = "statement_cache_size"
+private const val DEFAULT_STATEMENT_CACHE = 64
 private val PRAGMA_NAME = Regex("""[A-Za-z_]+""")
 private val PRAGMA_VALUE = Regex("""[\w.-]+""")
 private val ERROR_FORMAT = Regex("""^Error code: (\d+)(?:, message: (.*))?$""", RegexOption.DOT_MATCHES_ALL)
@@ -116,8 +118,9 @@ private fun nativeType(storageClass: Int) = when (storageClass) {
     else -> "NULL"
 }
 
-private fun sqlType(storageClass: Int) = when (storageClass) {
-    SQLITE_DATA_INTEGER -> SqlType.BIGINT
+/** An integer is INTEGER when the first row's fits in 32 bits, for JDBC and R2DBC to give an Integer as other SQLite drivers do. */
+private fun sqlType(storageClass: Int, first: Any?) = when (storageClass) {
+    SQLITE_DATA_INTEGER -> if (first is Long && first in Int.MIN_VALUE..Int.MAX_VALUE) SqlType.INTEGER else SqlType.BIGINT
     SQLITE_DATA_FLOAT -> SqlType.DOUBLE
     SQLITE_DATA_TEXT -> SqlType.TEXT
     SQLITE_DATA_BLOB -> SqlType.BINARY
@@ -150,8 +153,11 @@ private class SqliteRow(override val columns: List<ColumnInfo>, private val valu
     override fun booleanValue(index: Int): Boolean = longValue(index) != 0L
 }
 
-private fun readRow(statement: SQLiteStatement, columns: List<ColumnInfo>, codecs: CodecRegistry): SqliteRow {
-    val values = arrayOfNulls<Any?>(columns.size)
+private fun readRow(statement: SQLiteStatement, columns: List<ColumnInfo>, codecs: CodecRegistry) =
+    SqliteRow(columns, readValues(statement, columns.size), codecs)
+
+private fun readValues(statement: SQLiteStatement, count: Int): Array<Any?> {
+    val values = arrayOfNulls<Any?>(count)
     for (i in values.indices) {
         values[i] = when (statement.getColumnType(i)) {
             SQLITE_DATA_INTEGER -> statement.getLong(i)
@@ -162,7 +168,7 @@ private fun readRow(statement: SQLiteStatement, columns: List<ColumnInfo>, codec
             else -> statement.getText(i)
         }
     }
-    return SqliteRow(columns, values, codecs)
+    return values
 }
 
 /** The keys of the rows of one INSERT: SQLite gives the last one, and they are consecutive for the rows of a statement. */
@@ -171,6 +177,17 @@ private class InsertedKeys(private val last: Long, override val size: Int) : Abs
         if (index !in 0 until size) throw IndexOutOfBoundsException("Index $index, size $size")
         return last - size + 1 + index
     }
+}
+
+/**
+ * HH:MM:SS with the fraction if there is one. The text has to be the same for the same time, which `LocalTime.toString` without
+ * the seconds of 12:00 isn't, for comparisons and SQLite's date functions.
+ */
+private fun timeText(time: LocalTime): String {
+    fun two(n: Int) = n.toString().padStart(2, '0')
+    val text = "${two(time.hour)}:${two(time.minute)}:${two(time.second)}"
+    if (time.nanosecond == 0) return text
+    return text + "." + time.nanosecond.toString().padStart(9, '0').trimEnd('0')
 }
 
 private fun bind(statement: SQLiteStatement, position: Int, value: Any?) {
@@ -189,18 +206,61 @@ private fun bind(statement: SQLiteStatement, position: Int, value: Any?) {
         // Everything else as the text that SQLite's own date functions and NUMERIC columns understand.
         is SqlDecimal -> statement.bindText(i, value.text)
         is LocalDate -> statement.bindText(i, value.toString())
-        is LocalTime -> statement.bindText(i, value.toString())
-        is LocalDateTime -> statement.bindText(i, "${value.date} ${value.time}")
-        is SqlOffsetDateTime -> statement.bindText(i, "${value.dateTime.date} ${value.dateTime.time}")
-        is SqlOffsetTime -> statement.bindText(i, "${value.time}${value.offset}")
+        is LocalTime -> statement.bindText(i, timeText(value))
+        is LocalDateTime -> statement.bindText(i, "${value.date} ${timeText(value.time)}")
+        is SqlOffsetDateTime -> statement.bindText(i, "${value.dateTime.date} ${timeText(value.dateTime.time)}")
+        is SqlOffsetTime -> statement.bindText(i, "${timeText(value.time)}${value.offset}")
         is Instant -> statement.bindText(i, value.toString())
         is Uuid -> statement.bindText(i, value.toString())
         else -> throw SqlException("Unsupported parameter type ${value::class.simpleName}", "22023")
     }
 }
 
-internal class SqliteConnection private constructor(private val config: ConnectionConfig, private val db: SQLiteConnection) : SqlConnection {
+internal class SqliteConnection private constructor(
+    private val config: ConnectionConfig,
+    private val db: SQLiteConnection,
+    private val cacheSize: Int,
+) : SqlConnection {
     private var closed = false
+
+    /**
+     * Prepared statements that are free, by their text, the least recently used first. One in use is out of the map, so a
+     * statement that runs while another with the same text still has rows gets one of its own.
+     */
+    private val cache = LinkedHashMap<String, Prepared>()
+
+    private class Prepared(val statement: SQLiteStatement, val parameters: Int, val verb: String)
+
+    private fun acquire(sql: String): Prepared {
+        cache.remove(sql)?.let { return it }
+        return Prepared(sqlite { db.prepare(sql) }, SqliteDialect.parameterCount(sql), SqliteDialect.verb(sql))
+    }
+
+    /** Back to the cache, ready for the next use, or closed if it can't be. */
+    private fun release(sql: String, prepared: Prepared) {
+        val kept = !closed && cacheSize > 0 && runCatching {
+            prepared.statement.reset()
+            prepared.statement.clearBindings()
+        }.isSuccess
+        if (!kept) {
+            prepared.statement.close()
+            return
+        }
+        cache.put(sql, prepared)?.statement?.close()
+        if (cache.size > cacheSize) {
+            val eldest = cache.keys.first()
+            cache.remove(eldest)?.statement?.close()
+        }
+    }
+
+    private inline fun <T> using(sql: String, block: (SQLiteStatement) -> T): T {
+        val prepared = acquire(sql)
+        try {
+            return block(prepared.statement)
+        } finally {
+            release(sql, prepared)
+        }
+    }
     private var active: SqliteCursor? = null
     override val dialect: SqlDialect get() = SqliteDialect
     override val codecs: CodecRegistry get() = config.codecs
@@ -219,27 +279,25 @@ internal class SqliteConnection private constructor(private val config: Connecti
         active = null
     }
 
-    private fun checkedStatement(sql: String, params: List<Any?>): SQLiteStatement {
-        val count = SqliteDialect.parameterCount(sql)
-        if (count != params.size) throw SqlException("The statement has $count parameters, but ${params.size} were given", "07001")
-        val statement = sqlite { db.prepare(sql) }
+    private fun checkedStatement(sql: String, params: List<Any?>): Prepared {
+        val prepared = acquire(sql)
         try {
-            sqlite { params.forEachIndexed { i, value -> bind(statement, i, value) } }
+            bindAll(prepared, params)
         } catch (e: Throwable) {
-            statement.close()
+            release(sql, prepared)
             throw e
         }
-        return statement
+        return prepared
     }
 
-    private fun scalar(sql: String): Long {
-        val statement = sqlite { db.prepare(sql) }
-        try {
-            sqlite { statement.step() }
-            return statement.getLong(0)
-        } finally {
-            statement.close()
-        }
+    private fun bindAll(prepared: Prepared, params: List<Any?>) {
+        if (prepared.parameters != params.size) throw SqlException("The statement has ${prepared.parameters} parameters, but ${params.size} were given", "07001")
+        sqlite { params.forEachIndexed { i, value -> bind(prepared.statement, i, value) } }
+    }
+
+    private fun scalar(sql: String): Long = using(sql) { statement ->
+        sqlite { statement.step() }
+        statement.getLong(0)
     }
 
     private fun changedRows(verb: String) = if (verb == "INSERT" || verb == "UPDATE" || verb == "DELETE" || verb == "REPLACE" || verb == "WITH") scalar("SELECT changes()") else 0
@@ -258,54 +316,48 @@ internal class SqliteConnection private constructor(private val config: Connecti
         val counts = LongArray(items.size)
         var done = 0
         val ownTransaction = transactionState == TransactionState.IDLE
-        fun simple(sql: String) {
-            val statement = sqlite { db.prepare(sql) }
-            try { sqlite { statement.step() } } finally { statement.close() }
-        }
-        var statement: SQLiteStatement? = null
+        fun simple(sql: String) = using(sql) { sqlite { it.step() } }
+        var prepared: Prepared? = null
         var preparedSql: String? = null
         try {
             if (ownTransaction) simple("BEGIN")
             for (item in items) {
                 val encoded = item.params.map(config.codecs::encode)
-                val count = SqliteDialect.parameterCount(item.sql)
-                if (count != encoded.size) throw SqlException("The statement has $count parameters, but ${encoded.size} were given", "07001")
-                val reusable = statement?.takeIf { item.sql == preparedSql }
-                if (reusable == null) statement?.close()
-                statement = null
-                val current = reusable ?: sqlite { db.prepare(item.sql) }
-                statement = current
-                preparedSql = item.sql
-                sqlite {
-                    current.reset()
-                    current.clearBindings()
-                    encoded.forEachIndexed { i, value -> bind(current, i, value) }
-                    while (current.step()) { /* the rows of RETURNING are of no interest */ }
-                    current.reset()
+                // The usual batch is one statement many times, which keeps it rather than going to the cache for each.
+                if (preparedSql != item.sql) {
+                    prepared?.let { release(preparedSql!!, it) }
+                    prepared = null
+                    prepared = acquire(item.sql)
+                    preparedSql = item.sql
                 }
-                counts[done++] = changedRows(SqliteDialect.verb(item.sql))
+                val current = prepared!!
+                bindAll(current, encoded)
+                sqlite {
+                    while (current.statement.step()) { /* the rows of RETURNING are of no interest */ }
+                    current.statement.reset()
+                }
+                counts[done++] = changedRows(current.verb)
             }
-            statement?.close()
-            statement = null
             if (ownTransaction) simple("COMMIT")
         } catch (e: SqlException) {
-            statement?.close()
+            // The failed statement is reset before the rollback.
+            prepared?.let { release(preparedSql!!, it) }
+            prepared = null
             if (ownTransaction && !closed) runCatching { simple("ROLLBACK") }
             throw SqlBatchException(counts.copyOf(done), e)
+        } finally {
+            prepared?.let { release(preparedSql!!, it) }
         }
         return counts
     }
 
     override suspend fun describe(sql: String): StatementDescription {
         beginOperation()
-        val statement = sqlite { db.prepare(sql) }
-        try {
+        return using(sql) { statement ->
             val columns = List(statement.getColumnCount()) { i ->
                 ColumnInfo(statement.getColumnName(i), SqlType.OTHER, "", codec = null)
             }
-            return StatementDescription(List(SqliteDialect.parameterCount(sql)) { SqlType.OTHER }, columns)
-        } finally {
-            statement.close()
+            StatementDescription(List(SqliteDialect.parameterCount(sql)) { SqlType.OTHER }, columns)
         }
     }
 
@@ -324,6 +376,8 @@ internal class SqliteConnection private constructor(private val config: Connecti
             active?.release()
         } finally {
             active = null
+            for (prepared in cache.values) prepared.statement.close()
+            cache.clear()
             sqlite { db.close() }
         }
     }
@@ -337,21 +391,22 @@ internal class SqliteConnection private constructor(private val config: Connecti
         private var finished = false
 
         private fun run(sql: String): SqlResult {
-            val verb = SqliteDialect.verb(sql)
-            val statement = checkedStatement(sql, params)
+            val prepared = checkedStatement(sql, params)
+            val verb = prepared.verb
+            val statement = prepared.statement
             var keep = false
             try {
                 val columnCount = statement.getColumnCount()
                 if (columnCount > 0) {
                     val hasRow = sqlite { statement.step() }
-                    val names = List(columnCount) { statement.getColumnName(it) }
-                    val columns = names.mapIndexed { i, name ->
+                    val values = if (hasRow) sqlite { readValues(statement, columnCount) } else null
+                    val columns = List(columnCount) { i ->
                         val storageClass = if (hasRow) statement.getColumnType(i) else SQLITE_DATA_NULL
-                        ColumnInfo(name, sqlType(storageClass), nativeType(storageClass))
+                        ColumnInfo(statement.getColumnName(i), sqlType(storageClass, values?.get(i)), nativeType(storageClass))
                     }
-                    val first = if (hasRow) sqlite { readRow(statement, columns, config.codecs) } else null
+                    val first = values?.let { SqliteRow(columns, it, config.codecs) }
                     keep = true
-                    return StatementRows(statement, columns, first, verb)
+                    return StatementRows(sql, prepared, columns, first, verb)
                 }
                 sqlite { statement.step() }
                 val count = changedRows(verb)
@@ -362,7 +417,7 @@ internal class SqliteConnection private constructor(private val config: Connecti
                 }
                 return SqlResult.UpdateCount(count, keys)
             } finally {
-                if (!keep) statement.close()
+                if (!keep) release(sql, prepared)
             }
         }
 
@@ -445,7 +500,8 @@ internal class SqliteConnection private constructor(private val config: Connecti
     }
 
     private inner class StatementRows(
-        private var statement: SQLiteStatement?,
+        private val sql: String,
+        private var prepared: Prepared?,
         override val columns: List<ColumnInfo>,
         private var first: SqliteRow?,
         private val verb: String,
@@ -455,8 +511,8 @@ internal class SqliteConnection private constructor(private val config: Connecti
             private set
 
         private fun finish() {
-            statement?.close()
-            statement = null
+            prepared?.let { release(sql, it) }
+            prepared = null
             updateCount = if (verb == "SELECT") null else changedRows(verb).takeIf { verb != "PRAGMA" && verb != "EXPLAIN" && verb != "VALUES" }
         }
 
@@ -466,7 +522,7 @@ internal class SqliteConnection private constructor(private val config: Connecti
                 first = null
                 return it
             }
-            val open = statement ?: return null
+            val open = prepared?.statement ?: return null
             if (closed) throw SqlException("The connection is closed", "08003")
             if (sqlite { open.step() }) return sqlite { readRow(open, columns, config.codecs) }
             finish()
@@ -488,8 +544,8 @@ internal class SqliteConnection private constructor(private val config: Connecti
         }
 
         fun release() {
-            statement?.close()
-            statement = null
+            prepared?.statement?.close()
+            prepared = null
         }
     }
 
@@ -506,14 +562,17 @@ internal class SqliteConnection private constructor(private val config: Connecti
             }
             val pragmas = linkedMapOf("busy_timeout" to DEFAULT_BUSY_TIMEOUT)
             for ((name, value) in config.properties) {
-                if (name == MODE) continue
+                if (name == MODE || name == STATEMENT_CACHE) continue
                 // These go into the text of a statement.
                 if (!PRAGMA_NAME.matches(name) || !PRAGMA_VALUE.matches(value)) throw SqlException("Invalid setting $name=$value", "08001")
                 pragmas[name] = value
             }
+            val cacheSize = config.properties[STATEMENT_CACHE]?.let { text ->
+                text.toIntOrNull()?.takeIf { it >= 0 } ?: throw SqlException("Invalid value of $STATEMENT_CACHE: '$text'; expected a count, 0 for none", "08001")
+            } ?: DEFAULT_STATEMENT_CACHE
             val db = sqlite { BundledSQLiteDriver().open(path, flags) }
             try {
-                val connection = SqliteConnection(config, db)
+                val connection = SqliteConnection(config, db, cacheSize)
                 for ((name, value) in pragmas) {
                     val statement = sqlite { db.prepare("PRAGMA $name = $value") }
                     try { sqlite { while (statement.step()) { /* some of them report the new value */ } } } finally { statement.close() }

@@ -9,6 +9,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public final class Databases {
     private static GenericContainer<?> postgres;
     private static GenericContainer<?> mysql;
+    private static String sqlite;
 
     private Databases() {}
 
@@ -32,5 +33,19 @@ public final class Databases {
             mysql.start();
         }
         return "jdbc:kotsql:mysql://" + mysql.getHost() + ":" + mysql.getFirstMappedPort() + "/app";
+    }
+
+    /** A file rather than memory, as each connection of the pool would otherwise have a database of its own. */
+    public static synchronized String sqliteUrl() {
+        if (sqlite == null) {
+            try {
+                java.nio.file.Path file = java.nio.file.Files.createTempFile("kotsql-compat", ".db");
+                file.toFile().deleteOnExit();
+                sqlite = "jdbc:kotsql:sqlite:///" + file + "?journal_mode=WAL&foreign_keys=on";
+            } catch (java.io.IOException e) {
+                throw new java.io.UncheckedIOException(e);
+            }
+        }
+        return sqlite;
     }
 }

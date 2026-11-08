@@ -222,6 +222,7 @@ internal class R2dbcRow(private val row: SqlRow, private val metadata: R2dbcRowM
                 !row.codecs.isEmpty && !type.isInstance(value) && row.codecs.forClass(type.kotlin) != null -> translating { row.get(index, type.kotlin) }
                 // The SPI maps binary columns to ByteBuffer by default.
                 type == Any::class.java && value is ByteArray -> ByteBuffer.wrap(value) as T
+                type == Any::class.java && row.columns[index].type == SqlType.INTEGER -> JvmValues.integer(value) as T
                 type == Blob::class.java && value is ByteArray ->
                     Blob.from(one { ByteBuffer.wrap(value) }) as T
                 type == Clob::class.java && value is String -> Clob.from(one<CharSequence> { value }) as T

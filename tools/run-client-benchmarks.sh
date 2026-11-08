@@ -24,13 +24,23 @@ ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}
 binary=kotsql-benchmark-client/build/bin/$dir/releaseExecutable
 env="--network container:$pg -e BENCH_HOST=$ip -e BENCH_PORT=5432"
 
+# Only the results, but a failure must stop the script, which a pipe into grep would hide.
+results() {
+  log=$(mktemp)
+  status=0
+  "$@" > "$log" 2>&1 || status=$?
+  grep RESULT "$log" || true
+  [ "$status" -eq 0 ] || tail -20 "$log" >&2
+  rm -f "$log"
+  return "$status"
+}
 native() {
-  docker run --rm --platform "$platform" $env -v "$PWD/$binary:/b:ro" debian:stable-slim \
-    /b/kotsql-benchmark-client.kexe "$@" | grep RESULT
+  results docker run --rm --platform "$platform" $env -v "$PWD/$binary:/b:ro" debian:stable-slim \
+    /b/kotsql-benchmark-client.kexe "$@"
 }
 jvm() {
-  docker run --rm $env -v "$PWD/kotsql-benchmark-client/build/install/jvm:/lib-bench:ro" eclipse-temurin:17-jdk \
-    java -Xmx1g -cp '/lib-bench/*' ru.ttraum.kotsql.benchmark.client.MainKt "$@" | grep RESULT
+  results docker run --rm $env -v "$PWD/kotsql-benchmark-client/build/install/jvm:/lib-bench:ro" eclipse-temurin:17-jdk \
+    java -Xmx1g -cp '/lib-bench/*' ru.ttraum.kotsql.benchmark.client.MainKt "$@"
 }
 
 : > "$out"
@@ -38,12 +48,13 @@ echo "RESULT size native binaryBytes $(wc -c < "$binary/kotsql-benchmark-client.
 round=0
 while [ "$round" -lt "$rounds" ]; do
   round=$((round + 1))
-  native epoll disable "$warmup" "$iterations" "$seconds" "$@" | tee -a "$out"
-  native ktor disable "$warmup" "$iterations" "$seconds" "$@" | tee -a "$out"
-  jvm ktor disable "$warmup" "$iterations" "$seconds" "$@" | tee -a "$out"
-  jvm async disable "$warmup" "$iterations" "$seconds" "$@" | tee -a "$out"
-  native epoll require "$warmup" "$iterations" "$seconds" selectOne select1000Rows connectPerQuery | tee -a "$out"
-  jvm ktor require "$warmup" "$iterations" "$seconds" selectOne select1000Rows connectPerQuery | tee -a "$out"
-  jvm async require "$warmup" "$iterations" "$seconds" selectOne select1000Rows connectPerQuery | tee -a "$out"
+  native epoll disable "$warmup" "$iterations" "$seconds" "$@" >> "$out"
+  native ktor disable "$warmup" "$iterations" "$seconds" "$@" >> "$out"
+  jvm ktor disable "$warmup" "$iterations" "$seconds" "$@" >> "$out"
+  jvm async disable "$warmup" "$iterations" "$seconds" "$@" >> "$out"
+  native epoll require "$warmup" "$iterations" "$seconds" selectOne select1000Rows connectPerQuery >> "$out"
+  jvm ktor require "$warmup" "$iterations" "$seconds" selectOne select1000Rows connectPerQuery >> "$out"
+  jvm async require "$warmup" "$iterations" "$seconds" selectOne select1000Rows connectPerQuery >> "$out"
+  echo "round $round done"
 done
 python3 tools/benchmark-client-report.py "$out" benchmarks/RESULTS-native.md

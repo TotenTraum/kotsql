@@ -23,6 +23,9 @@ services:
       - -c
       - ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
     environment: { POSTGRES_USER: kotsql, POSTGRES_PASSWORD: kotsql, POSTGRES_DB: kotsql }
+    # The benchmarks' clients share this network namespace, and opening ~1500 connections a second would otherwise run out
+    # of local ports, each closed one keeping its port for a minute.
+    sysctls: { net.ipv4.ip_local_port_range: "1024 65000", net.ipv4.tcp_tw_reuse: "1" }
     ports: ["55432:5432"]
     healthcheck:
       test: pg_isready -U kotsql

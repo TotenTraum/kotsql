@@ -14,6 +14,8 @@ dependencies {
     testImplementation(project(":kotsql-jdbc"))
     testRuntimeOnly(project(":kotsql-postgres"))
     testRuntimeOnly(project(":kotsql-mysql"))
+    testRuntimeOnly(project(":kotsql-sqlite"))
+    testRuntimeOnly("org.hibernate.orm:hibernate-community-dialects")
     testImplementation("org.testcontainers:testcontainers:2.0.5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

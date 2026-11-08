@@ -111,10 +111,13 @@ abstract class AbstractCompatTest {
             a.add(fullBook("Zoned"));
             authors.save(a);
         });
-        assertTrue(jdbc.queryForObject("select " + utcText("updated_instant") + " from books", String.class).startsWith("2024-06-01 12:00:00"));
-        assertTrue(jdbc.queryForObject("select " + utcText("updated_offset") + " from books", String.class).startsWith("2024-06-01 12:00:00"));
+        String instant = jdbc.queryForObject("select " + utcText("updated_instant") + " from books", String.class);
+        assertTrue(instant.startsWith("2024-06-01 12:00:00"), instant);
+        String offset = jdbc.queryForObject("select " + utcText("updated_offset") + " from books", String.class);
+        assertTrue(offset.startsWith("2024-06-01 12:00:00"), offset);
         // A local date and time has no zone: the wall clock is kept as it is.
-        assertTrue(jdbc.queryForObject("select cast(updated_local as char(19)) from books", String.class).startsWith("2024-01-02 03:04:05"));
+        String local = jdbc.queryForObject("select cast(updated_local as char(19)) from books", String.class);
+        assertTrue(local.startsWith("2024-01-02 03:04:05"), local);
         assertEquals("2024-02-29", jdbc.queryForObject("select cast(published as char(10)) from books", String.class));
     }
 
@@ -197,7 +200,9 @@ abstract class AbstractCompatTest {
         var violation = assertThrows(DataIntegrityViolationException.class, () -> authors.saveAndFlush(new Author("Unique")));
         // What an application wants for "this email is taken", through Spring's and Hibernate's wrapping, and from Java.
         assertEquals(ru.ttraum.kotsql.ConstraintViolation.UNIQUE, ru.ttraum.kotsql.SqlErrors.sqlErrorDetails(violation).getViolation());
-        assertNotNull(ru.ttraum.kotsql.SqlErrors.sqlErrorDetails(violation).getConstraint());
+        // SQLite names the column rather than the constraint.
+        var details = ru.ttraum.kotsql.SqlErrors.sqlErrorDetails(violation);
+        assertNotNull(details.getConstraint() != null ? details.getConstraint() : details.getColumn());
         assertThrows(DuplicateKeyException.class, () -> jdbc.update("insert into authors(name, version) values ('Unique', 0)"));
         assertThrows(BadSqlGrammarException.class, () -> jdbc.queryForList("select * from no_such_table"));
         // A failure leaves the connection fit for the pool.

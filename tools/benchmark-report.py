@@ -13,16 +13,20 @@ out = pathlib.Path(sys.argv[1])
 results = json.loads((out / "results.json").read_text())
 scores = {}
 order = []
+sqlite_order = []
 for r in results:
     cls, name = r["benchmark"].rsplit(".", 2)[-2:]
     params = r.get("params", {})
-    if cls == "JdbcBenchmark":
+    if cls == "SqliteBenchmark":
+        driver = "sqlite-" + params["driver"]
+    elif cls == "JdbcBenchmark":
         driver = {"pgjdbc": "pgjdbc", "kotsql": "kotsql-jdbc"}[params["driver"]]
     else:
         driver = {"kotsql": "kotsql-r2dbc", "postgresql": "r2dbc-postgresql"}[params.get("driver", "kotsql")]
     key = (name, params.get("sslmode", "disable"))
-    if key not in order:
-        order.append(key)
+    target = sqlite_order if cls == "SqliteBenchmark" else order
+    if key not in target:
+        target.append(key)
     alloc = r["secondaryMetrics"].get("·gc.alloc.rate.norm") or r["secondaryMetrics"].get("gc.alloc.rate.norm")
     iterations = [x for fork in r["primaryMetric"]["rawData"] for x in fork]
     scores[key, driver] = (statistics.median(iterations), (min(iterations), max(iterations)), alloc["score"] if alloc else None)
@@ -78,5 +82,26 @@ lines += [
 ]
 for key in order:
     lines.append(f"| {label(key)} | {alloc(key, 'pgjdbc')} | {alloc(key, 'kotsql-jdbc')} | {alloc(key, 'kotsql-r2dbc')} | {alloc(key, 'r2dbc-postgresql')} |")
+if sqlite_order:
+    lines += [
+        "",
+        "## SQLite, operations per second (higher is better)",
+        "",
+        "One file through each JDBC driver, with WAL and synchronous=NORMAL. kotsql-nocache is kotsql with `statement_cache_size=0`.",
+        "",
+        "| Scenario | xerial sqlite-jdbc | kotsql-jdbc | kotsql-jdbc / xerial | kotsql-nocache |",
+        "|---|---:|---:|---:|---:|",
+    ]
+    for key in sqlite_order:
+        lines.append(f"| {label(key)} | {cell(key, 'sqlite-xerial')} | {cell(key, 'sqlite-kotsql')} | {ratio(key, 'sqlite-kotsql', 'sqlite-xerial')} | {cell(key, 'sqlite-kotsql-nocache')} |")
+    lines += [
+        "",
+        "### SQLite allocation, KB per operation (lower is better)",
+        "",
+        "| Scenario | xerial sqlite-jdbc | kotsql-jdbc | kotsql-nocache |",
+        "|---|---:|---:|---:|",
+    ]
+    for key in sqlite_order:
+        lines.append(f"| {label(key)} | {alloc(key, 'sqlite-xerial')} | {alloc(key, 'sqlite-kotsql')} | {alloc(key, 'sqlite-kotsql-nocache')} |")
 (out / "RESULTS.md").write_text("\n".join(lines) + "\n")
 print("\n".join(lines))

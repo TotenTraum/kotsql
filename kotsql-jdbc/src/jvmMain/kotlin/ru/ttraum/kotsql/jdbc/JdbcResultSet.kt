@@ -182,8 +182,10 @@ internal class JdbcResultSet(
         return Time(v.atDate(LocalDate.EPOCH).atZone(zone(p1)).toInstant().toEpochMilli())
     }
     override fun getTimestamp(p0: Int, p1: Calendar?): Timestamp? {
-        // A value with a time zone is an instant already, so the calendar applies only to one without.
-        if (columns[p0.coerceIn(1, columns.size) - 1].type != SqlType.TIMESTAMP) return getTimestamp(p0)
+        // A value with a time zone is an instant already, so the calendar applies only to one without: a TIMESTAMP, or the text
+        // of a date and time where the database keeps them as text.
+        val local = columns[p0.coerceIn(1, columns.size) - 1].type == SqlType.TIMESTAMP || (raw(p0) as? String)?.let(JvmValues::isLocalDateTimeText) == true
+        if (!local) return getTimestamp(p0)
         val v = convert(p0, LocalDateTime::class.java) ?: return null
         return Timestamp.from(v.atZone(zone(p1)).toInstant())
     }
@@ -211,6 +213,7 @@ internal class JdbcResultSet(
         val v = raw(p0) ?: return null
         return when (columns[p0 - 1].type) {
             SqlType.SMALLINT -> (v as Short).toInt() // as the JDBC specification maps it
+            SqlType.INTEGER -> JvmValues.integer(v)
             SqlType.DATE -> convert(p0, Date::class.java)
             SqlType.TIME -> convert(p0, Time::class.java)
             SqlType.TIMESTAMP, SqlType.TIMESTAMP_TZ -> convert(p0, Timestamp::class.java)

@@ -61,8 +61,14 @@ class SqliteJdbcTest {
                 assertTrue(r.getBoolean(6))
                 assertContentEquals(byteArrayOf(1, 2), r.getBytes(7))
                 assertEquals("INTEGER", r.metaData.getColumnTypeName(1))
-                assertEquals(Types.BIGINT, r.metaData.getColumnType(1))
+                assertEquals(Types.INTEGER, r.metaData.getColumnType(1))
+                assertEquals(1, r.getObject(1)) // an Integer, as other SQLite drivers give it
                 assertFalse(r.next())
+            }
+            // A larger one stays a Long, also further down a column whose first value fits.
+            s.executeQuery("SELECT 1 UNION ALL SELECT 5000000000").use { r ->
+                assertTrue(r.next()); assertEquals(1, r.getObject(1))
+                assertTrue(r.next()); assertEquals(5_000_000_000L, r.getObject(1))
             }
         }
     }
