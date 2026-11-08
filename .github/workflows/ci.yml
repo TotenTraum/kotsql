@@ -38,7 +38,7 @@ jobs:
           path: '**/build/reports/tests/'
 
   client-linux:
-    name: Client and TLS tests, JVM and linuxX64
+    name: Client and TLS tests, JVM, linuxX64 and mingwX64 under Wine
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -53,7 +53,10 @@ jobs:
         with:
           path: ~/.konan
           key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      # The mingwX64 tests too, under Wine, against the same servers with TLS and client certificates.
       - run: tools/run-client-tests.sh
+        env:
+          KOTSQL_TEST_WINE: 1
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -78,6 +81,41 @@ jobs:
           key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
       # No Docker on these runners: the tests that need a server skip themselves, and SQLite, the fuzzing and the rest run.
       - run: ./gradlew macosArm64Test --continue
+
+  windows:
+    name: mingwX64 on Windows, with the runner's PostgreSQL
+    runs-on: windows-2025
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+      # The wrapper downloads Gradle on a fresh runner, which can time out while several jobs do it at once.
+      - name: Download Gradle
+        run: for attempt in 1 2 3; do echo "Attempt $attempt"; ./gradlew --version -q && exit 0; sleep 15; done; exit 1
+      - uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      # The image has PostgreSQL installed but stopped, with the password in PGPASSWORD. No TLS there, so the TLS
+      # tests skip themselves; under Wine in client-linux they run against a server that has it.
+      - name: Start PostgreSQL
+        shell: pwsh
+        run: |
+          $service = Get-Service -Name postgresql*
+          Set-Service -InputObject $service -Status running -StartupType automatic
+      - run: ./gradlew mingwX64Test --continue
+        env:
+          KOTSQL_TEST_URL: postgresql://postgres:root@localhost:5432/postgres?sslmode=disable
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-test-reports
+          path: '**/build/reports/tests/'
 
   openssl:
     name: OpenSSL declarations against the headers

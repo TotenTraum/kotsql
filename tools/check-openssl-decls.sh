@@ -20,7 +20,6 @@ _Static_assert(SSL_CTRL_SET_MIN_PROTO_VERSION == 123 && TLS1_2_VERSION == 0x0303
 _Static_assert(SSL_CTRL_SET_TLSEXT_HOSTNAME == 55 && TLSEXT_NAMETYPE_host_name == 0, "sni");
 _Static_assert(X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS == 4 && X509_V_OK == 0 && OPENSSL_VERSION == 0, "misc");
 _Static_assert(SSL_FILETYPE_PEM == 1 && NID_md5 == 4 && NID_sha1 == 64 && EVP_MAX_MD_SIZE == 64, "certificates");
-_Static_assert(sizeof(size_t) == sizeof(unsigned long), "size_t");
 C
 } > /t.c
 gcc -fsyntax-only -Werror -D_GNU_SOURCE /t.c

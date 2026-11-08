@@ -1,0 +1,7 @@
+# The process memory counters of Windows, which the platform bindings leave out. For the soak test's memory samples.
+package = ru.ttraum.kotsql.ktor.psapi
+headers = windows.h psapi.h
+# Only psapi's own declarations: the rest of windows.h is in the platform bindings already.
+headerFilter = psapi.h
+# K32GetProcessMemoryInfo, which kernel32 has, rather than a library of its own.
+compilerOpts = -DPSAPI_VERSION=2

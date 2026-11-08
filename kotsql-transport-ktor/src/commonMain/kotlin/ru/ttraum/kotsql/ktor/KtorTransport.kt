@@ -8,7 +8,6 @@ import ru.ttraum.kotsql.SqlException
 import ru.ttraum.kotsql.transport.TlsOptions
 import ru.ttraum.kotsql.transport.Transport
 import ru.ttraum.kotsql.transport.TransportFactory
-import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.aSocket
 import io.ktor.network.sockets.openReadChannel
@@ -51,7 +50,7 @@ internal class SocketStream(
 }
 
 /** Non-blocking transport on ktor sockets, for every platform. */
-class KtorTransport private constructor(internal val socket: Socket) : Transport {
+class KtorTransport private constructor(internal val socket: Socket, private val lease: SelectorPool.Lease) : Transport {
     private val plain = SocketStream(socket)
     private var stream: ByteStream = plain
     private var readTimeout = 0L
@@ -82,24 +81,44 @@ class KtorTransport private constructor(internal val socket: Socket) : Transport
     }
 
     override suspend fun close() {
-        stream.close()
-        scope.cancel()
+        try {
+            stream.close()
+            scope.cancel()
+        } finally {
+            lease.release()
+        }
     }
 
     companion object Factory : TransportFactory {
-        private val selector by lazy { SelectorManager(Dispatchers.IO) }
+        internal val selectors by lazy { SelectorPool(socketsPerSelector) }
 
-        override suspend fun connect(host: String, port: Int, connectTimeoutMillis: Long): Transport = try {
-            val socket = withTimeoutOrNull(connectTimeoutMillis) { aSocket(selector).tcp().connect(host, port) { noDelay = true; keepAlive = true } }
-                ?: throw SqlException("Timed out connecting to $host:$port", "08001")
-            applySocketOptions(socket)
-            KtorTransport(socket)
-        } catch (e: SqlException) {
-            throw e
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            throw SqlException("Cannot connect to $host:$port: ${e.message}", "08001", cause = e)
+        override suspend fun connect(host: String, port: Int, connectTimeoutMillis: Long): Transport {
+            // A second try only for a selector found dead, which a new one replaces.
+            repeat(2) { attempt ->
+                val lease = selectors.acquire()
+                var connected = false
+                try {
+                    val socket = withTimeoutOrNull(connectTimeoutMillis) {
+                        aSocket(lease.selector.manager).tcp().connect(host, port) { noDelay = true; keepAlive = true }
+                    } ?: throw SqlException("Timed out connecting to $host:$port", "08001")
+                    applySocketOptions(socket)
+                    connected = true
+                    return KtorTransport(socket, lease)
+                } catch (e: SqlException) {
+                    throw e
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    if (isSelectorClosed(e)) {
+                        lease.selectorDied()
+                        if (attempt == 0) return@repeat
+                    }
+                    throw SqlException("Cannot connect to $host:$port: ${e.message}", "08001", cause = e)
+                } finally {
+                    if (!connected) lease.release()
+                }
+            }
+            error("unreachable")
         }
     }
 }

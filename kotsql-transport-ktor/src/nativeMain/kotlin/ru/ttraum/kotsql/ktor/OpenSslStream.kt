@@ -78,6 +78,7 @@ private const val SSL_ERROR_WANT_READ = 2
 private const val SSL_ERROR_WANT_WRITE = 3
 private const val SSL_ERROR_ZERO_RETURN = 6
 private const val SSL_CTRL_SET_TLSEXT_HOSTNAME = 55
+// C's long is 64 bits on Linux and macOS but 32 on Windows, so the values that go into one are converted where they are used.
 private const val TLSEXT_NAMETYPE_HOST_NAME = 0L
 private const val SSL_CTRL_SET_MIN_PROTO_VERSION = 123
 private const val TLS1_2_VERSION = 0x0303L
@@ -161,7 +162,7 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
     }
 
     private fun configureContext() {
-        if (SSL_CTX_ctrl(ctx, SSL_CTRL_SET_MIN_PROTO_VERSION, TLS1_2_VERSION, null) != 1L) throw tlsError("Cannot set the TLS version")
+        if (SSL_CTX_ctrl(ctx, SSL_CTRL_SET_MIN_PROTO_VERSION, TLS1_2_VERSION.convert(), null).toLong() != 1L) throw tlsError("Cannot set the TLS version")
         loadClientCertificate()
         when (options.mode) {
             // PREFER and REQUIRE encrypt without authenticating the server, by definition of those modes.
@@ -193,7 +194,7 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
         val isIp = isIpLiteral(host)
         // Server Name Indication takes no IP addresses.
         if (!isIp) memScoped {
-            if (SSL_ctrl(session, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_HOST_NAME, host.cstr.ptr) != 1L) {
+            if (SSL_ctrl(session, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_HOST_NAME.convert(), host.cstr.ptr).toLong() != 1L) {
                 throw tlsError("Cannot set the server name")
             }
         }
@@ -250,7 +251,7 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
 
     private fun handshakeFailure(): String {
         val verify = SSL_get_verify_result(ssl)
-        val reason = if (verify != X509_V_OK) "certificate verification failed: " + X509_verify_cert_error_string(verify)?.toKString() else lastError()
+        val reason = if (verify.toLong() != X509_V_OK) "certificate verification failed: " + X509_verify_cert_error_string(verify)?.toKString() else lastError()
         return "TLS handshake failed: $reason"
     }
 
@@ -261,7 +262,7 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
             ?: throw SqlException("TLS handshake failed: the server sent no certificate", "08001")
         X509_free(certificate)
         val verify = SSL_get_verify_result(ssl)
-        if (verify != X509_V_OK) {
+        if (verify.toLong() != X509_V_OK) {
             throw SqlException("TLS handshake failed: certificate verification failed: " + X509_verify_cert_error_string(verify)?.toKString(), "08001")
         }
     }
@@ -334,7 +335,7 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
 
     private fun lastError(): String {
         val code = ERR_get_error()
-        if (code == 0uL) return "unknown error"
+        if (code.toULong() == 0uL) return "unknown error"
         return memScoped {
             val text = allocArray<ByteVar>(256)
             ERR_error_string_n(code, text, 256u.convert())

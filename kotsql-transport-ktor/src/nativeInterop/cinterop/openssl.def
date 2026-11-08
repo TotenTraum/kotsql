@@ -5,6 +5,7 @@
 # compiles these declarations against the real headers: run it when changing this file or upgrading OpenSSL.
 package = ru.ttraum.kotsql.ktor.openssl
 ---
+#include <stddef.h>
 typedef struct ssl_ctx_st SSL_CTX;
 typedef struct ssl_st SSL;
 typedef struct ssl_method_st SSL_METHOD;
@@ -57,8 +58,8 @@ const BIO_METHOD *BIO_s_mem(void);
 BIO *BIO_new(const BIO_METHOD *type);
 int BIO_read(BIO *b, void *data, int dlen);
 int BIO_write(BIO *b, const void *data, int dlen);
-unsigned long BIO_ctrl_pending(BIO *b);
+size_t BIO_ctrl_pending(BIO *b);
 
 unsigned long ERR_get_error(void);
 void ERR_clear_error(void);
-void ERR_error_string_n(unsigned long e, char *buf, unsigned long len);
+void ERR_error_string_n(unsigned long e, char *buf, size_t len);

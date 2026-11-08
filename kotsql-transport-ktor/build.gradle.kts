@@ -5,8 +5,20 @@ plugins { alias(libs.plugins.kotlin.multiplatform) }
 kotlin {
     jvmToolchain(17)
     jvm()
-    listOf(macosArm64(), linuxX64(), linuxArm64()).forEach { target ->
+    listOf(macosArm64(), linuxX64(), linuxArm64(), mingwX64()).forEach { target ->
         target.compilations.getByName("main").cinterops.create("openssl")
+    }
+    mingwX64().compilations.getByName("test").cinterops.create("psapi")
+    // POSIX sockets on Linux and macOS, Winsock on Windows.
+    applyDefaultHierarchyTemplate {
+        common {
+            group("native") {
+                group("unix") {
+                    group("linux")
+                    group("macos")
+                }
+            }
+        }
     }
     compilerOptions { optIn.add("kotlin.uuid.ExperimentalUuidApi") }
     sourceSets {
@@ -24,9 +36,11 @@ kotlin {
             implementation(kotlin("test"))
             implementation(project(":kotsql-postgres"))
             implementation(project(":kotsql-mysql"))
-            implementation(project(":kotsql-sqlite"))
             implementation(libs.coroutines.test)
         }
+        // SQLite has no build for Windows.
+        jvmTest.dependencies { implementation(project(":kotsql-sqlite")) }
+        getByName("unixTest").dependencies { implementation(project(":kotsql-sqlite")) }
     }
 }
 

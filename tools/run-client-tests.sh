@@ -108,3 +108,25 @@ docker run --rm --platform "$platform" --network "container:$pg" \
   -e KOTSQL_TEST_TLS_OTHER_HOST="$(docker inspect -f '{{.Config.Hostname}}' "$pg")" \
   -v "$certs:/certs:ro" -v "$PWD/kotsql-transport-ktor/build/bin/$dir/debugTest:/t:ro" \
   debian:stable-slim /t/test.kexe "$@"
+
+# KOTSQL_TEST_WINE=1 also runs the mingwX64 tests under Wine in an x86_64 container, beside the server as above.
+if [ "${KOTSQL_TEST_WINE:-}" = 1 ]; then
+  echo "== Native (mingwX64, Wine)"
+  ./gradlew :kotsql-transport-ktor:linkDebugTestMingwX64 -q
+  docker build -q -t kotsql-wine --platform linux/amd64 - >/dev/null <<'DOCKERFILE'
+FROM debian:stable-slim
+RUN apt-get -o Acquire::Retries=3 update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -qq -y --no-install-recommends wine64 \
+ && rm -rf /var/lib/apt/lists/* && WINEDEBUG=-all /usr/lib/wine/wine64 wineboot --init 2>/dev/null || true
+DOCKERFILE
+  new_standby
+  standby_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$(docker compose --profile replica ps -q postgres-standby)")
+  # Windows paths for the certificates, through Wine's Z: drive.
+  docker run --rm --platform linux/amd64 --network "container:$pg" -e WINEDEBUG=-all \
+    -e KOTSQL_TEST_URL='postgresql://kotsql:kotsql@localhost:5432/kotsql?sslmode=disable' \
+    -e KOTSQL_TEST_SCRAM_URL="postgresql://kotsql:kotsql@$ip:5432/kotsql" -e KOTSQL_TEST_MD5_ADDRESS=localhost:5432 -e KOTSQL_TEST_MYSQL_HOST_PORT="$mysql_ip:3306" \
+    -e KOTSQL_TEST_PRIMARY="$ip:5432" -e KOTSQL_TEST_STANDBY="$standby_ip:5432" -e KOTSQL_TEST_CERTS='Z:/certs' -e KOTSQL_TEST_NFKC=1 \
+    -e KOTSQL_TEST_TLS_PORT=5432 -e KOTSQL_TEST_TLS_ROOT='Z:/certs/root.pem' -e KOTSQL_TEST_TLS_OTHER_ROOT='Z:/certs/other.pem' \
+    -e KOTSQL_TEST_TLS_OTHER_HOST="$(docker inspect -f '{{.Config.Hostname}}' "$pg")" \
+    -v "$certs:/certs:ro" -v "$PWD/kotsql-transport-ktor/build/bin/mingwX64/debugTest:/t:ro" \
+    kotsql-wine /usr/lib/wine/wine64 /t/test.exe "$@"
+fi

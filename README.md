@@ -12,12 +12,14 @@ kotsql-core             API (SqlConnection, SqlCursor, SqlRow) and SPI (SqlDrive
 kotsql-transport        For databases behind a socket: Transport, NetworkSqlDriver, wire primitives, failover JVM, Native
 kotsql-postgres         PostgreSQL wire protocol                                                             JVM, Native
 kotsql-mysql            MySQL wire protocol                                                                  JVM, Native
-kotsql-sqlite           SQLite, embedded, through androidx.sqlite's bundled build                            JVM, Native
+kotsql-sqlite           SQLite, embedded, through androidx.sqlite's bundled build                            JVM, Native but Windows
 kotsql-transport-ktor   Non-blocking sockets                                                                 JVM, Native
 kotsql-jvm-values       What the JVM adapters share: conversions to and from java.sql and java.time           JVM
 kotsql-jdbc             java.sql adapter, blocking                                                           JVM
 kotsql-r2dbc            R2DBC SPI adapter, reactive                                                          JVM
 ```
+
+Native means `linuxX64`, `linuxArm64`, `macosArm64` and `mingwX64` (Windows), except that SQLite has no Windows build.
 
 ## Usage
 
@@ -129,7 +131,8 @@ R2DBC named binding uses `?1`, `?2` and so on, since MySQL's markers have no nam
 `sslmode` works the same on every platform. The JVM uses JSSE (ktor for R2DBC), native targets OpenSSL, linked statically
 from `com.ensody.nativebuilds`. With `verify-ca` and `verify-full`, trust comes from `sslrootcert` if set. Otherwise it is
 the JVM's trust store, or on native targets the `SSL_CERT_FILE` and `SSL_CERT_DIR` variables and the operating system's
-usual CA bundle locations; if none is found, the connection fails. The macOS keychain is not consulted.
+usual CA bundle locations; if none is found, the connection fails. The macOS keychain and the Windows certificate store are
+not consulted, so on Windows, where there is no such bundle, verifying needs `sslrootcert` or `SSL_CERT_FILE`.
 
 Building the `macosArm64` target needs a full Xcode, because of the OpenSSL bindings. JVM and Linux tasks do not.
 
@@ -138,15 +141,18 @@ Building the `macosArm64` target needs a full Xcode, because of the OpenSSL bind
 - Parameters travel in the text format, and results too until a statement has been prepared on the server. From then on the
   columns of the types that convert to text without loss come in binary: `bool`, the integers, `oid`, `bytea`, `uuid`, `date`,
   `time` and `timestamp`. `binaryTransfer=false` turns that off.
-- On macOS the Kotlin client uses ktor's sockets, which are built on one `pselect` thread, so they don't scale with connections
-  and can't use descriptors above 1024. A `kqueue` counterpart of `EpollTransport` is yet to be written.
+- On macOS and Windows the Kotlin client uses ktor's sockets, which don't scale with connections the way `EpollTransport` does
+  on Linux. On macOS they are built on one `pselect` thread and can't use descriptors above 1024; a `kqueue` counterpart of
+  `EpollTransport` is yet to be written. On Windows one of ktor's selectors watches at most 63 sockets, so `KtorTransport`
+  spreads them over as many selectors as it takes, 48 to each, with a thread for each selector.
 - Not implemented: password-protected client keys,
   a `CallableStatement`'s parameters by name, batches of calls.
 - An updatable JDBC result set takes a plain query of one table with a primary key, whose columns it has to select, and holds
   its rows in memory. Inserted rows don't show up in it. Any other query yields a read-only result set.
 - With MySQL, a `CallableStatement` with out parameters drops any result sets of the procedure.
 - SASLprep for SCRAM leaves out the bidirectional check. On native Linux it also leaves out normalization, for lack of a
-  platform API, so a password that isn't in normal form, such as a decomposed `é`, doesn't match there.
+  platform API, so a password that isn't in normal form, such as a decomposed `é`, doesn't match there. macOS and Windows
+  normalize with their own APIs.
 - A JDBC scrollable result set (`TYPE_SCROLL_INSENSITIVE`) and `Clob`/`Blob` values are held in memory in full.
 - A JDBC query timeout covers the wait for the first row, not the iteration over the rest.
 - R2DBC streams a result's rows only if its `Result` is subscribed to while the statement publisher is emitting it, as
@@ -285,7 +291,8 @@ themselves without it. This script runs them on the JVM and in a Linux container
 tools/run-client-tests.sh
 ```
 
-On a Mac with a full Xcode it runs them natively on macOS as well.
+On a Mac with a full Xcode it runs them natively on macOS as well. With `KOTSQL_TEST_WINE=1` it also runs the `mingwX64`
+tests under Wine, in an x86_64 container beside the same servers.
 
 `ProtocolFuzzTest` needs no server, and feeds both drivers mutated server responses. `KOTSQL_FUZZ_ITERATIONS` and
 `KOTSQL_FUZZ_SEED` take it further than its default. `NetworkFaultTest` makes the network fail at each position of an exchange
@@ -302,7 +309,8 @@ the OpenSSL bindings or upgrading OpenSSL, run `tools/check-openssl-decls.sh`.
 `.github/workflows/ci.yml` runs on every push to `main` and every pull request:
 
 - the JVM suites, the compatibility application and the module boundaries, on Linux;
-- `tools/run-client-tests.sh` on Linux x86_64, which covers the JVM and `linuxX64`;
+- `tools/run-client-tests.sh` on Linux x86_64, which covers the JVM, `linuxX64` and `mingwX64` under Wine;
+- `mingwX64Test` on Windows, against the PostgreSQL that the runner has, without TLS;
 - `macosArm64Test` on macOS, where there is no Docker, so the tests that need a server skip themselves;
 - `tools/check-openssl-decls.sh`, and a two-minute `tools/run-soak.sh`.
 
