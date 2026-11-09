@@ -24,6 +24,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.milliseconds
 
 /** A connection's bytes, plain or encrypted. */
 internal interface ByteStream {
@@ -67,7 +68,7 @@ class KtorTransport private constructor(internal val socket: Socket, private val
     override suspend fun read(buffer: ByteArray, offset: Int, length: Int): Int {
         if (readTimeout <= 0) return stream.read(buffer, offset, length)
         // Not catching TimeoutCancellationException, which could be the caller's own withTimeout, and is theirs to get.
-        return withTimeoutOrNull(readTimeout) { stream.read(buffer, offset, length) }
+        return withTimeoutOrNull(readTimeout.milliseconds) { stream.read(buffer, offset, length) }
             ?: throw SqlException("Timed out waiting for the server", "08006")
     }
 
@@ -91,14 +92,15 @@ class KtorTransport private constructor(internal val socket: Socket, private val
 
     companion object Factory : TransportFactory {
         internal val selectors by lazy { SelectorPool(socketsPerSelector) }
+        private const val CONNECT_ATTEMPTS = 3
 
         override suspend fun connect(host: String, port: Int, connectTimeoutMillis: Long): Transport {
-            // A second try only for a selector found dead, which a new one replaces.
-            repeat(2) { attempt ->
+            // Another try only for a selector found dead, which a new one replaces, or a connection refused for no reason.
+            repeat(CONNECT_ATTEMPTS) { attempt ->
                 val lease = selectors.acquire()
                 var connected = false
                 try {
-                    val socket = withTimeoutOrNull(connectTimeoutMillis) {
+                    val socket = withTimeoutOrNull(connectTimeoutMillis.milliseconds) {
                         aSocket(lease.selector.manager).tcp().connect(host, port) { noDelay = true; keepAlive = true }
                     } ?: throw SqlException("Timed out connecting to $host:$port", "08001")
                     applySocketOptions(socket)
@@ -109,10 +111,12 @@ class KtorTransport private constructor(internal val socket: Socket, private val
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
+                    val last = attempt == CONNECT_ATTEMPTS - 1
                     if (isSelectorClosed(e)) {
                         lease.selectorDied()
-                        if (attempt == 0) return@repeat
+                        if (!last) return@repeat
                     }
+                    if (isSpuriousConnectFailure(e) && !last) return@repeat
                     throw SqlException("Cannot connect to $host:$port: ${e.message}", "08001", cause = e)
                 } finally {
                     if (!connected) lease.release()

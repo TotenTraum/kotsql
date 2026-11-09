@@ -1,6 +1,10 @@
 package ru.ttraum.kotsql.ktor
 
-internal actual fun testEnv(name: String): String? = System.getenv(name)
+internal actual fun systemEnv(name: String): String? = System.getenv(name)
+
+internal actual fun <T> blocking(block: suspend () -> T): T = kotlinx.coroutines.runBlocking { block() }
+
+internal actual val platformNormalizes: Boolean = true
 
 internal actual fun memoryInUse(): Long {
     System.gc()

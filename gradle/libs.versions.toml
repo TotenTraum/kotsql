@@ -14,6 +14,8 @@ hikari = "7.1.0"
 flyway = "13.12.0"
 jooq = "3.19.28"
 pgjdbc = "42.7.14"
+testcontainers-kotlin = "0.2.0"
+kotlinx-io = "0.9.1"
 xerial-sqlite = "3.50.3.0"
 jmh = "1.37"
 sqlite = "2.7.1"
@@ -47,6 +49,8 @@ flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", versio
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version = "1.1.3.RELEASE" }
 pgjdbc = { module = "org.postgresql:postgresql", version.ref = "pgjdbc" }
+testcontainers-kotlin = { module = "ru.ttraum:testcontainers-core", version.ref = "testcontainers-kotlin" }
+kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 xerial-sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "xerial-sqlite" }
 jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-processor = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }

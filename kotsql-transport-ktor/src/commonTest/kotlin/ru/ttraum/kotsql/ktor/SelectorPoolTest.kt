@@ -33,3 +33,11 @@ class SelectorPoolTest {
         second.release()
     }
 }
+
+class SpuriousConnectFailureTest {
+    @Test fun onlyErrorZero() {
+        kotlin.test.assertTrue(isSpuriousConnectFailure(RuntimeException("Failed to connect", RuntimeException("POSIX error 0: Success (0)"))))
+        kotlin.test.assertFalse(isSpuriousConnectFailure(RuntimeException("Failed to connect", RuntimeException("POSIX error 111: Connection refused (111)"))))
+        kotlin.test.assertFalse(isSpuriousConnectFailure(RuntimeException("POSIX error 10061: refused")))
+    }
+}

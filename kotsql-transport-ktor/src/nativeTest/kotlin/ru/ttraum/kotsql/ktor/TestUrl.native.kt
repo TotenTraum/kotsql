@@ -9,7 +9,9 @@ import platform.posix.getenv
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-internal actual fun testEnv(name: String): String? = getenv(name)?.toKString()
+internal actual fun systemEnv(name: String): String? = getenv(name)?.toKString()
+
+internal actual fun <T> blocking(block: suspend () -> T): T = kotlinx.coroutines.runBlocking { block() }
 
 internal actual val extraTransports: List<ru.ttraum.kotsql.transport.TransportFactory> get() = listOf(KtorTransport)
 

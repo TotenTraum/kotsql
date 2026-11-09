@@ -59,3 +59,11 @@ internal class SelectorPool(private val limit: Int, private val create: () -> Se
 
 /** Whether [e] says that ktor's selector has stopped, which no retry on the same one can help. */
 internal fun isSelectorClosed(e: Throwable): Boolean = e.message?.startsWith("Selector closed") == true
+
+/**
+ * Whether [e] is ktor's failure to connect with error 0, which no real failure has. On Windows its native connect reads
+ * WSAGetLastError() some calls after connect() itself, and can find it cleared: a connection still in progress, which it
+ * should have waited for, then fails as `POSIX error 0`. A new attempt gets through.
+ */
+internal fun isSpuriousConnectFailure(e: Throwable): Boolean =
+    generateSequence(e) { it.cause }.take(8).any { it.message?.startsWith("POSIX error 0:") == true }

@@ -38,6 +38,9 @@ kotlin {
             implementation(project(":kotsql-mysql"))
             implementation(project(":kotsql-sqlite"))
             implementation(libs.coroutines.test)
+            // The servers that the client tests need, started from the tests themselves.
+            implementation(libs.testcontainers.kotlin)
+            implementation(libs.kotlinx.io)
         }
     }
 }

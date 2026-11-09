@@ -289,15 +289,23 @@ writes `benchmarks/RESULTS-native.md`.
 The JDBC and R2DBC suites start PostgreSQL through Testcontainers, so Docker must be running. The R2DBC suite runs the
 official `r2dbc-spi-test` TCK on PostgreSQL, MySQL and SQLite.
 
-The client and TLS tests in `kotsql-transport-ktor` run on every target against the database of `compose.yaml`, and skip
-themselves without it. This script runs them on the JVM and in a Linux container, on the architecture of this machine:
+The client and TLS tests in `kotsql-transport-ktor` run on every target. Where Docker is available, they start what they need
+themselves through [testcontainers-kotlin](https://github.com/TotenTraum/testcontainers-kotlin): PostgreSQL with TLS, the
+roles they log in as and a CA for client certificates, a streaming standby, and MySQL. So these need nothing else:
+
+```bash
+./gradlew :kotsql-transport-ktor:jvmTest
+./gradlew :kotsql-transport-ktor:macosArm64Test
+```
+
+`KOTSQL_TEST_URL` and the other `KOTSQL_TEST_*` variables name servers of your own instead, and the tests that need one skip
+themselves without either. Tests that run inside a container can't start containers, so this script runs them against the
+servers of `compose.yaml`, set up the same way: Linux on a Mac, and with `KOTSQL_TEST_WINE=1` the `mingwX64` tests under Wine
+in an x86_64 container. It runs the JVM and this machine's native tests too:
 
 ```bash
 tools/run-client-tests.sh
 ```
-
-On a Mac with a full Xcode it runs them natively on macOS as well. With `KOTSQL_TEST_WINE=1` it also runs the `mingwX64`
-tests under Wine, in an x86_64 container beside the same servers.
 
 `ProtocolFuzzTest` needs no server, and feeds both drivers mutated server responses. `KOTSQL_FUZZ_ITERATIONS` and
 `KOTSQL_FUZZ_SEED` take it further than its default. `NetworkFaultTest` makes the network fail at each position of an exchange

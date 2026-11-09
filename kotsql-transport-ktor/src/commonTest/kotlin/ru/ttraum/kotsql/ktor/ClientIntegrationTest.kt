@@ -35,7 +35,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.Uuid
 
-internal expect fun testEnv(name: String): String?
+
 
 /** Runs on every target against the database in `KOTSQL_TEST_URL`; skipped when it is not set. */
 class ClientIntegrationTest {
