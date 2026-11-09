@@ -7,7 +7,7 @@ import ru.ttraum.kotsql.transport.NetworkSqlDriver
 import ru.ttraum.kotsql.transport.TransportFactory
 import ru.ttraum.kotsql.transport.connectToSuitableServer
 
-class MysqlDriver : NetworkSqlDriver {
+public class MysqlDriver : NetworkSqlDriver {
     override val schemes: Set<String> = setOf("mysql", "mariadb")
     override val dialect: SqlDialect get() = MysqlDialect
     override suspend fun connect(config: ConnectionConfig, transports: TransportFactory): SqlConnection =

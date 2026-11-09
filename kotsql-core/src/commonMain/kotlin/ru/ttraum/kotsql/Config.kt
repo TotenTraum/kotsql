@@ -1,6 +1,6 @@
 package ru.ttraum.kotsql
 
-enum class TlsMode(val id: String) {
+public enum class TlsMode(public val id: String) {
     /** Never encrypt. */
     DISABLE("disable"),
     /** Encrypt if the server supports it; no certificate checks. Does not protect from an active attacker. */
@@ -12,14 +12,14 @@ enum class TlsMode(val id: String) {
     /** Always encrypt and verify both the certificate chain and the host name. */
     VERIFY_FULL("verify-full");
 
-    companion object {
-        fun of(id: String): TlsMode = entries.firstOrNull { it.id.equals(id, ignoreCase = true) }
+    public companion object {
+        public fun of(id: String): TlsMode = entries.firstOrNull { it.id.equals(id, ignoreCase = true) }
             ?: throw SqlException("Unknown TLS mode '$id'; expected one of ${entries.map { it.id }}", "08001")
     }
 }
 
 /** Which servers will do, among several. A primary accepts writes; a secondary is a read-only replica. */
-enum class TargetServerType(val id: String) {
+public enum class TargetServerType(public val id: String) {
     ANY("any"),
     PRIMARY("primary"),
     SECONDARY("secondary"),
@@ -27,18 +27,18 @@ enum class TargetServerType(val id: String) {
     /** A secondary if there is one in reach, otherwise whichever responds. */
     PREFER_SECONDARY("preferSecondary");
 
-    companion object {
-        fun of(id: String): TargetServerType = entries.firstOrNull { it.id.equals(id, ignoreCase = true) }
+    public companion object {
+        public fun of(id: String): TargetServerType = entries.firstOrNull { it.id.equals(id, ignoreCase = true) }
             ?: throw SqlException("Unknown target server type '$id'; expected one of ${entries.map { it.id }}", "08001")
     }
 }
 
-data class ServerAddress(val host: String, val port: Int? = null)
+public data class ServerAddress(val host: String, val port: Int? = null)
 
 /**
  * @param properties driver-specific settings; settings known to [ConnectionConfig.parse] are removed from it
  */
-data class ConnectionConfig(
+public data class ConnectionConfig(
     val scheme: String,
     val host: String = "localhost",
     val port: Int? = null,
@@ -66,14 +66,14 @@ data class ConnectionConfig(
     override fun toString(): String =
         "ConnectionConfig($scheme://${servers.joinToString(",") { a -> a.host + (a.port?.let { ":$it" } ?: "") }}/${database ?: ""}, user=$user, tls=${tlsMode.id})"
 
-    companion object {
+    public companion object {
         /**
          * Parses `scheme://[user[:password]@]host[:port][,host[:port]...][/database][?key=value&...]`. Recognized keys are
          * `user`, `password`, `sslmode`, `sslrootcert`, `sslcert`, `sslkey`, `connectTimeout` (ms), `socketTimeout` (ms), `applicationName`,
          * `targetServerType` and `loadBalanceHosts`.
          * Components are percent-decoded.
          */
-        fun parse(url: String): ConnectionConfig {
+        public fun parse(url: String): ConnectionConfig {
             fun bad(): Nothing = throw SqlException("Malformed connection URL (expected scheme://host[:port]/database)", "08001")
             val schemeEnd = url.indexOf("://")
             if (schemeEnd <= 0) bad()
@@ -109,7 +109,7 @@ data class ConnectionConfig(
         }
 
         /** Parses `host[:port][,host[:port]...]`, with an IPv6 address in brackets. */
-        fun parseServers(text: String): List<ServerAddress> = text.split(',').map { server ->
+        public fun parseServers(text: String): List<ServerAddress> = text.split(',').map { server ->
             fun bad(): Nothing = throw SqlException("Malformed server address '$server' (expected host[:port])", "08001")
             val host: String
             val portText: String?
@@ -144,7 +144,7 @@ data class ConnectionConfig(
     }
 
     /** Applies settings given as key/value pairs, as in a URL query or `java.util.Properties`. */
-    fun withProperties(props: Map<String, String>): ConnectionConfig {
+    public fun withProperties(props: Map<String, String>): ConnectionConfig {
         var c = this
         val extra = LinkedHashMap(c.properties)
         for ((k, v) in props) when (k) {

@@ -6,7 +6,7 @@ package ru.ttraum.kotsql
  * The details of the [SqlException] behind [this], however deep, or null if there is none. They survive the wrapping by JDBC,
  * R2DBC and frameworks such as Spring, whose exceptions all have it as a cause. From Java: `SqlErrors.sqlErrorDetails(e)`.
  */
-fun Throwable.sqlErrorDetails(): SqlErrorDetails? {
+public fun Throwable.sqlErrorDetails(): SqlErrorDetails? {
     var current: Throwable? = this
     // Bounded, since a cause can form a cycle in a badly written wrapper.
     repeat(64) {

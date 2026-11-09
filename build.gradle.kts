@@ -5,7 +5,26 @@ allprojects {
     version = "0.1.0-SNAPSHOT"
 }
 
+/** The modules that are published: their public API is declared on purpose and checked against a dump of it. */
+val libraries = setOf(
+    "kotsql-core", "kotsql-transport", "kotsql-jvm-values", "kotsql-postgres", "kotsql-mysql", "kotsql-sqlite",
+    "kotsql-transport-ktor", "kotsql-jdbc", "kotsql-r2dbc",
+)
+
 subprojects {
+    if (name in libraries) {
+        plugins.withId("org.jetbrains.kotlin.multiplatform") {
+            extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
+                explicitApi()
+                // kotsql's modules share what InternalKotsqlApi marks; it stays out of the checked dumps.
+                compilerOptions { optIn.add("ru.ttraum.kotsql.InternalKotsqlApi") }
+                @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+                abiValidation {
+                    filters { exclude { annotatedWith.add("ru.ttraum.kotsql.InternalKotsqlApi") } }
+                }
+            }
+        }
+    }
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
         testLogging { events("failed"); exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL }

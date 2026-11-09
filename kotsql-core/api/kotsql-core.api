@@ -1,0 +1,775 @@
+public final class ru/ttraum/kotsql/BackslashEscapes : java/lang/Enum {
+	public static final field IN_STRINGS Lru/ttraum/kotsql/BackslashEscapes;
+	public static final field NEVER Lru/ttraum/kotsql/BackslashEscapes;
+	public static final field WITH_E_PREFIX Lru/ttraum/kotsql/BackslashEscapes;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/BackslashEscapes;
+	public static fun values ()[Lru/ttraum/kotsql/BackslashEscapes;
+}
+
+public final class ru/ttraum/kotsql/BatchItem {
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lru/ttraum/kotsql/BatchItem;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/BatchItem;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lru/ttraum/kotsql/BatchItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getParams ()Ljava/util/List;
+	public final fun getSql ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/CallSyntax {
+	public fun <init> ()V
+	public fun <init> (ZLjava/lang/String;ZZ)V
+	public synthetic fun <init> (ZLjava/lang/String;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun functionSql (Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
+	public final fun getOutVariables ()Z
+	public final fun getProcedureLookupSql ()Ljava/lang/String;
+	public final fun getProcedures ()Z
+	public final fun getTableFunctions ()Z
+}
+
+public final class ru/ttraum/kotsql/CodecRegistry {
+	public static final field Companion Lru/ttraum/kotsql/CodecRegistry$Companion;
+	public fun <init> ([Lru/ttraum/kotsql/SqlCodec;)V
+	public final fun encode (Ljava/lang/Object;)Ljava/lang/Object;
+	public final fun forClass (Lkotlin/reflect/KClass;)Lru/ttraum/kotsql/SqlCodec;
+	public final fun forTypeName (Ljava/lang/String;)Lru/ttraum/kotsql/SqlCodec;
+	public final fun isEmpty ()Z
+	public final fun register (Lru/ttraum/kotsql/SqlCodec;)Lru/ttraum/kotsql/CodecRegistry;
+}
+
+public final class ru/ttraum/kotsql/CodecRegistry$Companion {
+	public final fun getGlobal ()Lru/ttraum/kotsql/CodecRegistry;
+}
+
+public class ru/ttraum/kotsql/ColumnInfo {
+	public fun <init> (Ljava/lang/String;Lru/ttraum/kotsql/SqlType;Ljava/lang/String;IIILjava/lang/Boolean;ZLru/ttraum/kotsql/SqlCodec;)V
+	public synthetic fun <init> (Ljava/lang/String;Lru/ttraum/kotsql/SqlType;Ljava/lang/String;IIILjava/lang/Boolean;ZLru/ttraum/kotsql/SqlCodec;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getCodec ()Lru/ttraum/kotsql/SqlCodec;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNativeTypeId ()I
+	public final fun getNativeTypeName ()Ljava/lang/String;
+	public final fun getNullable ()Ljava/lang/Boolean;
+	public final fun getPrecision ()I
+	public final fun getScale ()I
+	public final fun getType ()Lru/ttraum/kotsql/SqlType;
+	public final fun getUnsigned ()Z
+}
+
+public final class ru/ttraum/kotsql/ConnectionConfig {
+	public static final field Companion Lru/ttraum/kotsql/ConnectionConfig$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lru/ttraum/kotsql/TlsMode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLjava/lang/String;Ljava/util/Map;Lru/ttraum/kotsql/CodecRegistry;Ljava/util/List;Lru/ttraum/kotsql/TargetServerType;Z)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lru/ttraum/kotsql/TlsMode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLjava/lang/String;Ljava/util/Map;Lru/ttraum/kotsql/CodecRegistry;Ljava/util/List;Lru/ttraum/kotsql/TargetServerType;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component10 ()Ljava/lang/String;
+	public final fun component11 ()J
+	public final fun component12 ()J
+	public final fun component13 ()Ljava/lang/String;
+	public final fun component14 ()Ljava/util/Map;
+	public final fun component15 ()Lru/ttraum/kotsql/CodecRegistry;
+	public final fun component16 ()Ljava/util/List;
+	public final fun component17 ()Lru/ttraum/kotsql/TargetServerType;
+	public final fun component18 ()Z
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Integer;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Lru/ttraum/kotsql/TlsMode;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lru/ttraum/kotsql/TlsMode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLjava/lang/String;Ljava/util/Map;Lru/ttraum/kotsql/CodecRegistry;Ljava/util/List;Lru/ttraum/kotsql/TargetServerType;Z)Lru/ttraum/kotsql/ConnectionConfig;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/ConnectionConfig;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lru/ttraum/kotsql/TlsMode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLjava/lang/String;Ljava/util/Map;Lru/ttraum/kotsql/CodecRegistry;Ljava/util/List;Lru/ttraum/kotsql/TargetServerType;ZILjava/lang/Object;)Lru/ttraum/kotsql/ConnectionConfig;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlternateServers ()Ljava/util/List;
+	public final fun getApplicationName ()Ljava/lang/String;
+	public final fun getCodecs ()Lru/ttraum/kotsql/CodecRegistry;
+	public final fun getConnectTimeoutMillis ()J
+	public final fun getDatabase ()Ljava/lang/String;
+	public final fun getHost ()Ljava/lang/String;
+	public final fun getLoadBalanceHosts ()Z
+	public final fun getPassword ()Ljava/lang/String;
+	public final fun getPort ()Ljava/lang/Integer;
+	public final fun getProperties ()Ljava/util/Map;
+	public final fun getScheme ()Ljava/lang/String;
+	public final fun getServers ()Ljava/util/List;
+	public final fun getSocketTimeoutMillis ()J
+	public final fun getTargetServerType ()Lru/ttraum/kotsql/TargetServerType;
+	public final fun getTlsCertPath ()Ljava/lang/String;
+	public final fun getTlsKeyPath ()Ljava/lang/String;
+	public final fun getTlsMode ()Lru/ttraum/kotsql/TlsMode;
+	public final fun getTlsRootCertPath ()Ljava/lang/String;
+	public final fun getUser ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun withProperties (Ljava/util/Map;)Lru/ttraum/kotsql/ConnectionConfig;
+}
+
+public final class ru/ttraum/kotsql/ConnectionConfig$Companion {
+	public final fun parse (Ljava/lang/String;)Lru/ttraum/kotsql/ConnectionConfig;
+	public final fun parseServers (Ljava/lang/String;)Ljava/util/List;
+}
+
+public final class ru/ttraum/kotsql/ConstraintViolation : java/lang/Enum {
+	public static final field CHECK Lru/ttraum/kotsql/ConstraintViolation;
+	public static final field EXCLUSION Lru/ttraum/kotsql/ConstraintViolation;
+	public static final field FOREIGN_KEY Lru/ttraum/kotsql/ConstraintViolation;
+	public static final field NOT_NULL Lru/ttraum/kotsql/ConstraintViolation;
+	public static final field UNIQUE Lru/ttraum/kotsql/ConstraintViolation;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/ConstraintViolation;
+	public static fun values ()[Lru/ttraum/kotsql/ConstraintViolation;
+}
+
+public final class ru/ttraum/kotsql/ExecuteOptions {
+	public static final field Companion Lru/ttraum/kotsql/ExecuteOptions$Companion;
+	public fun <init> ()V
+	public fun <init> (I)V
+	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun copy (I)Lru/ttraum/kotsql/ExecuteOptions;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/ExecuteOptions;IILjava/lang/Object;)Lru/ttraum/kotsql/ExecuteOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFetchSize ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/ExecuteOptions$Companion {
+	public final fun getDEFAULT ()Lru/ttraum/kotsql/ExecuteOptions;
+}
+
+public final class ru/ttraum/kotsql/IdentifierCase : java/lang/Enum {
+	public static final field AS_WRITTEN Lru/ttraum/kotsql/IdentifierCase;
+	public static final field LOWER Lru/ttraum/kotsql/IdentifierCase;
+	public static final field UPPER Lru/ttraum/kotsql/IdentifierCase;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/IdentifierCase;
+	public static fun values ()[Lru/ttraum/kotsql/IdentifierCase;
+}
+
+public abstract interface annotation class ru/ttraum/kotsql/InternalKotsqlApi : java/lang/annotation/Annotation {
+}
+
+public final class ru/ttraum/kotsql/IsolationLevel : java/lang/Enum {
+	public static final field Companion Lru/ttraum/kotsql/IsolationLevel$Companion;
+	public static final field READ_COMMITTED Lru/ttraum/kotsql/IsolationLevel;
+	public static final field READ_UNCOMMITTED Lru/ttraum/kotsql/IsolationLevel;
+	public static final field REPEATABLE_READ Lru/ttraum/kotsql/IsolationLevel;
+	public static final field SERIALIZABLE Lru/ttraum/kotsql/IsolationLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getSql ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/IsolationLevel;
+	public static fun values ()[Lru/ttraum/kotsql/IsolationLevel;
+}
+
+public final class ru/ttraum/kotsql/IsolationLevel$Companion {
+	public final fun ofSql (Ljava/lang/String;)Lru/ttraum/kotsql/IsolationLevel;
+}
+
+public final class ru/ttraum/kotsql/KotsqlKt {
+	public static final fun connect (Ljava/lang/String;Lru/ttraum/kotsql/CodecRegistry;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun connect$default (Ljava/lang/String;Lru/ttraum/kotsql/CodecRegistry;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun query (Lru/ttraum/kotsql/SqlConnection;Ljava/lang/String;Ljava/util/List;I)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun query$default (Lru/ttraum/kotsql/SqlConnection;Ljava/lang/String;Ljava/util/List;IILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun transaction (Lru/ttraum/kotsql/SqlConnection;Lru/ttraum/kotsql/IsolationLevel;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun transaction$default (Lru/ttraum/kotsql/SqlConnection;Lru/ttraum/kotsql/IsolationLevel;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun update (Lru/ttraum/kotsql/SqlConnection;Ljava/lang/String;Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun update$default (Lru/ttraum/kotsql/SqlConnection;Ljava/lang/String;Ljava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class ru/ttraum/kotsql/MetadataQueries {
+	public fun catalogs ()Lru/ttraum/kotsql/MetadataQuery;
+	public fun columns (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public fun exportedKeys (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public fun importedKeys (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public fun indexInfo (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lru/ttraum/kotsql/MetadataQuery;
+	public fun primaryKeys (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public fun schemas (Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public fun tableTypes ()Lru/ttraum/kotsql/MetadataQuery;
+	public fun tables (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lru/ttraum/kotsql/MetadataQuery;
+	public fun typeInfo ()Lru/ttraum/kotsql/MetadataQuery;
+}
+
+public final class ru/ttraum/kotsql/MetadataQueries$DefaultImpls {
+	public static fun catalogs (Lru/ttraum/kotsql/MetadataQueries;)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun columns (Lru/ttraum/kotsql/MetadataQueries;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun exportedKeys (Lru/ttraum/kotsql/MetadataQueries;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun importedKeys (Lru/ttraum/kotsql/MetadataQueries;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun indexInfo (Lru/ttraum/kotsql/MetadataQueries;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun primaryKeys (Lru/ttraum/kotsql/MetadataQueries;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun schemas (Lru/ttraum/kotsql/MetadataQueries;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun tableTypes (Lru/ttraum/kotsql/MetadataQueries;)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun tables (Lru/ttraum/kotsql/MetadataQueries;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lru/ttraum/kotsql/MetadataQuery;
+	public static fun typeInfo (Lru/ttraum/kotsql/MetadataQueries;)Lru/ttraum/kotsql/MetadataQuery;
+}
+
+public final class ru/ttraum/kotsql/MetadataQuery {
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lru/ttraum/kotsql/MetadataQuery;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/MetadataQuery;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lru/ttraum/kotsql/MetadataQuery;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getParams ()Ljava/util/List;
+	public final fun getSql ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/ServerAddress {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Integer;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Integer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Integer;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Integer;)Lru/ttraum/kotsql/ServerAddress;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/ServerAddress;Ljava/lang/String;Ljava/lang/Integer;ILjava/lang/Object;)Lru/ttraum/kotsql/ServerAddress;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHost ()Ljava/lang/String;
+	public final fun getPort ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/ServerInfo {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;II)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;II)Lru/ttraum/kotsql/ServerInfo;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/ServerInfo;Ljava/lang/String;Ljava/lang/String;IIILjava/lang/Object;)Lru/ttraum/kotsql/ServerInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMajorVersion ()I
+	public final fun getMinorVersion ()I
+	public final fun getProductName ()Ljava/lang/String;
+	public final fun getVersion ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/SqlBatchException : ru/ttraum/kotsql/SqlException {
+	public fun <init> ([JLru/ttraum/kotsql/SqlException;)V
+	public final fun getUpdateCounts ()[J
+}
+
+public abstract class ru/ttraum/kotsql/SqlCodec {
+	public static final field Companion Lru/ttraum/kotsql/SqlCodec$Companion;
+	public fun <init> (Lkotlin/reflect/KClass;Ljava/util/Set;)V
+	public synthetic fun <init> (Lkotlin/reflect/KClass;Ljava/util/Set;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public abstract fun decode (Ljava/lang/Object;)Ljava/lang/Object;
+	public abstract fun encode (Ljava/lang/Object;)Ljava/lang/Object;
+	public final fun getType ()Lkotlin/reflect/KClass;
+	public final fun getTypeNames ()Ljava/util/Set;
+}
+
+public final class ru/ttraum/kotsql/SqlCodec$Companion {
+}
+
+public abstract interface class ru/ttraum/kotsql/SqlConnection {
+	public abstract fun cancel (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun describe (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun drainWarnings ()Ljava/util/List;
+	public abstract fun execute (Ljava/lang/String;Ljava/util/List;Lru/ttraum/kotsql/ExecuteOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun execute$default (Lru/ttraum/kotsql/SqlConnection;Ljava/lang/String;Ljava/util/List;Lru/ttraum/kotsql/ExecuteOptions;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun executeBatch (Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun executeScript (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getCodecs ()Lru/ttraum/kotsql/CodecRegistry;
+	public abstract fun getDialect ()Lru/ttraum/kotsql/SqlDialect;
+	public abstract fun getServerInfo ()Lru/ttraum/kotsql/ServerInfo;
+	public abstract fun getTransactionState ()Lru/ttraum/kotsql/TransactionState;
+	public abstract fun isClosed ()Z
+	public abstract fun ping (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setReadTimeout (J)V
+	public fun unwrap (Lkotlin/reflect/KClass;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/SqlConnection$DefaultImpls {
+	public static synthetic fun execute$default (Lru/ttraum/kotsql/SqlConnection;Ljava/lang/String;Ljava/util/List;Lru/ttraum/kotsql/ExecuteOptions;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun getCodecs (Lru/ttraum/kotsql/SqlConnection;)Lru/ttraum/kotsql/CodecRegistry;
+	public static fun unwrap (Lru/ttraum/kotsql/SqlConnection;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+}
+
+public abstract interface class ru/ttraum/kotsql/SqlCursor {
+	public abstract fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun nextResult (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/SqlDecimal {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lru/ttraum/kotsql/SqlDecimal;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/SqlDecimal;Ljava/lang/String;ILjava/lang/Object;)Lru/ttraum/kotsql/SqlDecimal;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class ru/ttraum/kotsql/SqlDialect {
+	public fun beginStatements (Lru/ttraum/kotsql/IsolationLevel;Ljava/lang/Boolean;)Ljava/util/List;
+	public static synthetic fun beginStatements$default (Lru/ttraum/kotsql/SqlDialect;Lru/ttraum/kotsql/IsolationLevel;Ljava/lang/Boolean;ILjava/lang/Object;)Ljava/util/List;
+	public fun commitSql ()Ljava/lang/String;
+	public fun currentCatalogSql ()Ljava/lang/String;
+	public fun currentSchemaSql ()Ljava/lang/String;
+	public fun escapeFunction (Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
+	public fun getCalls ()Lru/ttraum/kotsql/CallSyntax;
+	public fun getDefaultIsolation ()Lru/ttraum/kotsql/IsolationLevel;
+	public fun getIdentifierCase ()Lru/ttraum/kotsql/IdentifierCase;
+	public fun getIdentifierQuote ()Ljava/lang/String;
+	public fun getMetadata ()Lru/ttraum/kotsql/MetadataQueries;
+	public abstract fun getProductName ()Ljava/lang/String;
+	public fun getSearchStringEscape ()Ljava/lang/String;
+	public fun getSyntax ()Lru/ttraum/kotsql/SqlSyntax;
+	public fun getTableQualifier ()Lru/ttraum/kotsql/TableQualifier;
+	public abstract fun parameterCount (Ljava/lang/String;)I
+	public abstract fun parameterIndex (Ljava/lang/String;)Ljava/lang/Integer;
+	public abstract fun parameterMarker (I)Ljava/lang/String;
+	public fun quoteIdentifier (Ljava/lang/String;)Ljava/lang/String;
+	public fun releaseSavepointSql (Ljava/lang/String;)Ljava/lang/String;
+	public fun rollbackSql ()Ljava/lang/String;
+	public fun rollbackToSavepointSql (Ljava/lang/String;)Ljava/lang/String;
+	public fun savepointSql (Ljava/lang/String;)Ljava/lang/String;
+	public fun setCatalogSql (Ljava/lang/String;)Ljava/lang/String;
+	public abstract fun setIsolationSql (Lru/ttraum/kotsql/IsolationLevel;)Ljava/lang/String;
+	public fun setLockTimeoutSql (J)Ljava/lang/String;
+	public abstract fun setReadOnlySql (Z)Ljava/lang/String;
+	public fun setSchemaSql (Ljava/lang/String;)Ljava/lang/String;
+	public fun setStatementTimeoutSql (J)Ljava/lang/String;
+	public abstract fun showIsolationSql ()Ljava/lang/String;
+	public fun temporalLiteral (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public abstract fun translatePositional (Ljava/lang/String;)Lru/ttraum/kotsql/TranslatedSql;
+	public fun withGeneratedKeys (Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/SqlDialect$DefaultImpls {
+	public static fun beginStatements (Lru/ttraum/kotsql/SqlDialect;Lru/ttraum/kotsql/IsolationLevel;Ljava/lang/Boolean;)Ljava/util/List;
+	public static synthetic fun beginStatements$default (Lru/ttraum/kotsql/SqlDialect;Lru/ttraum/kotsql/IsolationLevel;Ljava/lang/Boolean;ILjava/lang/Object;)Ljava/util/List;
+	public static fun commitSql (Lru/ttraum/kotsql/SqlDialect;)Ljava/lang/String;
+	public static fun currentCatalogSql (Lru/ttraum/kotsql/SqlDialect;)Ljava/lang/String;
+	public static fun currentSchemaSql (Lru/ttraum/kotsql/SqlDialect;)Ljava/lang/String;
+	public static fun escapeFunction (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
+	public static fun getCalls (Lru/ttraum/kotsql/SqlDialect;)Lru/ttraum/kotsql/CallSyntax;
+	public static fun getDefaultIsolation (Lru/ttraum/kotsql/SqlDialect;)Lru/ttraum/kotsql/IsolationLevel;
+	public static fun getIdentifierCase (Lru/ttraum/kotsql/SqlDialect;)Lru/ttraum/kotsql/IdentifierCase;
+	public static fun getIdentifierQuote (Lru/ttraum/kotsql/SqlDialect;)Ljava/lang/String;
+	public static fun getMetadata (Lru/ttraum/kotsql/SqlDialect;)Lru/ttraum/kotsql/MetadataQueries;
+	public static fun getSearchStringEscape (Lru/ttraum/kotsql/SqlDialect;)Ljava/lang/String;
+	public static fun getSyntax (Lru/ttraum/kotsql/SqlDialect;)Lru/ttraum/kotsql/SqlSyntax;
+	public static fun getTableQualifier (Lru/ttraum/kotsql/SqlDialect;)Lru/ttraum/kotsql/TableQualifier;
+	public static fun quoteIdentifier (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;)Ljava/lang/String;
+	public static fun releaseSavepointSql (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;)Ljava/lang/String;
+	public static fun rollbackSql (Lru/ttraum/kotsql/SqlDialect;)Ljava/lang/String;
+	public static fun rollbackToSavepointSql (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;)Ljava/lang/String;
+	public static fun savepointSql (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;)Ljava/lang/String;
+	public static fun setCatalogSql (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;)Ljava/lang/String;
+	public static fun setLockTimeoutSql (Lru/ttraum/kotsql/SqlDialect;J)Ljava/lang/String;
+	public static fun setSchemaSql (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;)Ljava/lang/String;
+	public static fun setStatementTimeoutSql (Lru/ttraum/kotsql/SqlDialect;J)Ljava/lang/String;
+	public static fun temporalLiteral (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static fun withGeneratedKeys (Lru/ttraum/kotsql/SqlDialect;Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/SqlErrorDetails {
+	public static final field Companion Lru/ttraum/kotsql/SqlErrorDetails$Companion;
+	public fun <init> ()V
+	public fun <init> (Lru/ttraum/kotsql/ConstraintViolation;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lru/ttraum/kotsql/ConstraintViolation;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lru/ttraum/kotsql/ConstraintViolation;
+	public final fun component10 ()Ljava/lang/Integer;
+	public final fun component11 ()Ljava/lang/String;
+	public final fun component12 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (Lru/ttraum/kotsql/ConstraintViolation;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/SqlErrorDetails;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/SqlErrorDetails;Lru/ttraum/kotsql/ConstraintViolation;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lru/ttraum/kotsql/SqlErrorDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColumn ()Ljava/lang/String;
+	public final fun getConstraint ()Ljava/lang/String;
+	public final fun getDataType ()Ljava/lang/String;
+	public final fun getDetail ()Ljava/lang/String;
+	public final fun getHint ()Ljava/lang/String;
+	public final fun getPosition ()Ljava/lang/Integer;
+	public final fun getRoutine ()Ljava/lang/String;
+	public final fun getSchema ()Ljava/lang/String;
+	public final fun getSeverity ()Ljava/lang/String;
+	public final fun getTable ()Ljava/lang/String;
+	public final fun getViolation ()Lru/ttraum/kotsql/ConstraintViolation;
+	public final fun getWhere ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/SqlErrorDetails$Companion {
+	public final fun getNONE ()Lru/ttraum/kotsql/SqlErrorDetails;
+}
+
+public final class ru/ttraum/kotsql/SqlErrorKind : java/lang/Enum {
+	public static final field AUTHENTICATION Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field CONNECTION Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field Companion Lru/ttraum/kotsql/SqlErrorKind$Companion;
+	public static final field DATA Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field INTEGRITY Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field OTHER Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field PERMISSION Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field ROLLBACK Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field SYNTAX Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field TIMEOUT Lru/ttraum/kotsql/SqlErrorKind;
+	public static final field UNSUPPORTED Lru/ttraum/kotsql/SqlErrorKind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/SqlErrorKind;
+	public static fun values ()[Lru/ttraum/kotsql/SqlErrorKind;
+}
+
+public final class ru/ttraum/kotsql/SqlErrorKind$Companion {
+	public final fun ofSqlState (Ljava/lang/String;)Lru/ttraum/kotsql/SqlErrorKind;
+}
+
+public final class ru/ttraum/kotsql/SqlErrors {
+	public static final fun sqlErrorDetails (Ljava/lang/Throwable;)Lru/ttraum/kotsql/SqlErrorDetails;
+}
+
+public class ru/ttraum/kotsql/SqlException : java/lang/Exception {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;ILru/ttraum/kotsql/SqlErrorKind;Ljava/lang/Throwable;Lru/ttraum/kotsql/SqlErrorDetails;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILru/ttraum/kotsql/SqlErrorKind;Ljava/lang/Throwable;Lru/ttraum/kotsql/SqlErrorDetails;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDetails ()Lru/ttraum/kotsql/SqlErrorDetails;
+	public final fun getKind ()Lru/ttraum/kotsql/SqlErrorKind;
+	public final fun getSqlState ()Ljava/lang/String;
+	public final fun getVendorCode ()I
+}
+
+public final class ru/ttraum/kotsql/SqlOffsetDateTime {
+	public fun <init> (Lkotlinx/datetime/LocalDateTime;Lkotlinx/datetime/UtcOffset;)V
+	public final fun component1 ()Lkotlinx/datetime/LocalDateTime;
+	public final fun component2 ()Lkotlinx/datetime/UtcOffset;
+	public final fun copy (Lkotlinx/datetime/LocalDateTime;Lkotlinx/datetime/UtcOffset;)Lru/ttraum/kotsql/SqlOffsetDateTime;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/SqlOffsetDateTime;Lkotlinx/datetime/LocalDateTime;Lkotlinx/datetime/UtcOffset;ILjava/lang/Object;)Lru/ttraum/kotsql/SqlOffsetDateTime;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDateTime ()Lkotlinx/datetime/LocalDateTime;
+	public final fun getOffset ()Lkotlinx/datetime/UtcOffset;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/SqlOffsetTime {
+	public fun <init> (Lkotlinx/datetime/LocalTime;Lkotlinx/datetime/UtcOffset;)V
+	public final fun component1 ()Lkotlinx/datetime/LocalTime;
+	public final fun component2 ()Lkotlinx/datetime/UtcOffset;
+	public final fun copy (Lkotlinx/datetime/LocalTime;Lkotlinx/datetime/UtcOffset;)Lru/ttraum/kotsql/SqlOffsetTime;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/SqlOffsetTime;Lkotlinx/datetime/LocalTime;Lkotlinx/datetime/UtcOffset;ILjava/lang/Object;)Lru/ttraum/kotsql/SqlOffsetTime;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOffset ()Lkotlinx/datetime/UtcOffset;
+	public final fun getTime ()Lkotlinx/datetime/LocalTime;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class ru/ttraum/kotsql/SqlResult {
+}
+
+public abstract interface class ru/ttraum/kotsql/SqlResult$Rows : ru/ttraum/kotsql/SqlResult {
+	public abstract fun getColumns ()Ljava/util/List;
+	public abstract fun getUpdateCount ()Ljava/lang/Long;
+	public abstract fun next (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun nextBuffered ()Lru/ttraum/kotsql/SqlRow;
+}
+
+public final class ru/ttraum/kotsql/SqlResult$Rows$DefaultImpls {
+	public static fun nextBuffered (Lru/ttraum/kotsql/SqlResult$Rows;)Lru/ttraum/kotsql/SqlRow;
+}
+
+public final class ru/ttraum/kotsql/SqlResult$UpdateCount : ru/ttraum/kotsql/SqlResult {
+	public fun <init> (JLjava/util/List;)V
+	public synthetic fun <init> (JLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getCount ()J
+	public final fun getGeneratedKeys ()Ljava/util/List;
+}
+
+public abstract interface class ru/ttraum/kotsql/SqlRow {
+	public fun booleanValue (I)Z
+	public abstract fun get (I)Ljava/lang/Object;
+	public fun get (ILkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun get (Ljava/lang/String;)Ljava/lang/Object;
+	public fun get (Ljava/lang/String;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun getCodecs ()Lru/ttraum/kotsql/CodecRegistry;
+	public abstract fun getColumns ()Ljava/util/List;
+	public abstract fun getText (I)Ljava/lang/String;
+	public fun indexOf (Ljava/lang/String;)I
+	public fun isNull (I)Z
+	public fun longValue (I)J
+}
+
+public final class ru/ttraum/kotsql/SqlRow$DefaultImpls {
+	public static fun booleanValue (Lru/ttraum/kotsql/SqlRow;I)Z
+	public static fun get (Lru/ttraum/kotsql/SqlRow;ILkotlin/reflect/KClass;)Ljava/lang/Object;
+	public static fun get (Lru/ttraum/kotsql/SqlRow;Ljava/lang/String;)Ljava/lang/Object;
+	public static fun get (Lru/ttraum/kotsql/SqlRow;Ljava/lang/String;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public static fun getCodecs (Lru/ttraum/kotsql/SqlRow;)Lru/ttraum/kotsql/CodecRegistry;
+	public static fun indexOf (Lru/ttraum/kotsql/SqlRow;Ljava/lang/String;)I
+	public static fun isNull (Lru/ttraum/kotsql/SqlRow;I)Z
+	public static fun longValue (Lru/ttraum/kotsql/SqlRow;I)J
+}
+
+public final class ru/ttraum/kotsql/SqlSyntax {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;ZLru/ttraum/kotsql/BackslashEscapes;ZZZZ)V
+	public synthetic fun <init> (Ljava/lang/String;ZLru/ttraum/kotsql/BackslashEscapes;ZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getBackslashEscapes ()Lru/ttraum/kotsql/BackslashEscapes;
+	public final fun getBracketIdentifiers ()Z
+	public final fun getDashCommentNeedsSpace ()Z
+	public final fun getDollarQuotedStrings ()Z
+	public final fun getHashComments ()Z
+	public final fun getNestedComments ()Z
+	public final fun getQuotes ()Ljava/lang/String;
+	public final fun opaqueEnd (Ljava/lang/String;I)I
+}
+
+public final class ru/ttraum/kotsql/SqlType : java/lang/Enum {
+	public static final field ARRAY Lru/ttraum/kotsql/SqlType;
+	public static final field BIGINT Lru/ttraum/kotsql/SqlType;
+	public static final field BINARY Lru/ttraum/kotsql/SqlType;
+	public static final field BOOLEAN Lru/ttraum/kotsql/SqlType;
+	public static final field CHAR Lru/ttraum/kotsql/SqlType;
+	public static final field DATE Lru/ttraum/kotsql/SqlType;
+	public static final field DECIMAL Lru/ttraum/kotsql/SqlType;
+	public static final field DOUBLE Lru/ttraum/kotsql/SqlType;
+	public static final field INTEGER Lru/ttraum/kotsql/SqlType;
+	public static final field INTERVAL Lru/ttraum/kotsql/SqlType;
+	public static final field JSON Lru/ttraum/kotsql/SqlType;
+	public static final field OTHER Lru/ttraum/kotsql/SqlType;
+	public static final field REAL Lru/ttraum/kotsql/SqlType;
+	public static final field SMALLINT Lru/ttraum/kotsql/SqlType;
+	public static final field TEXT Lru/ttraum/kotsql/SqlType;
+	public static final field TIME Lru/ttraum/kotsql/SqlType;
+	public static final field TIMESTAMP Lru/ttraum/kotsql/SqlType;
+	public static final field TIMESTAMP_TZ Lru/ttraum/kotsql/SqlType;
+	public static final field TIME_TZ Lru/ttraum/kotsql/SqlType;
+	public static final field UUID Lru/ttraum/kotsql/SqlType;
+	public static final field VARCHAR Lru/ttraum/kotsql/SqlType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/SqlType;
+	public static fun values ()[Lru/ttraum/kotsql/SqlType;
+}
+
+public final class ru/ttraum/kotsql/StatementDescription {
+	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;Ljava/util/List;)Lru/ttraum/kotsql/StatementDescription;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/StatementDescription;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lru/ttraum/kotsql/StatementDescription;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColumns ()Ljava/util/List;
+	public final fun getParameterTypes ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/TableQualifier : java/lang/Enum {
+	public static final field CATALOG Lru/ttraum/kotsql/TableQualifier;
+	public static final field NONE Lru/ttraum/kotsql/TableQualifier;
+	public static final field SCHEMA Lru/ttraum/kotsql/TableQualifier;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/TableQualifier;
+	public static fun values ()[Lru/ttraum/kotsql/TableQualifier;
+}
+
+public final class ru/ttraum/kotsql/TargetServerType : java/lang/Enum {
+	public static final field ANY Lru/ttraum/kotsql/TargetServerType;
+	public static final field Companion Lru/ttraum/kotsql/TargetServerType$Companion;
+	public static final field PREFER_SECONDARY Lru/ttraum/kotsql/TargetServerType;
+	public static final field PRIMARY Lru/ttraum/kotsql/TargetServerType;
+	public static final field SECONDARY Lru/ttraum/kotsql/TargetServerType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getId ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/TargetServerType;
+	public static fun values ()[Lru/ttraum/kotsql/TargetServerType;
+}
+
+public final class ru/ttraum/kotsql/TargetServerType$Companion {
+	public final fun of (Ljava/lang/String;)Lru/ttraum/kotsql/TargetServerType;
+}
+
+public final class ru/ttraum/kotsql/TlsMode : java/lang/Enum {
+	public static final field Companion Lru/ttraum/kotsql/TlsMode$Companion;
+	public static final field DISABLE Lru/ttraum/kotsql/TlsMode;
+	public static final field PREFER Lru/ttraum/kotsql/TlsMode;
+	public static final field REQUIRE Lru/ttraum/kotsql/TlsMode;
+	public static final field VERIFY_CA Lru/ttraum/kotsql/TlsMode;
+	public static final field VERIFY_FULL Lru/ttraum/kotsql/TlsMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getId ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/TlsMode;
+	public static fun values ()[Lru/ttraum/kotsql/TlsMode;
+}
+
+public final class ru/ttraum/kotsql/TlsMode$Companion {
+	public final fun of (Ljava/lang/String;)Lru/ttraum/kotsql/TlsMode;
+}
+
+public final class ru/ttraum/kotsql/TransactionState : java/lang/Enum {
+	public static final field ACTIVE Lru/ttraum/kotsql/TransactionState;
+	public static final field FAILED Lru/ttraum/kotsql/TransactionState;
+	public static final field IDLE Lru/ttraum/kotsql/TransactionState;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lru/ttraum/kotsql/TransactionState;
+	public static fun values ()[Lru/ttraum/kotsql/TransactionState;
+}
+
+public final class ru/ttraum/kotsql/TranslatedSql {
+	public fun <init> (Ljava/lang/String;I)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun copy (Ljava/lang/String;I)Lru/ttraum/kotsql/TranslatedSql;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/TranslatedSql;Ljava/lang/String;IILjava/lang/Object;)Lru/ttraum/kotsql/TranslatedSql;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getParameterCount ()I
+	public final fun getSql ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/TypedNull {
+	public fun <init> (Lru/ttraum/kotsql/SqlType;)V
+	public final fun component1 ()Lru/ttraum/kotsql/SqlType;
+	public final fun copy (Lru/ttraum/kotsql/SqlType;)Lru/ttraum/kotsql/TypedNull;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/TypedNull;Lru/ttraum/kotsql/SqlType;ILjava/lang/Object;)Lru/ttraum/kotsql/TypedNull;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getType ()Lru/ttraum/kotsql/SqlType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/pool/ConnectionPool {
+	public fun <init> (Lkotlin/jvm/functions/Function1;Lru/ttraum/kotsql/pool/PoolConfig;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;Lru/ttraum/kotsql/pool/PoolConfig;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun acquire (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getConfig ()Lru/ttraum/kotsql/pool/PoolConfig;
+	public final fun query (Ljava/lang/String;Ljava/util/List;I)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun query$default (Lru/ttraum/kotsql/pool/ConnectionPool;Ljava/lang/String;Ljava/util/List;IILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+	public final fun stats (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun transaction (Lru/ttraum/kotsql/IsolationLevel;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun transaction$default (Lru/ttraum/kotsql/pool/ConnectionPool;Lru/ttraum/kotsql/IsolationLevel;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun update (Ljava/lang/String;Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun update$default (Lru/ttraum/kotsql/pool/ConnectionPool;Ljava/lang/String;Ljava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun withConnection (Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/pool/PoolConfig {
+	public fun <init> ()V
+	public synthetic fun <init> (IIJJJJJJLkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (IIJJJJJJLkotlin/jvm/functions/Function2;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3-UwyO8pc ()J
+	public final fun component4-UwyO8pc ()J
+	public final fun component5-UwyO8pc ()J
+	public final fun component6-UwyO8pc ()J
+	public final fun component7-UwyO8pc ()J
+	public final fun component8-UwyO8pc ()J
+	public final fun component9 ()Lkotlin/jvm/functions/Function2;
+	public final fun copy-9AeKp-E (IIJJJJJJLkotlin/jvm/functions/Function2;)Lru/ttraum/kotsql/pool/PoolConfig;
+	public static synthetic fun copy-9AeKp-E$default (Lru/ttraum/kotsql/pool/PoolConfig;IIJJJJJJLkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lru/ttraum/kotsql/pool/PoolConfig;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAcquireTimeout-UwyO8pc ()J
+	public final fun getMaintenanceInterval-UwyO8pc ()J
+	public final fun getMaxIdleTime-UwyO8pc ()J
+	public final fun getMaxLifetime-UwyO8pc ()J
+	public final fun getMaxSize ()I
+	public final fun getMinSize ()I
+	public final fun getOnConnect ()Lkotlin/jvm/functions/Function2;
+	public final fun getResetTimeout-UwyO8pc ()J
+	public final fun getValidateAfterIdle-UwyO8pc ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/pool/PoolStats {
+	public fun <init> (IIIII)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()I
+	public final fun copy (IIIII)Lru/ttraum/kotsql/pool/PoolStats;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/pool/PoolStats;IIIIIILjava/lang/Object;)Lru/ttraum/kotsql/pool/PoolStats;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCreated ()I
+	public final fun getDiscarded ()I
+	public final fun getIdle ()I
+	public final fun getInUse ()I
+	public final fun getWaiting ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ru/ttraum/kotsql/pool/PooledConnection : ru/ttraum/kotsql/SqlConnection {
+	public fun cancel (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun describe (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun drainWarnings ()Ljava/util/List;
+	public fun execute (Ljava/lang/String;Ljava/util/List;Lru/ttraum/kotsql/ExecuteOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun executeBatch (Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun executeScript (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getCodecs ()Lru/ttraum/kotsql/CodecRegistry;
+	public fun getDialect ()Lru/ttraum/kotsql/SqlDialect;
+	public fun getServerInfo ()Lru/ttraum/kotsql/ServerInfo;
+	public fun getTransactionState ()Lru/ttraum/kotsql/TransactionState;
+	public fun isClosed ()Z
+	public fun ping (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun setReadTimeout (J)V
+	public fun unwrap (Lkotlin/reflect/KClass;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/spi/Drivers {
+	public static final field INSTANCE Lru/ttraum/kotsql/spi/Drivers;
+	public final fun find (Ljava/lang/String;)Lru/ttraum/kotsql/spi/SqlDriver;
+	public final fun register (Lru/ttraum/kotsql/spi/SqlDriver;)V
+	public final fun require (Ljava/lang/String;)Lru/ttraum/kotsql/spi/SqlDriver;
+}
+
+public final class ru/ttraum/kotsql/spi/ListRows : ru/ttraum/kotsql/SqlResult$Rows {
+	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public fun getColumns ()Ljava/util/List;
+	public fun getUpdateCount ()Ljava/lang/Long;
+	public fun next (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun nextBuffered ()Lru/ttraum/kotsql/SqlRow;
+}
+
+public final class ru/ttraum/kotsql/spi/ListRowsKt {
+	public static final fun generatedKeyRows (Ljava/util/List;)Lru/ttraum/kotsql/spi/ListRows;
+}
+
+public abstract interface class ru/ttraum/kotsql/spi/SqlDriver {
+	public abstract fun connect (Lru/ttraum/kotsql/ConnectionConfig;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getDialect ()Lru/ttraum/kotsql/SqlDialect;
+	public abstract fun getSchemes ()Ljava/util/Set;
+}
+
+public final class ru/ttraum/kotsql/spi/ValuesRow : ru/ttraum/kotsql/SqlRow {
+	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public fun booleanValue (I)Z
+	public fun get (I)Ljava/lang/Object;
+	public fun get (ILkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun get (Ljava/lang/String;)Ljava/lang/Object;
+	public fun get (Ljava/lang/String;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun getCodecs ()Lru/ttraum/kotsql/CodecRegistry;
+	public fun getColumns ()Ljava/util/List;
+	public fun getText (I)Ljava/lang/String;
+	public fun indexOf (Ljava/lang/String;)I
+	public fun isNull (I)Z
+	public fun longValue (I)J
+}
+

@@ -237,10 +237,10 @@ private class EpollStream(private val descriptor: Int, private val loop: EventLo
 }
 
 /** Sockets on `epoll`, without ktor's selector thread and its reader and writer coroutines. */
-class EpollTransport private constructor(private val plain: EpollStream) : Transport {
+public class EpollTransport private constructor(private val plain: EpollStream) : Transport {
     private var stream: ByteStream = plain
     private var readTimeout = 0L
-    override var isSecure = false
+    override var isSecure: Boolean = false
         private set
 
     override val tlsServerEndPoint: ByteArray? get() = stream.tlsServerEndPoint
@@ -256,10 +256,10 @@ class EpollTransport private constructor(private val plain: EpollStream) : Trans
             ?: throw SqlException("Timed out waiting for the server", "08006")
     }
 
-    override suspend fun write(buffer: ByteArray, offset: Int, length: Int) =
+    override suspend fun write(buffer: ByteArray, offset: Int, length: Int): Unit =
         stream.write(buffer, offset, length)
 
-    override suspend fun flush() = stream.flush()
+    override suspend fun flush(): Unit = stream.flush()
 
     override suspend fun startTls(options: TlsOptions) {
         val secure = OpenSslStream(plain, options)
@@ -273,9 +273,9 @@ class EpollTransport private constructor(private val plain: EpollStream) : Trans
         isSecure = true
     }
 
-    override suspend fun close() = stream.close()
+    override suspend fun close(): Unit = stream.close()
 
-    companion object Factory : TransportFactory {
+    public companion object Factory : TransportFactory {
         override suspend fun connect(
             host: String,
             port: Int,
@@ -370,4 +370,4 @@ private class ResolvedAddresses(private val head: kotlinx.cinterop.CPointer<addr
     fun free() = freeaddrinfo(head)
 }
 
-actual val DefaultTransport: TransportFactory get() = EpollTransport
+public actual val DefaultTransport: TransportFactory get() = EpollTransport

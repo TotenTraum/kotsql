@@ -3,7 +3,7 @@
 
 package ru.ttraum.kotsql.jdbc
 
-abstract class BaseResultSet : java.sql.ResultSet {
+internal abstract class BaseResultSet : java.sql.ResultSet {
     override fun absolute(p0: Int): Boolean = unsupported("absolute")
     override fun afterLast(): Unit = unsupported("afterLast")
     override fun beforeFirst(): Unit = unsupported("beforeFirst")
@@ -197,7 +197,7 @@ abstract class BaseResultSet : java.sql.ResultSet {
     override fun wasNull(): Boolean = unsupported("wasNull")
 }
 
-abstract class BasePreparedStatement : java.sql.PreparedStatement {
+internal abstract class BasePreparedStatement : java.sql.PreparedStatement {
     override fun addBatch(): Unit = unsupported("addBatch")
     override fun addBatch(p0: String?): Unit = unsupported("addBatch")
     override fun cancel(): Unit = unsupported("cancel")
@@ -299,7 +299,7 @@ abstract class BasePreparedStatement : java.sql.PreparedStatement {
     override fun <T> unwrap(p0: Class<T>?): T = unsupported("unwrap")
 }
 
-abstract class BaseConnection : java.sql.Connection {
+internal abstract class BaseConnection : java.sql.Connection {
     override fun abort(p0: java.util.concurrent.Executor?): Unit = unsupported("abort")
     override fun clearWarnings(): Unit = unsupported("clearWarnings")
     override fun close(): Unit = unsupported("close")
@@ -356,7 +356,7 @@ abstract class BaseConnection : java.sql.Connection {
     override fun <T> unwrap(p0: Class<T>?): T = unsupported("unwrap")
 }
 
-abstract class BaseDatabaseMetaData : java.sql.DatabaseMetaData {
+internal abstract class BaseDatabaseMetaData : java.sql.DatabaseMetaData {
     override fun allProceduresAreCallable(): Boolean = false
     override fun allTablesAreSelectable(): Boolean = false
     override fun autoCommitFailureClosesAllResultSets(): Boolean = false
@@ -535,7 +535,7 @@ abstract class BaseDatabaseMetaData : java.sql.DatabaseMetaData {
     override fun usesLocalFiles(): Boolean = false
 }
 
-interface CallableDefaults : java.sql.CallableStatement {
+internal interface CallableDefaults : java.sql.CallableStatement {
     override fun getArray(p0: String?): java.sql.Array? = unsupported("getArray")
     override fun getArray(p0: Int): java.sql.Array? = unsupported("getArray")
     override fun getBigDecimal(p0: String?): java.math.BigDecimal? = unsupported("getBigDecimal")

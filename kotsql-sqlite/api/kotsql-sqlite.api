@@ -1,0 +1,12 @@
+public final class ru/ttraum/kotsql/sqlite/SqliteDriver : ru/ttraum/kotsql/spi/SqlDriver {
+	public fun <init> ()V
+	public fun connect (Lru/ttraum/kotsql/ConnectionConfig;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getDialect ()Lru/ttraum/kotsql/SqlDialect;
+	public fun getSchemes ()Ljava/util/Set;
+}
+
+public final class ru/ttraum/kotsql/sqlite/SqliteDriverKt {
+	public static final fun connectSqlite (Ljava/lang/String;Lru/ttraum/kotsql/CodecRegistry;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun connectSqlite$default (Ljava/lang/String;Lru/ttraum/kotsql/CodecRegistry;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+

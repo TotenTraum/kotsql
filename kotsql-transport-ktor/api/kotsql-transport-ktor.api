@@ -1,0 +1,27 @@
+public final class ru/ttraum/kotsql/ktor/DefaultTransport_jvmKt {
+	public static final fun getDefaultTransport ()Lru/ttraum/kotsql/transport/TransportFactory;
+}
+
+public final class ru/ttraum/kotsql/ktor/KtorTransport : ru/ttraum/kotsql/transport/Transport {
+	public static final field Factory Lru/ttraum/kotsql/ktor/KtorTransport$Factory;
+	public fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun flush (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getTlsServerEndPoint ()[B
+	public fun isSecure ()Z
+	public fun read ([BIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun setReadTimeout (J)V
+	public fun startTls (Lru/ttraum/kotsql/transport/TlsOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun write ([BIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/ktor/KtorTransport$Factory : ru/ttraum/kotsql/transport/TransportFactory {
+	public fun connect (Ljava/lang/String;IJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/ktor/KtorTransportKt {
+	public static final fun connect (Ljava/lang/String;Lru/ttraum/kotsql/CodecRegistry;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun connect$default (Ljava/lang/String;Lru/ttraum/kotsql/CodecRegistry;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun connectionPool (Ljava/lang/String;Lru/ttraum/kotsql/pool/PoolConfig;Lru/ttraum/kotsql/CodecRegistry;)Lru/ttraum/kotsql/pool/ConnectionPool;
+	public static synthetic fun connectionPool$default (Ljava/lang/String;Lru/ttraum/kotsql/pool/PoolConfig;Lru/ttraum/kotsql/CodecRegistry;ILjava/lang/Object;)Lru/ttraum/kotsql/pool/ConnectionPool;
+}
+

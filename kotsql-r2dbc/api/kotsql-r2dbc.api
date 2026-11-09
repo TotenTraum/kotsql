@@ -1,0 +1,12 @@
+public final class ru/ttraum/kotsql/r2dbc/KotsqlConnectionFactory : io/r2dbc/spi/ConnectionFactory {
+	public fun create ()Lorg/reactivestreams/Publisher;
+	public fun getMetadata ()Lio/r2dbc/spi/ConnectionFactoryMetadata;
+}
+
+public final class ru/ttraum/kotsql/r2dbc/KotsqlConnectionFactoryProvider : io/r2dbc/spi/ConnectionFactoryProvider {
+	public fun <init> ()V
+	public fun create (Lio/r2dbc/spi/ConnectionFactoryOptions;)Lio/r2dbc/spi/ConnectionFactory;
+	public fun getDriver ()Ljava/lang/String;
+	public fun supports (Lio/r2dbc/spi/ConnectionFactoryOptions;)Z
+}
+

@@ -1,0 +1,89 @@
+public final class ru/ttraum/kotsql/transport/AsyncSocketTransport : ru/ttraum/kotsql/transport/Transport {
+	public static final field Factory Lru/ttraum/kotsql/transport/AsyncSocketTransport$Factory;
+	public fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun flush (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getTlsServerEndPoint ()[B
+	public fun isSecure ()Z
+	public fun read ([BIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun setReadTimeout (J)V
+	public fun startTls (Lru/ttraum/kotsql/transport/TlsOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun write ([BIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/transport/AsyncSocketTransport$Factory : ru/ttraum/kotsql/transport/TransportFactory {
+	public fun connect (Ljava/lang/String;IJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class ru/ttraum/kotsql/transport/NetworkSqlDriver : ru/ttraum/kotsql/spi/SqlDriver {
+	public fun connect (Lru/ttraum/kotsql/ConnectionConfig;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun connect (Lru/ttraum/kotsql/ConnectionConfig;Lru/ttraum/kotsql/transport/TransportFactory;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/transport/NetworkSqlDriver$DefaultImpls {
+	public static fun connect (Lru/ttraum/kotsql/transport/NetworkSqlDriver;Lru/ttraum/kotsql/ConnectionConfig;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/transport/SocketTransport : ru/ttraum/kotsql/transport/Transport {
+	public static final field Factory Lru/ttraum/kotsql/transport/SocketTransport$Factory;
+	public fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun flush (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getTlsServerEndPoint ()[B
+	public fun isSecure ()Z
+	public fun read ([BIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun setReadTimeout (J)V
+	public fun startTls (Lru/ttraum/kotsql/transport/TlsOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun write ([BIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/transport/SocketTransport$Factory : ru/ttraum/kotsql/transport/TransportFactory {
+	public fun connect (Ljava/lang/String;IJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun sslContext (Lru/ttraum/kotsql/transport/TlsOptions;)Ljavax/net/ssl/SSLContext;
+	public final fun trustManager (Lru/ttraum/kotsql/transport/TlsOptions;)Ljavax/net/ssl/TrustManager;
+}
+
+public final class ru/ttraum/kotsql/transport/TlsOptions {
+	public fun <init> (Lru/ttraum/kotsql/TlsMode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lru/ttraum/kotsql/TlsMode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lru/ttraum/kotsql/TlsMode;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Lru/ttraum/kotsql/TlsMode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lru/ttraum/kotsql/transport/TlsOptions;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/transport/TlsOptions;Lru/ttraum/kotsql/TlsMode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lru/ttraum/kotsql/transport/TlsOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCertPath ()Ljava/lang/String;
+	public final fun getKeyPath ()Ljava/lang/String;
+	public final fun getMode ()Lru/ttraum/kotsql/TlsMode;
+	public final fun getRootCertPath ()Ljava/lang/String;
+	public final fun getServerName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class ru/ttraum/kotsql/transport/Transport {
+	public abstract fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun flush (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getTlsServerEndPoint ()[B
+	public abstract fun isSecure ()Z
+	public abstract fun read ([BIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setReadTimeout (J)V
+	public abstract fun startTls (Lru/ttraum/kotsql/transport/TlsOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun write ([BIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/transport/Transport$DefaultImpls {
+	public static fun getTlsServerEndPoint (Lru/ttraum/kotsql/transport/Transport;)[B
+}
+
+public abstract interface class ru/ttraum/kotsql/transport/TransportFactory {
+	public abstract fun connect (Ljava/lang/String;IJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/transport/TransportKt {
+	public static final fun connect (Ljava/lang/String;Lru/ttraum/kotsql/transport/TransportFactory;Lru/ttraum/kotsql/CodecRegistry;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun connect$default (Ljava/lang/String;Lru/ttraum/kotsql/transport/TransportFactory;Lru/ttraum/kotsql/CodecRegistry;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun connectVia (Lru/ttraum/kotsql/spi/SqlDriver;Lru/ttraum/kotsql/ConnectionConfig;Lru/ttraum/kotsql/transport/TransportFactory;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun getTlsOptions (Lru/ttraum/kotsql/ConnectionConfig;)Lru/ttraum/kotsql/transport/TlsOptions;
+}
+

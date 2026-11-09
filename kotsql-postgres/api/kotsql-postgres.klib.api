@@ -1,0 +1,62 @@
+// Klib ABI Dump
+// Targets: [linuxArm64, linuxX64, macosArm64, mingwX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <ru.ttraum.kotsql:kotsql-postgres>
+abstract interface ru.ttraum.kotsql.postgres/PostgresConnection : ru.ttraum.kotsql/SqlConnection { // ru.ttraum.kotsql.postgres/PostgresConnection|null[0]
+    abstract fun copyOut(kotlin/String): kotlinx.coroutines.flow/Flow<kotlin/ByteArray> // ru.ttraum.kotsql.postgres/PostgresConnection.copyOut|copyOut(kotlin.String){}[0]
+    abstract fun copyOutRows(kotlin/String): kotlinx.coroutines.flow/Flow<kotlin.collections/List<kotlin/String?>> // ru.ttraum.kotsql.postgres/PostgresConnection.copyOutRows|copyOutRows(kotlin.String){}[0]
+    abstract fun drainNotifications(): kotlin.collections/List<ru.ttraum.kotsql.postgres/PgNotification> // ru.ttraum.kotsql.postgres/PostgresConnection.drainNotifications|drainNotifications(){}[0]
+    abstract fun notifications(kotlin/Array<out kotlin/String>...): kotlinx.coroutines.flow/Flow<ru.ttraum.kotsql.postgres/PgNotification> // ru.ttraum.kotsql.postgres/PostgresConnection.notifications|notifications(kotlin.Array<out|kotlin.String>...){}[0]
+    abstract suspend fun copyIn(kotlin/String, kotlinx.coroutines.flow/Flow<kotlin/ByteArray>): kotlin/Long // ru.ttraum.kotsql.postgres/PostgresConnection.copyIn|copyIn(kotlin.String;kotlinx.coroutines.flow.Flow<kotlin.ByteArray>){}[0]
+    abstract suspend fun copyInRows(kotlin/String, kotlin.collections/List<kotlin/String>, kotlinx.coroutines.flow/Flow<kotlin.collections/List<kotlin/Any?>>): kotlin/Long // ru.ttraum.kotsql.postgres/PostgresConnection.copyInRows|copyInRows(kotlin.String;kotlin.collections.List<kotlin.String>;kotlinx.coroutines.flow.Flow<kotlin.collections.List<kotlin.Any?>>){}[0]
+    abstract suspend fun notify(kotlin/String, kotlin/String = ...) // ru.ttraum.kotsql.postgres/PostgresConnection.notify|notify(kotlin.String;kotlin.String){}[0]
+
+    final object Companion { // ru.ttraum.kotsql.postgres/PostgresConnection.Companion|null[0]
+        final const val MAX_BUFFERED_NOTIFICATIONS // ru.ttraum.kotsql.postgres/PostgresConnection.Companion.MAX_BUFFERED_NOTIFICATIONS|{}MAX_BUFFERED_NOTIFICATIONS[0]
+            final fun <get-MAX_BUFFERED_NOTIFICATIONS>(): kotlin/Int // ru.ttraum.kotsql.postgres/PostgresConnection.Companion.MAX_BUFFERED_NOTIFICATIONS.<get-MAX_BUFFERED_NOTIFICATIONS>|<get-MAX_BUFFERED_NOTIFICATIONS>(){}[0]
+    }
+}
+
+final class ru.ttraum.kotsql.postgres/PgNotification { // ru.ttraum.kotsql.postgres/PgNotification|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/Int) // ru.ttraum.kotsql.postgres/PgNotification.<init>|<init>(kotlin.String;kotlin.String;kotlin.Int){}[0]
+
+    final val channel // ru.ttraum.kotsql.postgres/PgNotification.channel|{}channel[0]
+        final fun <get-channel>(): kotlin/String // ru.ttraum.kotsql.postgres/PgNotification.channel.<get-channel>|<get-channel>(){}[0]
+    final val payload // ru.ttraum.kotsql.postgres/PgNotification.payload|{}payload[0]
+        final fun <get-payload>(): kotlin/String // ru.ttraum.kotsql.postgres/PgNotification.payload.<get-payload>|<get-payload>(){}[0]
+    final val senderPid // ru.ttraum.kotsql.postgres/PgNotification.senderPid|{}senderPid[0]
+        final fun <get-senderPid>(): kotlin/Int // ru.ttraum.kotsql.postgres/PgNotification.senderPid.<get-senderPid>|<get-senderPid>(){}[0]
+
+    final fun component1(): kotlin/String // ru.ttraum.kotsql.postgres/PgNotification.component1|component1(){}[0]
+    final fun component2(): kotlin/String // ru.ttraum.kotsql.postgres/PgNotification.component2|component2(){}[0]
+    final fun component3(): kotlin/Int // ru.ttraum.kotsql.postgres/PgNotification.component3|component3(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/Int = ...): ru.ttraum.kotsql.postgres/PgNotification // ru.ttraum.kotsql.postgres/PgNotification.copy|copy(kotlin.String;kotlin.String;kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql.postgres/PgNotification.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql.postgres/PgNotification.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql.postgres/PgNotification.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql.postgres/PostgresDriver : ru.ttraum.kotsql.transport/NetworkSqlDriver { // ru.ttraum.kotsql.postgres/PostgresDriver|null[0]
+    constructor <init>() // ru.ttraum.kotsql.postgres/PostgresDriver.<init>|<init>(){}[0]
+
+    final val dialect // ru.ttraum.kotsql.postgres/PostgresDriver.dialect|{}dialect[0]
+        final fun <get-dialect>(): ru.ttraum.kotsql/SqlDialect // ru.ttraum.kotsql.postgres/PostgresDriver.dialect.<get-dialect>|<get-dialect>(){}[0]
+    final val schemes // ru.ttraum.kotsql.postgres/PostgresDriver.schemes|{}schemes[0]
+        final fun <get-schemes>(): kotlin.collections/Set<kotlin/String> // ru.ttraum.kotsql.postgres/PostgresDriver.schemes.<get-schemes>|<get-schemes>(){}[0]
+
+    final suspend fun connect(ru.ttraum.kotsql/ConnectionConfig, ru.ttraum.kotsql.transport/TransportFactory): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.postgres/PostgresDriver.connect|connect(ru.ttraum.kotsql.ConnectionConfig;ru.ttraum.kotsql.transport.TransportFactory){}[0]
+}
+
+final object ru.ttraum.kotsql.postgres/HstoreCodec : ru.ttraum.kotsql/SqlCodec<kotlin.collections/Map<kotlin/String, kotlin/String?>> { // ru.ttraum.kotsql.postgres/HstoreCodec|null[0]
+    final fun decode(kotlin/Any): kotlin.collections/Map<kotlin/String, kotlin/String?> // ru.ttraum.kotsql.postgres/HstoreCodec.decode|decode(kotlin.Any){}[0]
+    final fun encode(kotlin.collections/Map<kotlin/String, kotlin/String?>): kotlin/Any // ru.ttraum.kotsql.postgres/HstoreCodec.encode|encode(kotlin.collections.Map<kotlin.String,kotlin.String?>){}[0]
+}
+
+final val ru.ttraum.kotsql.postgres/postgres // ru.ttraum.kotsql.postgres/postgres|@ru.ttraum.kotsql.SqlConnection{}postgres[0]
+    final fun (ru.ttraum.kotsql/SqlConnection).<get-postgres>(): ru.ttraum.kotsql.postgres/PostgresConnection // ru.ttraum.kotsql.postgres/postgres.<get-postgres>|<get-postgres>@ru.ttraum.kotsql.SqlConnection(){}[0]
+
+final fun ru.ttraum.kotsql.postgres/postgresNotifications(kotlin.coroutines/SuspendFunction0<ru.ttraum.kotsql/SqlConnection>, kotlin/Array<out kotlin/String>..., kotlin.time/Duration = ..., kotlin.coroutines/SuspendFunction0<kotlin/Unit> = ...): kotlinx.coroutines.flow/Flow<ru.ttraum.kotsql.postgres/PgNotification> // ru.ttraum.kotsql.postgres/postgresNotifications|postgresNotifications(kotlin.coroutines.SuspendFunction0<ru.ttraum.kotsql.SqlConnection>;kotlin.Array<out|kotlin.String>...;kotlin.time.Duration;kotlin.coroutines.SuspendFunction0<kotlin.Unit>){}[0]

@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.flow
  * Opens a connection using the driver registered for the URL's scheme, e.g. `sqlite:///app.db`. For a database behind a
  * socket, use `connect` of kotsql-transport-ktor, or of kotsql-transport with a transport of your choice.
  */
-suspend fun connect(url: String, codecs: CodecRegistry = CodecRegistry.Global): SqlConnection {
+public suspend fun connect(url: String, codecs: CodecRegistry = CodecRegistry.Global): SqlConnection {
     val config = ConnectionConfig.parse(url).copy(codecs = codecs)
     return Drivers.require(config.scheme).connect(config)
 }
 
 /** Streams the rows of a query. The cursor is closed when collection ends, however it ends. */
-fun SqlConnection.query(sql: String, params: List<Any?> = emptyList(), fetchSize: Int = 0): Flow<SqlRow> = flow {
+public fun SqlConnection.query(sql: String, params: List<Any?> = emptyList(), fetchSize: Int = 0): Flow<SqlRow> = flow {
     val cursor = execute(sql, params, ExecuteOptions(fetchSize))
     try {
         while (true) {
@@ -27,7 +27,7 @@ fun SqlConnection.query(sql: String, params: List<Any?> = emptyList(), fetchSize
 }
 
 /** Runs a statement and returns the number of affected rows. */
-suspend fun SqlConnection.update(sql: String, params: List<Any?> = emptyList()): Long {
+public suspend fun SqlConnection.update(sql: String, params: List<Any?> = emptyList()): Long {
     val cursor = execute(sql, params)
     try {
         var total = 0L
@@ -44,7 +44,7 @@ suspend fun SqlConnection.update(sql: String, params: List<Any?> = emptyList()):
 }
 
 /** Runs [block] in a transaction: commits when it returns, rolls back when it throws. */
-suspend fun <T> SqlConnection.transaction(isolation: IsolationLevel? = null, block: suspend SqlConnection.() -> T): T {
+public suspend fun <T> SqlConnection.transaction(isolation: IsolationLevel? = null, block: suspend SqlConnection.() -> T): T {
     dialect.beginStatements(isolation).forEach { update(it) }
     val result = try {
         block()

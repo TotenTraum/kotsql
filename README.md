@@ -330,6 +330,17 @@ the OpenSSL bindings or upgrading OpenSSL, run `tools/check-openssl-decls.sh`.
 `linuxArm64` is covered by running the scripts on an ARM machine, such as a Mac with Apple silicon. On a machine that can run
 x86_64 containers, `KOTSQL_LINUX_ARCH=x86_64` makes the scripts test `linuxX64` instead.
 
+## API stability
+
+The published modules declare their public API explicitly (Kotlin's explicit API mode), and `api/` in each holds a dump of
+it for the JVM and for the native targets. `./gradlew check` and CI compare the code with those dumps, so a change to the
+public API shows up in review: when it is meant, `./gradlew updateKotlinAbi` updates them.
+
+What the modules share between themselves, such as the wire primitives of `kotsql-transport` and `kotsql-jvm-values`, is
+marked `@InternalKotsqlApi`: using it outside kotsql takes an opt-in, it may change in any release, and it is left out of
+the dumps. The SPI for adding a database (`SqlDriver`, `SqlDialect`, `NetworkSqlDriver`, `Transport`, `ListRows` and the
+rest) is public API like the rest.
+
 ## License
 
 [Apache License 2.0](LICENSE).

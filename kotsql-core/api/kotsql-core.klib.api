@@ -1,0 +1,868 @@
+// Klib ABI Dump
+// Targets: [linuxArm64, linuxX64, macosArm64, mingwX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <ru.ttraum.kotsql:kotsql-core>
+open annotation class ru.ttraum.kotsql/InternalKotsqlApi : kotlin/Annotation { // ru.ttraum.kotsql/InternalKotsqlApi|null[0]
+    constructor <init>() // ru.ttraum.kotsql/InternalKotsqlApi.<init>|<init>(){}[0]
+}
+
+final enum class ru.ttraum.kotsql/BackslashEscapes : kotlin/Enum<ru.ttraum.kotsql/BackslashEscapes> { // ru.ttraum.kotsql/BackslashEscapes|null[0]
+    enum entry IN_STRINGS // ru.ttraum.kotsql/BackslashEscapes.IN_STRINGS|null[0]
+    enum entry NEVER // ru.ttraum.kotsql/BackslashEscapes.NEVER|null[0]
+    enum entry WITH_E_PREFIX // ru.ttraum.kotsql/BackslashEscapes.WITH_E_PREFIX|null[0]
+
+    final val entries // ru.ttraum.kotsql/BackslashEscapes.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/BackslashEscapes> // ru.ttraum.kotsql/BackslashEscapes.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/BackslashEscapes // ru.ttraum.kotsql/BackslashEscapes.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/BackslashEscapes> // ru.ttraum.kotsql/BackslashEscapes.values|values#static(){}[0]
+}
+
+final enum class ru.ttraum.kotsql/ConstraintViolation : kotlin/Enum<ru.ttraum.kotsql/ConstraintViolation> { // ru.ttraum.kotsql/ConstraintViolation|null[0]
+    enum entry CHECK // ru.ttraum.kotsql/ConstraintViolation.CHECK|null[0]
+    enum entry EXCLUSION // ru.ttraum.kotsql/ConstraintViolation.EXCLUSION|null[0]
+    enum entry FOREIGN_KEY // ru.ttraum.kotsql/ConstraintViolation.FOREIGN_KEY|null[0]
+    enum entry NOT_NULL // ru.ttraum.kotsql/ConstraintViolation.NOT_NULL|null[0]
+    enum entry UNIQUE // ru.ttraum.kotsql/ConstraintViolation.UNIQUE|null[0]
+
+    final val entries // ru.ttraum.kotsql/ConstraintViolation.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/ConstraintViolation> // ru.ttraum.kotsql/ConstraintViolation.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/ConstraintViolation // ru.ttraum.kotsql/ConstraintViolation.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/ConstraintViolation> // ru.ttraum.kotsql/ConstraintViolation.values|values#static(){}[0]
+}
+
+final enum class ru.ttraum.kotsql/IdentifierCase : kotlin/Enum<ru.ttraum.kotsql/IdentifierCase> { // ru.ttraum.kotsql/IdentifierCase|null[0]
+    enum entry AS_WRITTEN // ru.ttraum.kotsql/IdentifierCase.AS_WRITTEN|null[0]
+    enum entry LOWER // ru.ttraum.kotsql/IdentifierCase.LOWER|null[0]
+    enum entry UPPER // ru.ttraum.kotsql/IdentifierCase.UPPER|null[0]
+
+    final val entries // ru.ttraum.kotsql/IdentifierCase.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/IdentifierCase> // ru.ttraum.kotsql/IdentifierCase.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/IdentifierCase // ru.ttraum.kotsql/IdentifierCase.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/IdentifierCase> // ru.ttraum.kotsql/IdentifierCase.values|values#static(){}[0]
+}
+
+final enum class ru.ttraum.kotsql/IsolationLevel : kotlin/Enum<ru.ttraum.kotsql/IsolationLevel> { // ru.ttraum.kotsql/IsolationLevel|null[0]
+    enum entry READ_COMMITTED // ru.ttraum.kotsql/IsolationLevel.READ_COMMITTED|null[0]
+    enum entry READ_UNCOMMITTED // ru.ttraum.kotsql/IsolationLevel.READ_UNCOMMITTED|null[0]
+    enum entry REPEATABLE_READ // ru.ttraum.kotsql/IsolationLevel.REPEATABLE_READ|null[0]
+    enum entry SERIALIZABLE // ru.ttraum.kotsql/IsolationLevel.SERIALIZABLE|null[0]
+
+    final val entries // ru.ttraum.kotsql/IsolationLevel.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/IsolationLevel> // ru.ttraum.kotsql/IsolationLevel.entries.<get-entries>|<get-entries>#static(){}[0]
+    final val sql // ru.ttraum.kotsql/IsolationLevel.sql|{}sql[0]
+        final fun <get-sql>(): kotlin/String // ru.ttraum.kotsql/IsolationLevel.sql.<get-sql>|<get-sql>(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/IsolationLevel // ru.ttraum.kotsql/IsolationLevel.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/IsolationLevel> // ru.ttraum.kotsql/IsolationLevel.values|values#static(){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/IsolationLevel.Companion|null[0]
+        final fun ofSql(kotlin/String): ru.ttraum.kotsql/IsolationLevel? // ru.ttraum.kotsql/IsolationLevel.Companion.ofSql|ofSql(kotlin.String){}[0]
+    }
+}
+
+final enum class ru.ttraum.kotsql/SqlErrorKind : kotlin/Enum<ru.ttraum.kotsql/SqlErrorKind> { // ru.ttraum.kotsql/SqlErrorKind|null[0]
+    enum entry AUTHENTICATION // ru.ttraum.kotsql/SqlErrorKind.AUTHENTICATION|null[0]
+    enum entry CONNECTION // ru.ttraum.kotsql/SqlErrorKind.CONNECTION|null[0]
+    enum entry DATA // ru.ttraum.kotsql/SqlErrorKind.DATA|null[0]
+    enum entry INTEGRITY // ru.ttraum.kotsql/SqlErrorKind.INTEGRITY|null[0]
+    enum entry OTHER // ru.ttraum.kotsql/SqlErrorKind.OTHER|null[0]
+    enum entry PERMISSION // ru.ttraum.kotsql/SqlErrorKind.PERMISSION|null[0]
+    enum entry ROLLBACK // ru.ttraum.kotsql/SqlErrorKind.ROLLBACK|null[0]
+    enum entry SYNTAX // ru.ttraum.kotsql/SqlErrorKind.SYNTAX|null[0]
+    enum entry TIMEOUT // ru.ttraum.kotsql/SqlErrorKind.TIMEOUT|null[0]
+    enum entry UNSUPPORTED // ru.ttraum.kotsql/SqlErrorKind.UNSUPPORTED|null[0]
+
+    final val entries // ru.ttraum.kotsql/SqlErrorKind.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/SqlErrorKind> // ru.ttraum.kotsql/SqlErrorKind.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/SqlErrorKind // ru.ttraum.kotsql/SqlErrorKind.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/SqlErrorKind> // ru.ttraum.kotsql/SqlErrorKind.values|values#static(){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/SqlErrorKind.Companion|null[0]
+        final fun ofSqlState(kotlin/String?): ru.ttraum.kotsql/SqlErrorKind // ru.ttraum.kotsql/SqlErrorKind.Companion.ofSqlState|ofSqlState(kotlin.String?){}[0]
+    }
+}
+
+final enum class ru.ttraum.kotsql/SqlType : kotlin/Enum<ru.ttraum.kotsql/SqlType> { // ru.ttraum.kotsql/SqlType|null[0]
+    enum entry ARRAY // ru.ttraum.kotsql/SqlType.ARRAY|null[0]
+    enum entry BIGINT // ru.ttraum.kotsql/SqlType.BIGINT|null[0]
+    enum entry BINARY // ru.ttraum.kotsql/SqlType.BINARY|null[0]
+    enum entry BOOLEAN // ru.ttraum.kotsql/SqlType.BOOLEAN|null[0]
+    enum entry CHAR // ru.ttraum.kotsql/SqlType.CHAR|null[0]
+    enum entry DATE // ru.ttraum.kotsql/SqlType.DATE|null[0]
+    enum entry DECIMAL // ru.ttraum.kotsql/SqlType.DECIMAL|null[0]
+    enum entry DOUBLE // ru.ttraum.kotsql/SqlType.DOUBLE|null[0]
+    enum entry INTEGER // ru.ttraum.kotsql/SqlType.INTEGER|null[0]
+    enum entry INTERVAL // ru.ttraum.kotsql/SqlType.INTERVAL|null[0]
+    enum entry JSON // ru.ttraum.kotsql/SqlType.JSON|null[0]
+    enum entry OTHER // ru.ttraum.kotsql/SqlType.OTHER|null[0]
+    enum entry REAL // ru.ttraum.kotsql/SqlType.REAL|null[0]
+    enum entry SMALLINT // ru.ttraum.kotsql/SqlType.SMALLINT|null[0]
+    enum entry TEXT // ru.ttraum.kotsql/SqlType.TEXT|null[0]
+    enum entry TIME // ru.ttraum.kotsql/SqlType.TIME|null[0]
+    enum entry TIMESTAMP // ru.ttraum.kotsql/SqlType.TIMESTAMP|null[0]
+    enum entry TIMESTAMP_TZ // ru.ttraum.kotsql/SqlType.TIMESTAMP_TZ|null[0]
+    enum entry TIME_TZ // ru.ttraum.kotsql/SqlType.TIME_TZ|null[0]
+    enum entry UUID // ru.ttraum.kotsql/SqlType.UUID|null[0]
+    enum entry VARCHAR // ru.ttraum.kotsql/SqlType.VARCHAR|null[0]
+
+    final val entries // ru.ttraum.kotsql/SqlType.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/SqlType> // ru.ttraum.kotsql/SqlType.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/SqlType // ru.ttraum.kotsql/SqlType.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/SqlType> // ru.ttraum.kotsql/SqlType.values|values#static(){}[0]
+}
+
+final enum class ru.ttraum.kotsql/TableQualifier : kotlin/Enum<ru.ttraum.kotsql/TableQualifier> { // ru.ttraum.kotsql/TableQualifier|null[0]
+    enum entry CATALOG // ru.ttraum.kotsql/TableQualifier.CATALOG|null[0]
+    enum entry NONE // ru.ttraum.kotsql/TableQualifier.NONE|null[0]
+    enum entry SCHEMA // ru.ttraum.kotsql/TableQualifier.SCHEMA|null[0]
+
+    final val entries // ru.ttraum.kotsql/TableQualifier.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/TableQualifier> // ru.ttraum.kotsql/TableQualifier.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/TableQualifier // ru.ttraum.kotsql/TableQualifier.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/TableQualifier> // ru.ttraum.kotsql/TableQualifier.values|values#static(){}[0]
+}
+
+final enum class ru.ttraum.kotsql/TargetServerType : kotlin/Enum<ru.ttraum.kotsql/TargetServerType> { // ru.ttraum.kotsql/TargetServerType|null[0]
+    enum entry ANY // ru.ttraum.kotsql/TargetServerType.ANY|null[0]
+    enum entry PREFER_SECONDARY // ru.ttraum.kotsql/TargetServerType.PREFER_SECONDARY|null[0]
+    enum entry PRIMARY // ru.ttraum.kotsql/TargetServerType.PRIMARY|null[0]
+    enum entry SECONDARY // ru.ttraum.kotsql/TargetServerType.SECONDARY|null[0]
+
+    final val entries // ru.ttraum.kotsql/TargetServerType.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/TargetServerType> // ru.ttraum.kotsql/TargetServerType.entries.<get-entries>|<get-entries>#static(){}[0]
+    final val id // ru.ttraum.kotsql/TargetServerType.id|{}id[0]
+        final fun <get-id>(): kotlin/String // ru.ttraum.kotsql/TargetServerType.id.<get-id>|<get-id>(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/TargetServerType // ru.ttraum.kotsql/TargetServerType.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/TargetServerType> // ru.ttraum.kotsql/TargetServerType.values|values#static(){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/TargetServerType.Companion|null[0]
+        final fun of(kotlin/String): ru.ttraum.kotsql/TargetServerType // ru.ttraum.kotsql/TargetServerType.Companion.of|of(kotlin.String){}[0]
+    }
+}
+
+final enum class ru.ttraum.kotsql/TlsMode : kotlin/Enum<ru.ttraum.kotsql/TlsMode> { // ru.ttraum.kotsql/TlsMode|null[0]
+    enum entry DISABLE // ru.ttraum.kotsql/TlsMode.DISABLE|null[0]
+    enum entry PREFER // ru.ttraum.kotsql/TlsMode.PREFER|null[0]
+    enum entry REQUIRE // ru.ttraum.kotsql/TlsMode.REQUIRE|null[0]
+    enum entry VERIFY_CA // ru.ttraum.kotsql/TlsMode.VERIFY_CA|null[0]
+    enum entry VERIFY_FULL // ru.ttraum.kotsql/TlsMode.VERIFY_FULL|null[0]
+
+    final val entries // ru.ttraum.kotsql/TlsMode.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/TlsMode> // ru.ttraum.kotsql/TlsMode.entries.<get-entries>|<get-entries>#static(){}[0]
+    final val id // ru.ttraum.kotsql/TlsMode.id|{}id[0]
+        final fun <get-id>(): kotlin/String // ru.ttraum.kotsql/TlsMode.id.<get-id>|<get-id>(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/TlsMode // ru.ttraum.kotsql/TlsMode.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/TlsMode> // ru.ttraum.kotsql/TlsMode.values|values#static(){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/TlsMode.Companion|null[0]
+        final fun of(kotlin/String): ru.ttraum.kotsql/TlsMode // ru.ttraum.kotsql/TlsMode.Companion.of|of(kotlin.String){}[0]
+    }
+}
+
+final enum class ru.ttraum.kotsql/TransactionState : kotlin/Enum<ru.ttraum.kotsql/TransactionState> { // ru.ttraum.kotsql/TransactionState|null[0]
+    enum entry ACTIVE // ru.ttraum.kotsql/TransactionState.ACTIVE|null[0]
+    enum entry FAILED // ru.ttraum.kotsql/TransactionState.FAILED|null[0]
+    enum entry IDLE // ru.ttraum.kotsql/TransactionState.IDLE|null[0]
+
+    final val entries // ru.ttraum.kotsql/TransactionState.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<ru.ttraum.kotsql/TransactionState> // ru.ttraum.kotsql/TransactionState.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): ru.ttraum.kotsql/TransactionState // ru.ttraum.kotsql/TransactionState.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<ru.ttraum.kotsql/TransactionState> // ru.ttraum.kotsql/TransactionState.values|values#static(){}[0]
+}
+
+abstract interface ru.ttraum.kotsql.spi/SqlDriver { // ru.ttraum.kotsql.spi/SqlDriver|null[0]
+    abstract val dialect // ru.ttraum.kotsql.spi/SqlDriver.dialect|{}dialect[0]
+        abstract fun <get-dialect>(): ru.ttraum.kotsql/SqlDialect // ru.ttraum.kotsql.spi/SqlDriver.dialect.<get-dialect>|<get-dialect>(){}[0]
+    abstract val schemes // ru.ttraum.kotsql.spi/SqlDriver.schemes|{}schemes[0]
+        abstract fun <get-schemes>(): kotlin.collections/Set<kotlin/String> // ru.ttraum.kotsql.spi/SqlDriver.schemes.<get-schemes>|<get-schemes>(){}[0]
+
+    abstract suspend fun connect(ru.ttraum.kotsql/ConnectionConfig): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.spi/SqlDriver.connect|connect(ru.ttraum.kotsql.ConnectionConfig){}[0]
+}
+
+abstract interface ru.ttraum.kotsql/MetadataQueries { // ru.ttraum.kotsql/MetadataQueries|null[0]
+    open fun catalogs(): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.catalogs|catalogs(){}[0]
+    open fun columns(kotlin/String?, kotlin/String?, kotlin/String?, kotlin/String?): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.columns|columns(kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    open fun exportedKeys(kotlin/String?, kotlin/String?, kotlin/String): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.exportedKeys|exportedKeys(kotlin.String?;kotlin.String?;kotlin.String){}[0]
+    open fun importedKeys(kotlin/String?, kotlin/String?, kotlin/String): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.importedKeys|importedKeys(kotlin.String?;kotlin.String?;kotlin.String){}[0]
+    open fun indexInfo(kotlin/String?, kotlin/String?, kotlin/String, kotlin/Boolean): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.indexInfo|indexInfo(kotlin.String?;kotlin.String?;kotlin.String;kotlin.Boolean){}[0]
+    open fun primaryKeys(kotlin/String?, kotlin/String?, kotlin/String): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.primaryKeys|primaryKeys(kotlin.String?;kotlin.String?;kotlin.String){}[0]
+    open fun schemas(kotlin/String?, kotlin/String?): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.schemas|schemas(kotlin.String?;kotlin.String?){}[0]
+    open fun tableTypes(): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.tableTypes|tableTypes(){}[0]
+    open fun tables(kotlin/String?, kotlin/String?, kotlin/String?, kotlin.collections/List<kotlin/String>?): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.tables|tables(kotlin.String?;kotlin.String?;kotlin.String?;kotlin.collections.List<kotlin.String>?){}[0]
+    open fun typeInfo(): ru.ttraum.kotsql/MetadataQuery? // ru.ttraum.kotsql/MetadataQueries.typeInfo|typeInfo(){}[0]
+}
+
+abstract interface ru.ttraum.kotsql/SqlConnection { // ru.ttraum.kotsql/SqlConnection|null[0]
+    abstract val dialect // ru.ttraum.kotsql/SqlConnection.dialect|{}dialect[0]
+        abstract fun <get-dialect>(): ru.ttraum.kotsql/SqlDialect // ru.ttraum.kotsql/SqlConnection.dialect.<get-dialect>|<get-dialect>(){}[0]
+    abstract val isClosed // ru.ttraum.kotsql/SqlConnection.isClosed|{}isClosed[0]
+        abstract fun <get-isClosed>(): kotlin/Boolean // ru.ttraum.kotsql/SqlConnection.isClosed.<get-isClosed>|<get-isClosed>(){}[0]
+    abstract val serverInfo // ru.ttraum.kotsql/SqlConnection.serverInfo|{}serverInfo[0]
+        abstract fun <get-serverInfo>(): ru.ttraum.kotsql/ServerInfo // ru.ttraum.kotsql/SqlConnection.serverInfo.<get-serverInfo>|<get-serverInfo>(){}[0]
+    abstract val transactionState // ru.ttraum.kotsql/SqlConnection.transactionState|{}transactionState[0]
+        abstract fun <get-transactionState>(): ru.ttraum.kotsql/TransactionState // ru.ttraum.kotsql/SqlConnection.transactionState.<get-transactionState>|<get-transactionState>(){}[0]
+    open val codecs // ru.ttraum.kotsql/SqlConnection.codecs|{}codecs[0]
+        open fun <get-codecs>(): ru.ttraum.kotsql/CodecRegistry // ru.ttraum.kotsql/SqlConnection.codecs.<get-codecs>|<get-codecs>(){}[0]
+
+    abstract fun drainWarnings(): kotlin.collections/List<kotlin/String> // ru.ttraum.kotsql/SqlConnection.drainWarnings|drainWarnings(){}[0]
+    abstract fun setReadTimeout(kotlin/Long) // ru.ttraum.kotsql/SqlConnection.setReadTimeout|setReadTimeout(kotlin.Long){}[0]
+    abstract suspend fun cancel() // ru.ttraum.kotsql/SqlConnection.cancel|cancel(){}[0]
+    abstract suspend fun close() // ru.ttraum.kotsql/SqlConnection.close|close(){}[0]
+    abstract suspend fun describe(kotlin/String): ru.ttraum.kotsql/StatementDescription // ru.ttraum.kotsql/SqlConnection.describe|describe(kotlin.String){}[0]
+    abstract suspend fun execute(kotlin/String, kotlin.collections/List<kotlin/Any?> = ..., ru.ttraum.kotsql/ExecuteOptions = ...): ru.ttraum.kotsql/SqlCursor // ru.ttraum.kotsql/SqlConnection.execute|execute(kotlin.String;kotlin.collections.List<kotlin.Any?>;ru.ttraum.kotsql.ExecuteOptions){}[0]
+    abstract suspend fun executeBatch(kotlin.collections/List<ru.ttraum.kotsql/BatchItem>): kotlin/LongArray // ru.ttraum.kotsql/SqlConnection.executeBatch|executeBatch(kotlin.collections.List<ru.ttraum.kotsql.BatchItem>){}[0]
+    abstract suspend fun executeScript(kotlin/String): ru.ttraum.kotsql/SqlCursor // ru.ttraum.kotsql/SqlConnection.executeScript|executeScript(kotlin.String){}[0]
+    abstract suspend fun ping(): kotlin/Boolean // ru.ttraum.kotsql/SqlConnection.ping|ping(){}[0]
+    open fun <#A1: kotlin/Any> unwrap(kotlin.reflect/KClass<#A1>): #A1? // ru.ttraum.kotsql/SqlConnection.unwrap|unwrap(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+}
+
+abstract interface ru.ttraum.kotsql/SqlCursor { // ru.ttraum.kotsql/SqlCursor|null[0]
+    abstract suspend fun close() // ru.ttraum.kotsql/SqlCursor.close|close(){}[0]
+    abstract suspend fun nextResult(): ru.ttraum.kotsql/SqlResult? // ru.ttraum.kotsql/SqlCursor.nextResult|nextResult(){}[0]
+}
+
+abstract interface ru.ttraum.kotsql/SqlDialect { // ru.ttraum.kotsql/SqlDialect|null[0]
+    abstract val productName // ru.ttraum.kotsql/SqlDialect.productName|{}productName[0]
+        abstract fun <get-productName>(): kotlin/String // ru.ttraum.kotsql/SqlDialect.productName.<get-productName>|<get-productName>(){}[0]
+    open val calls // ru.ttraum.kotsql/SqlDialect.calls|{}calls[0]
+        open fun <get-calls>(): ru.ttraum.kotsql/CallSyntax // ru.ttraum.kotsql/SqlDialect.calls.<get-calls>|<get-calls>(){}[0]
+    open val defaultIsolation // ru.ttraum.kotsql/SqlDialect.defaultIsolation|{}defaultIsolation[0]
+        open fun <get-defaultIsolation>(): ru.ttraum.kotsql/IsolationLevel // ru.ttraum.kotsql/SqlDialect.defaultIsolation.<get-defaultIsolation>|<get-defaultIsolation>(){}[0]
+    open val identifierCase // ru.ttraum.kotsql/SqlDialect.identifierCase|{}identifierCase[0]
+        open fun <get-identifierCase>(): ru.ttraum.kotsql/IdentifierCase // ru.ttraum.kotsql/SqlDialect.identifierCase.<get-identifierCase>|<get-identifierCase>(){}[0]
+    open val identifierQuote // ru.ttraum.kotsql/SqlDialect.identifierQuote|{}identifierQuote[0]
+        open fun <get-identifierQuote>(): kotlin/String // ru.ttraum.kotsql/SqlDialect.identifierQuote.<get-identifierQuote>|<get-identifierQuote>(){}[0]
+    open val metadata // ru.ttraum.kotsql/SqlDialect.metadata|{}metadata[0]
+        open fun <get-metadata>(): ru.ttraum.kotsql/MetadataQueries // ru.ttraum.kotsql/SqlDialect.metadata.<get-metadata>|<get-metadata>(){}[0]
+    open val searchStringEscape // ru.ttraum.kotsql/SqlDialect.searchStringEscape|{}searchStringEscape[0]
+        open fun <get-searchStringEscape>(): kotlin/String // ru.ttraum.kotsql/SqlDialect.searchStringEscape.<get-searchStringEscape>|<get-searchStringEscape>(){}[0]
+    open val syntax // ru.ttraum.kotsql/SqlDialect.syntax|{}syntax[0]
+        open fun <get-syntax>(): ru.ttraum.kotsql/SqlSyntax // ru.ttraum.kotsql/SqlDialect.syntax.<get-syntax>|<get-syntax>(){}[0]
+    open val tableQualifier // ru.ttraum.kotsql/SqlDialect.tableQualifier|{}tableQualifier[0]
+        open fun <get-tableQualifier>(): ru.ttraum.kotsql/TableQualifier // ru.ttraum.kotsql/SqlDialect.tableQualifier.<get-tableQualifier>|<get-tableQualifier>(){}[0]
+
+    abstract fun parameterCount(kotlin/String): kotlin/Int // ru.ttraum.kotsql/SqlDialect.parameterCount|parameterCount(kotlin.String){}[0]
+    abstract fun parameterIndex(kotlin/String): kotlin/Int? // ru.ttraum.kotsql/SqlDialect.parameterIndex|parameterIndex(kotlin.String){}[0]
+    abstract fun parameterMarker(kotlin/Int): kotlin/String // ru.ttraum.kotsql/SqlDialect.parameterMarker|parameterMarker(kotlin.Int){}[0]
+    abstract fun setIsolationSql(ru.ttraum.kotsql/IsolationLevel): kotlin/String // ru.ttraum.kotsql/SqlDialect.setIsolationSql|setIsolationSql(ru.ttraum.kotsql.IsolationLevel){}[0]
+    abstract fun setReadOnlySql(kotlin/Boolean): kotlin/String // ru.ttraum.kotsql/SqlDialect.setReadOnlySql|setReadOnlySql(kotlin.Boolean){}[0]
+    abstract fun showIsolationSql(): kotlin/String // ru.ttraum.kotsql/SqlDialect.showIsolationSql|showIsolationSql(){}[0]
+    abstract fun translatePositional(kotlin/String): ru.ttraum.kotsql/TranslatedSql // ru.ttraum.kotsql/SqlDialect.translatePositional|translatePositional(kotlin.String){}[0]
+    open fun beginStatements(ru.ttraum.kotsql/IsolationLevel? = ..., kotlin/Boolean? = ...): kotlin.collections/List<kotlin/String> // ru.ttraum.kotsql/SqlDialect.beginStatements|beginStatements(ru.ttraum.kotsql.IsolationLevel?;kotlin.Boolean?){}[0]
+    open fun commitSql(): kotlin/String // ru.ttraum.kotsql/SqlDialect.commitSql|commitSql(){}[0]
+    open fun currentCatalogSql(): kotlin/String? // ru.ttraum.kotsql/SqlDialect.currentCatalogSql|currentCatalogSql(){}[0]
+    open fun currentSchemaSql(): kotlin/String? // ru.ttraum.kotsql/SqlDialect.currentSchemaSql|currentSchemaSql(){}[0]
+    open fun escapeFunction(kotlin/String, kotlin.collections/List<kotlin/String>): kotlin/String? // ru.ttraum.kotsql/SqlDialect.escapeFunction|escapeFunction(kotlin.String;kotlin.collections.List<kotlin.String>){}[0]
+    open fun quoteIdentifier(kotlin/String): kotlin/String // ru.ttraum.kotsql/SqlDialect.quoteIdentifier|quoteIdentifier(kotlin.String){}[0]
+    open fun releaseSavepointSql(kotlin/String): kotlin/String // ru.ttraum.kotsql/SqlDialect.releaseSavepointSql|releaseSavepointSql(kotlin.String){}[0]
+    open fun rollbackSql(): kotlin/String // ru.ttraum.kotsql/SqlDialect.rollbackSql|rollbackSql(){}[0]
+    open fun rollbackToSavepointSql(kotlin/String): kotlin/String // ru.ttraum.kotsql/SqlDialect.rollbackToSavepointSql|rollbackToSavepointSql(kotlin.String){}[0]
+    open fun savepointSql(kotlin/String): kotlin/String // ru.ttraum.kotsql/SqlDialect.savepointSql|savepointSql(kotlin.String){}[0]
+    open fun setCatalogSql(kotlin/String): kotlin/String? // ru.ttraum.kotsql/SqlDialect.setCatalogSql|setCatalogSql(kotlin.String){}[0]
+    open fun setLockTimeoutSql(kotlin/Long): kotlin/String? // ru.ttraum.kotsql/SqlDialect.setLockTimeoutSql|setLockTimeoutSql(kotlin.Long){}[0]
+    open fun setSchemaSql(kotlin/String): kotlin/String? // ru.ttraum.kotsql/SqlDialect.setSchemaSql|setSchemaSql(kotlin.String){}[0]
+    open fun setStatementTimeoutSql(kotlin/Long): kotlin/String? // ru.ttraum.kotsql/SqlDialect.setStatementTimeoutSql|setStatementTimeoutSql(kotlin.Long){}[0]
+    open fun temporalLiteral(kotlin/String, kotlin/String): kotlin/String // ru.ttraum.kotsql/SqlDialect.temporalLiteral|temporalLiteral(kotlin.String;kotlin.String){}[0]
+    open fun withGeneratedKeys(kotlin/String, kotlin.collections/List<kotlin/String>): kotlin/String? // ru.ttraum.kotsql/SqlDialect.withGeneratedKeys|withGeneratedKeys(kotlin.String;kotlin.collections.List<kotlin.String>){}[0]
+}
+
+abstract interface ru.ttraum.kotsql/SqlRow { // ru.ttraum.kotsql/SqlRow|null[0]
+    abstract val columns // ru.ttraum.kotsql/SqlRow.columns|{}columns[0]
+        abstract fun <get-columns>(): kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo> // ru.ttraum.kotsql/SqlRow.columns.<get-columns>|<get-columns>(){}[0]
+    open val codecs // ru.ttraum.kotsql/SqlRow.codecs|{}codecs[0]
+        open fun <get-codecs>(): ru.ttraum.kotsql/CodecRegistry // ru.ttraum.kotsql/SqlRow.codecs.<get-codecs>|<get-codecs>(){}[0]
+
+    abstract fun get(kotlin/Int): kotlin/Any? // ru.ttraum.kotsql/SqlRow.get|get(kotlin.Int){}[0]
+    abstract fun getText(kotlin/Int): kotlin/String? // ru.ttraum.kotsql/SqlRow.getText|getText(kotlin.Int){}[0]
+    open fun <#A1: kotlin/Any> get(kotlin/Int, kotlin.reflect/KClass<#A1>): #A1? // ru.ttraum.kotsql/SqlRow.get|get(kotlin.Int;kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+    open fun <#A1: kotlin/Any> get(kotlin/String, kotlin.reflect/KClass<#A1>): #A1? // ru.ttraum.kotsql/SqlRow.get|get(kotlin.String;kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+    open fun booleanValue(kotlin/Int): kotlin/Boolean // ru.ttraum.kotsql/SqlRow.booleanValue|booleanValue(kotlin.Int){}[0]
+    open fun get(kotlin/String): kotlin/Any? // ru.ttraum.kotsql/SqlRow.get|get(kotlin.String){}[0]
+    open fun indexOf(kotlin/String): kotlin/Int // ru.ttraum.kotsql/SqlRow.indexOf|indexOf(kotlin.String){}[0]
+    open fun isNull(kotlin/Int): kotlin/Boolean // ru.ttraum.kotsql/SqlRow.isNull|isNull(kotlin.Int){}[0]
+    open fun longValue(kotlin/Int): kotlin/Long // ru.ttraum.kotsql/SqlRow.longValue|longValue(kotlin.Int){}[0]
+}
+
+sealed interface ru.ttraum.kotsql/SqlResult { // ru.ttraum.kotsql/SqlResult|null[0]
+    abstract interface Rows : ru.ttraum.kotsql/SqlResult { // ru.ttraum.kotsql/SqlResult.Rows|null[0]
+        abstract val columns // ru.ttraum.kotsql/SqlResult.Rows.columns|{}columns[0]
+            abstract fun <get-columns>(): kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo> // ru.ttraum.kotsql/SqlResult.Rows.columns.<get-columns>|<get-columns>(){}[0]
+        abstract val updateCount // ru.ttraum.kotsql/SqlResult.Rows.updateCount|{}updateCount[0]
+            abstract fun <get-updateCount>(): kotlin/Long? // ru.ttraum.kotsql/SqlResult.Rows.updateCount.<get-updateCount>|<get-updateCount>(){}[0]
+
+        abstract suspend fun next(): ru.ttraum.kotsql/SqlRow? // ru.ttraum.kotsql/SqlResult.Rows.next|next(){}[0]
+        open fun nextBuffered(): ru.ttraum.kotsql/SqlRow? // ru.ttraum.kotsql/SqlResult.Rows.nextBuffered|nextBuffered(){}[0]
+    }
+
+    final class UpdateCount : ru.ttraum.kotsql/SqlResult { // ru.ttraum.kotsql/SqlResult.UpdateCount|null[0]
+        constructor <init>(kotlin/Long, kotlin.collections/List<kotlin/Long> = ...) // ru.ttraum.kotsql/SqlResult.UpdateCount.<init>|<init>(kotlin.Long;kotlin.collections.List<kotlin.Long>){}[0]
+
+        final val count // ru.ttraum.kotsql/SqlResult.UpdateCount.count|{}count[0]
+            final fun <get-count>(): kotlin/Long // ru.ttraum.kotsql/SqlResult.UpdateCount.count.<get-count>|<get-count>(){}[0]
+        final val generatedKeys // ru.ttraum.kotsql/SqlResult.UpdateCount.generatedKeys|{}generatedKeys[0]
+            final fun <get-generatedKeys>(): kotlin.collections/List<kotlin/Long> // ru.ttraum.kotsql/SqlResult.UpdateCount.generatedKeys.<get-generatedKeys>|<get-generatedKeys>(){}[0]
+    }
+}
+
+abstract class <#A: kotlin/Any> ru.ttraum.kotsql/SqlCodec { // ru.ttraum.kotsql/SqlCodec|null[0]
+    constructor <init>(kotlin.reflect/KClass<#A>, kotlin.collections/Set<kotlin/String> = ...) // ru.ttraum.kotsql/SqlCodec.<init>|<init>(kotlin.reflect.KClass<1:0>;kotlin.collections.Set<kotlin.String>){}[0]
+
+    final val type // ru.ttraum.kotsql/SqlCodec.type|{}type[0]
+        final fun <get-type>(): kotlin.reflect/KClass<#A> // ru.ttraum.kotsql/SqlCodec.type.<get-type>|<get-type>(){}[0]
+    final val typeNames // ru.ttraum.kotsql/SqlCodec.typeNames|{}typeNames[0]
+        final fun <get-typeNames>(): kotlin.collections/Set<kotlin/String> // ru.ttraum.kotsql/SqlCodec.typeNames.<get-typeNames>|<get-typeNames>(){}[0]
+
+    abstract fun decode(kotlin/Any): #A // ru.ttraum.kotsql/SqlCodec.decode|decode(kotlin.Any){}[0]
+    abstract fun encode(#A): kotlin/Any // ru.ttraum.kotsql/SqlCodec.encode|encode(1:0){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/SqlCodec.Companion|null[0]
+        final inline fun <#A2: reified kotlin/Any> of(kotlin/Array<out kotlin/String>..., crossinline kotlin/Function1<#A2, kotlin/Any>, crossinline kotlin/Function1<kotlin/Any, #A2>): ru.ttraum.kotsql/SqlCodec<#A2> // ru.ttraum.kotsql/SqlCodec.Companion.of|of(kotlin.Array<out|kotlin.String>...;kotlin.Function1<0:0,kotlin.Any>;kotlin.Function1<kotlin.Any,0:0>){0§<kotlin.Any>}[0]
+        final inline fun <#A2: reified kotlin/Enum<#A2>> enum(kotlin/Array<out kotlin/String>...): ru.ttraum.kotsql/SqlCodec<#A2> // ru.ttraum.kotsql/SqlCodec.Companion.enum|enum(kotlin.Array<out|kotlin.String>...){0§<kotlin.Enum<0:0>>}[0]
+    }
+}
+
+final class ru.ttraum.kotsql.pool/ConnectionPool { // ru.ttraum.kotsql.pool/ConnectionPool|null[0]
+    constructor <init>(kotlin.coroutines/SuspendFunction0<ru.ttraum.kotsql/SqlConnection>, ru.ttraum.kotsql.pool/PoolConfig = ...) // ru.ttraum.kotsql.pool/ConnectionPool.<init>|<init>(kotlin.coroutines.SuspendFunction0<ru.ttraum.kotsql.SqlConnection>;ru.ttraum.kotsql.pool.PoolConfig){}[0]
+
+    final val config // ru.ttraum.kotsql.pool/ConnectionPool.config|{}config[0]
+        final fun <get-config>(): ru.ttraum.kotsql.pool/PoolConfig // ru.ttraum.kotsql.pool/ConnectionPool.config.<get-config>|<get-config>(){}[0]
+
+    final fun query(kotlin/String, kotlin.collections/List<kotlin/Any?> = ..., kotlin/Int = ...): kotlinx.coroutines.flow/Flow<ru.ttraum.kotsql/SqlRow> // ru.ttraum.kotsql.pool/ConnectionPool.query|query(kotlin.String;kotlin.collections.List<kotlin.Any?>;kotlin.Int){}[0]
+    final suspend fun <#A1: kotlin/Any?> transaction(ru.ttraum.kotsql/IsolationLevel? = ..., kotlin.coroutines/SuspendFunction1<ru.ttraum.kotsql/SqlConnection, #A1>): #A1 // ru.ttraum.kotsql.pool/ConnectionPool.transaction|transaction(ru.ttraum.kotsql.IsolationLevel?;kotlin.coroutines.SuspendFunction1<ru.ttraum.kotsql.SqlConnection,0:0>){0§<kotlin.Any?>}[0]
+    final suspend fun <#A1: kotlin/Any?> withConnection(kotlin.coroutines/SuspendFunction1<ru.ttraum.kotsql/SqlConnection, #A1>): #A1 // ru.ttraum.kotsql.pool/ConnectionPool.withConnection|withConnection(kotlin.coroutines.SuspendFunction1<ru.ttraum.kotsql.SqlConnection,0:0>){0§<kotlin.Any?>}[0]
+    final suspend fun acquire(): ru.ttraum.kotsql.pool/PooledConnection // ru.ttraum.kotsql.pool/ConnectionPool.acquire|acquire(){}[0]
+    final suspend fun close() // ru.ttraum.kotsql.pool/ConnectionPool.close|close(){}[0]
+    final suspend fun stats(): ru.ttraum.kotsql.pool/PoolStats // ru.ttraum.kotsql.pool/ConnectionPool.stats|stats(){}[0]
+    final suspend fun update(kotlin/String, kotlin.collections/List<kotlin/Any?> = ...): kotlin/Long // ru.ttraum.kotsql.pool/ConnectionPool.update|update(kotlin.String;kotlin.collections.List<kotlin.Any?>){}[0]
+}
+
+final class ru.ttraum.kotsql.pool/PoolConfig { // ru.ttraum.kotsql.pool/PoolConfig|null[0]
+    constructor <init>(kotlin/Int = ..., kotlin/Int = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.coroutines/SuspendFunction1<ru.ttraum.kotsql/SqlConnection, kotlin/Unit>? = ...) // ru.ttraum.kotsql.pool/PoolConfig.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.time.Duration;kotlin.time.Duration;kotlin.time.Duration;kotlin.time.Duration;kotlin.time.Duration;kotlin.time.Duration;kotlin.coroutines.SuspendFunction1<ru.ttraum.kotsql.SqlConnection,kotlin.Unit>?){}[0]
+
+    final val acquireTimeout // ru.ttraum.kotsql.pool/PoolConfig.acquireTimeout|{}acquireTimeout[0]
+        final fun <get-acquireTimeout>(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.acquireTimeout.<get-acquireTimeout>|<get-acquireTimeout>(){}[0]
+    final val maintenanceInterval // ru.ttraum.kotsql.pool/PoolConfig.maintenanceInterval|{}maintenanceInterval[0]
+        final fun <get-maintenanceInterval>(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.maintenanceInterval.<get-maintenanceInterval>|<get-maintenanceInterval>(){}[0]
+    final val maxIdleTime // ru.ttraum.kotsql.pool/PoolConfig.maxIdleTime|{}maxIdleTime[0]
+        final fun <get-maxIdleTime>(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.maxIdleTime.<get-maxIdleTime>|<get-maxIdleTime>(){}[0]
+    final val maxLifetime // ru.ttraum.kotsql.pool/PoolConfig.maxLifetime|{}maxLifetime[0]
+        final fun <get-maxLifetime>(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.maxLifetime.<get-maxLifetime>|<get-maxLifetime>(){}[0]
+    final val maxSize // ru.ttraum.kotsql.pool/PoolConfig.maxSize|{}maxSize[0]
+        final fun <get-maxSize>(): kotlin/Int // ru.ttraum.kotsql.pool/PoolConfig.maxSize.<get-maxSize>|<get-maxSize>(){}[0]
+    final val minSize // ru.ttraum.kotsql.pool/PoolConfig.minSize|{}minSize[0]
+        final fun <get-minSize>(): kotlin/Int // ru.ttraum.kotsql.pool/PoolConfig.minSize.<get-minSize>|<get-minSize>(){}[0]
+    final val onConnect // ru.ttraum.kotsql.pool/PoolConfig.onConnect|{}onConnect[0]
+        final fun <get-onConnect>(): kotlin.coroutines/SuspendFunction1<ru.ttraum.kotsql/SqlConnection, kotlin/Unit>? // ru.ttraum.kotsql.pool/PoolConfig.onConnect.<get-onConnect>|<get-onConnect>(){}[0]
+    final val resetTimeout // ru.ttraum.kotsql.pool/PoolConfig.resetTimeout|{}resetTimeout[0]
+        final fun <get-resetTimeout>(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.resetTimeout.<get-resetTimeout>|<get-resetTimeout>(){}[0]
+    final val validateAfterIdle // ru.ttraum.kotsql.pool/PoolConfig.validateAfterIdle|{}validateAfterIdle[0]
+        final fun <get-validateAfterIdle>(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.validateAfterIdle.<get-validateAfterIdle>|<get-validateAfterIdle>(){}[0]
+
+    final fun component1(): kotlin/Int // ru.ttraum.kotsql.pool/PoolConfig.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // ru.ttraum.kotsql.pool/PoolConfig.component2|component2(){}[0]
+    final fun component3(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.component3|component3(){}[0]
+    final fun component4(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.component4|component4(){}[0]
+    final fun component5(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.component5|component5(){}[0]
+    final fun component6(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.component6|component6(){}[0]
+    final fun component7(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.component7|component7(){}[0]
+    final fun component8(): kotlin.time/Duration // ru.ttraum.kotsql.pool/PoolConfig.component8|component8(){}[0]
+    final fun component9(): kotlin.coroutines/SuspendFunction1<ru.ttraum.kotsql/SqlConnection, kotlin/Unit>? // ru.ttraum.kotsql.pool/PoolConfig.component9|component9(){}[0]
+    final fun copy(kotlin/Int = ..., kotlin/Int = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., kotlin.coroutines/SuspendFunction1<ru.ttraum.kotsql/SqlConnection, kotlin/Unit>? = ...): ru.ttraum.kotsql.pool/PoolConfig // ru.ttraum.kotsql.pool/PoolConfig.copy|copy(kotlin.Int;kotlin.Int;kotlin.time.Duration;kotlin.time.Duration;kotlin.time.Duration;kotlin.time.Duration;kotlin.time.Duration;kotlin.time.Duration;kotlin.coroutines.SuspendFunction1<ru.ttraum.kotsql.SqlConnection,kotlin.Unit>?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql.pool/PoolConfig.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql.pool/PoolConfig.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql.pool/PoolConfig.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql.pool/PoolStats { // ru.ttraum.kotsql.pool/PoolStats|null[0]
+    constructor <init>(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int) // ru.ttraum.kotsql.pool/PoolStats.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+
+    final val created // ru.ttraum.kotsql.pool/PoolStats.created|{}created[0]
+        final fun <get-created>(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.created.<get-created>|<get-created>(){}[0]
+    final val discarded // ru.ttraum.kotsql.pool/PoolStats.discarded|{}discarded[0]
+        final fun <get-discarded>(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.discarded.<get-discarded>|<get-discarded>(){}[0]
+    final val idle // ru.ttraum.kotsql.pool/PoolStats.idle|{}idle[0]
+        final fun <get-idle>(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.idle.<get-idle>|<get-idle>(){}[0]
+    final val inUse // ru.ttraum.kotsql.pool/PoolStats.inUse|{}inUse[0]
+        final fun <get-inUse>(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.inUse.<get-inUse>|<get-inUse>(){}[0]
+    final val waiting // ru.ttraum.kotsql.pool/PoolStats.waiting|{}waiting[0]
+        final fun <get-waiting>(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.waiting.<get-waiting>|<get-waiting>(){}[0]
+
+    final fun component1(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.component2|component2(){}[0]
+    final fun component3(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.component3|component3(){}[0]
+    final fun component4(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.component4|component4(){}[0]
+    final fun component5(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.component5|component5(){}[0]
+    final fun copy(kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ...): ru.ttraum.kotsql.pool/PoolStats // ru.ttraum.kotsql.pool/PoolStats.copy|copy(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql.pool/PoolStats.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql.pool/PoolStats.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql.pool/PoolStats.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql.pool/PooledConnection : ru.ttraum.kotsql/SqlConnection { // ru.ttraum.kotsql.pool/PooledConnection|null[0]
+    final val codecs // ru.ttraum.kotsql.pool/PooledConnection.codecs|{}codecs[0]
+        final fun <get-codecs>(): ru.ttraum.kotsql/CodecRegistry // ru.ttraum.kotsql.pool/PooledConnection.codecs.<get-codecs>|<get-codecs>(){}[0]
+    final val dialect // ru.ttraum.kotsql.pool/PooledConnection.dialect|{}dialect[0]
+        final fun <get-dialect>(): ru.ttraum.kotsql/SqlDialect // ru.ttraum.kotsql.pool/PooledConnection.dialect.<get-dialect>|<get-dialect>(){}[0]
+    final val isClosed // ru.ttraum.kotsql.pool/PooledConnection.isClosed|{}isClosed[0]
+        final fun <get-isClosed>(): kotlin/Boolean // ru.ttraum.kotsql.pool/PooledConnection.isClosed.<get-isClosed>|<get-isClosed>(){}[0]
+    final val serverInfo // ru.ttraum.kotsql.pool/PooledConnection.serverInfo|{}serverInfo[0]
+        final fun <get-serverInfo>(): ru.ttraum.kotsql/ServerInfo // ru.ttraum.kotsql.pool/PooledConnection.serverInfo.<get-serverInfo>|<get-serverInfo>(){}[0]
+    final val transactionState // ru.ttraum.kotsql.pool/PooledConnection.transactionState|{}transactionState[0]
+        final fun <get-transactionState>(): ru.ttraum.kotsql/TransactionState // ru.ttraum.kotsql.pool/PooledConnection.transactionState.<get-transactionState>|<get-transactionState>(){}[0]
+
+    final fun <#A1: kotlin/Any> unwrap(kotlin.reflect/KClass<#A1>): #A1? // ru.ttraum.kotsql.pool/PooledConnection.unwrap|unwrap(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+    final fun drainWarnings(): kotlin.collections/List<kotlin/String> // ru.ttraum.kotsql.pool/PooledConnection.drainWarnings|drainWarnings(){}[0]
+    final fun setReadTimeout(kotlin/Long) // ru.ttraum.kotsql.pool/PooledConnection.setReadTimeout|setReadTimeout(kotlin.Long){}[0]
+    final suspend fun cancel() // ru.ttraum.kotsql.pool/PooledConnection.cancel|cancel(){}[0]
+    final suspend fun close() // ru.ttraum.kotsql.pool/PooledConnection.close|close(){}[0]
+    final suspend fun describe(kotlin/String): ru.ttraum.kotsql/StatementDescription // ru.ttraum.kotsql.pool/PooledConnection.describe|describe(kotlin.String){}[0]
+    final suspend fun execute(kotlin/String, kotlin.collections/List<kotlin/Any?>, ru.ttraum.kotsql/ExecuteOptions): ru.ttraum.kotsql/SqlCursor // ru.ttraum.kotsql.pool/PooledConnection.execute|execute(kotlin.String;kotlin.collections.List<kotlin.Any?>;ru.ttraum.kotsql.ExecuteOptions){}[0]
+    final suspend fun executeBatch(kotlin.collections/List<ru.ttraum.kotsql/BatchItem>): kotlin/LongArray // ru.ttraum.kotsql.pool/PooledConnection.executeBatch|executeBatch(kotlin.collections.List<ru.ttraum.kotsql.BatchItem>){}[0]
+    final suspend fun executeScript(kotlin/String): ru.ttraum.kotsql/SqlCursor // ru.ttraum.kotsql.pool/PooledConnection.executeScript|executeScript(kotlin.String){}[0]
+    final suspend fun ping(): kotlin/Boolean // ru.ttraum.kotsql.pool/PooledConnection.ping|ping(){}[0]
+}
+
+final class ru.ttraum.kotsql.spi/ListRows : ru.ttraum.kotsql/SqlResult.Rows { // ru.ttraum.kotsql.spi/ListRows|null[0]
+    constructor <init>(kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo>, kotlin.collections/List<ru.ttraum.kotsql/SqlRow>) // ru.ttraum.kotsql.spi/ListRows.<init>|<init>(kotlin.collections.List<ru.ttraum.kotsql.ColumnInfo>;kotlin.collections.List<ru.ttraum.kotsql.SqlRow>){}[0]
+
+    final val columns // ru.ttraum.kotsql.spi/ListRows.columns|{}columns[0]
+        final fun <get-columns>(): kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo> // ru.ttraum.kotsql.spi/ListRows.columns.<get-columns>|<get-columns>(){}[0]
+    final val updateCount // ru.ttraum.kotsql.spi/ListRows.updateCount|{}updateCount[0]
+        final fun <get-updateCount>(): kotlin/Long? // ru.ttraum.kotsql.spi/ListRows.updateCount.<get-updateCount>|<get-updateCount>(){}[0]
+
+    final fun nextBuffered(): ru.ttraum.kotsql/SqlRow? // ru.ttraum.kotsql.spi/ListRows.nextBuffered|nextBuffered(){}[0]
+    final suspend fun next(): ru.ttraum.kotsql/SqlRow? // ru.ttraum.kotsql.spi/ListRows.next|next(){}[0]
+}
+
+final class ru.ttraum.kotsql.spi/ValuesRow : ru.ttraum.kotsql/SqlRow { // ru.ttraum.kotsql.spi/ValuesRow|null[0]
+    constructor <init>(kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo>, kotlin.collections/List<kotlin/Any?>) // ru.ttraum.kotsql.spi/ValuesRow.<init>|<init>(kotlin.collections.List<ru.ttraum.kotsql.ColumnInfo>;kotlin.collections.List<kotlin.Any?>){}[0]
+
+    final val columns // ru.ttraum.kotsql.spi/ValuesRow.columns|{}columns[0]
+        final fun <get-columns>(): kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo> // ru.ttraum.kotsql.spi/ValuesRow.columns.<get-columns>|<get-columns>(){}[0]
+
+    final fun get(kotlin/Int): kotlin/Any? // ru.ttraum.kotsql.spi/ValuesRow.get|get(kotlin.Int){}[0]
+    final fun getText(kotlin/Int): kotlin/String? // ru.ttraum.kotsql.spi/ValuesRow.getText|getText(kotlin.Int){}[0]
+}
+
+final class ru.ttraum.kotsql/BatchItem { // ru.ttraum.kotsql/BatchItem|null[0]
+    constructor <init>(kotlin/String, kotlin.collections/List<kotlin/Any?> = ...) // ru.ttraum.kotsql/BatchItem.<init>|<init>(kotlin.String;kotlin.collections.List<kotlin.Any?>){}[0]
+
+    final val params // ru.ttraum.kotsql/BatchItem.params|{}params[0]
+        final fun <get-params>(): kotlin.collections/List<kotlin/Any?> // ru.ttraum.kotsql/BatchItem.params.<get-params>|<get-params>(){}[0]
+    final val sql // ru.ttraum.kotsql/BatchItem.sql|{}sql[0]
+        final fun <get-sql>(): kotlin/String // ru.ttraum.kotsql/BatchItem.sql.<get-sql>|<get-sql>(){}[0]
+
+    final fun component1(): kotlin/String // ru.ttraum.kotsql/BatchItem.component1|component1(){}[0]
+    final fun component2(): kotlin.collections/List<kotlin/Any?> // ru.ttraum.kotsql/BatchItem.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin.collections/List<kotlin/Any?> = ...): ru.ttraum.kotsql/BatchItem // ru.ttraum.kotsql/BatchItem.copy|copy(kotlin.String;kotlin.collections.List<kotlin.Any?>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/BatchItem.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/BatchItem.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/BatchItem.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/CallSyntax { // ru.ttraum.kotsql/CallSyntax|null[0]
+    constructor <init>(kotlin/Boolean = ..., kotlin/String? = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // ru.ttraum.kotsql/CallSyntax.<init>|<init>(kotlin.Boolean;kotlin.String?;kotlin.Boolean;kotlin.Boolean){}[0]
+
+    final val outVariables // ru.ttraum.kotsql/CallSyntax.outVariables|{}outVariables[0]
+        final fun <get-outVariables>(): kotlin/Boolean // ru.ttraum.kotsql/CallSyntax.outVariables.<get-outVariables>|<get-outVariables>(){}[0]
+    final val procedureLookupSql // ru.ttraum.kotsql/CallSyntax.procedureLookupSql|{}procedureLookupSql[0]
+        final fun <get-procedureLookupSql>(): kotlin/String? // ru.ttraum.kotsql/CallSyntax.procedureLookupSql.<get-procedureLookupSql>|<get-procedureLookupSql>(){}[0]
+    final val procedures // ru.ttraum.kotsql/CallSyntax.procedures|{}procedures[0]
+        final fun <get-procedures>(): kotlin/Boolean // ru.ttraum.kotsql/CallSyntax.procedures.<get-procedures>|<get-procedures>(){}[0]
+    final val tableFunctions // ru.ttraum.kotsql/CallSyntax.tableFunctions|{}tableFunctions[0]
+        final fun <get-tableFunctions>(): kotlin/Boolean // ru.ttraum.kotsql/CallSyntax.tableFunctions.<get-tableFunctions>|<get-tableFunctions>(){}[0]
+
+    final fun functionSql(kotlin/String, kotlin.collections/List<kotlin/String>): kotlin/String // ru.ttraum.kotsql/CallSyntax.functionSql|functionSql(kotlin.String;kotlin.collections.List<kotlin.String>){}[0]
+}
+
+final class ru.ttraum.kotsql/CodecRegistry { // ru.ttraum.kotsql/CodecRegistry|null[0]
+    constructor <init>(kotlin/Array<out ru.ttraum.kotsql/SqlCodec<*>>...) // ru.ttraum.kotsql/CodecRegistry.<init>|<init>(kotlin.Array<out|ru.ttraum.kotsql.SqlCodec<*>>...){}[0]
+
+    final val isEmpty // ru.ttraum.kotsql/CodecRegistry.isEmpty|{}isEmpty[0]
+        final fun <get-isEmpty>(): kotlin/Boolean // ru.ttraum.kotsql/CodecRegistry.isEmpty.<get-isEmpty>|<get-isEmpty>(){}[0]
+
+    final fun <#A1: kotlin/Any> forClass(kotlin.reflect/KClass<#A1>): ru.ttraum.kotsql/SqlCodec<#A1>? // ru.ttraum.kotsql/CodecRegistry.forClass|forClass(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+    final fun encode(kotlin/Any?): kotlin/Any? // ru.ttraum.kotsql/CodecRegistry.encode|encode(kotlin.Any?){}[0]
+    final fun forTypeName(kotlin/String): ru.ttraum.kotsql/SqlCodec<*>? // ru.ttraum.kotsql/CodecRegistry.forTypeName|forTypeName(kotlin.String){}[0]
+    final fun register(ru.ttraum.kotsql/SqlCodec<*>): ru.ttraum.kotsql/CodecRegistry // ru.ttraum.kotsql/CodecRegistry.register|register(ru.ttraum.kotsql.SqlCodec<*>){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/CodecRegistry.Companion|null[0]
+        final val Global // ru.ttraum.kotsql/CodecRegistry.Companion.Global|{}Global[0]
+            final fun <get-Global>(): ru.ttraum.kotsql/CodecRegistry // ru.ttraum.kotsql/CodecRegistry.Companion.Global.<get-Global>|<get-Global>(){}[0]
+    }
+}
+
+final class ru.ttraum.kotsql/ConnectionConfig { // ru.ttraum.kotsql/ConnectionConfig|null[0]
+    constructor <init>(kotlin/String, kotlin/String = ..., kotlin/Int? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., ru.ttraum.kotsql/TlsMode = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/Long = ..., kotlin/Long = ..., kotlin/String? = ..., kotlin.collections/Map<kotlin/String, kotlin/String> = ..., ru.ttraum.kotsql/CodecRegistry = ..., kotlin.collections/List<ru.ttraum.kotsql/ServerAddress> = ..., ru.ttraum.kotsql/TargetServerType = ..., kotlin/Boolean = ...) // ru.ttraum.kotsql/ConnectionConfig.<init>|<init>(kotlin.String;kotlin.String;kotlin.Int?;kotlin.String?;kotlin.String?;kotlin.String?;ru.ttraum.kotsql.TlsMode;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.Long;kotlin.Long;kotlin.String?;kotlin.collections.Map<kotlin.String,kotlin.String>;ru.ttraum.kotsql.CodecRegistry;kotlin.collections.List<ru.ttraum.kotsql.ServerAddress>;ru.ttraum.kotsql.TargetServerType;kotlin.Boolean){}[0]
+
+    final val alternateServers // ru.ttraum.kotsql/ConnectionConfig.alternateServers|{}alternateServers[0]
+        final fun <get-alternateServers>(): kotlin.collections/List<ru.ttraum.kotsql/ServerAddress> // ru.ttraum.kotsql/ConnectionConfig.alternateServers.<get-alternateServers>|<get-alternateServers>(){}[0]
+    final val applicationName // ru.ttraum.kotsql/ConnectionConfig.applicationName|{}applicationName[0]
+        final fun <get-applicationName>(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.applicationName.<get-applicationName>|<get-applicationName>(){}[0]
+    final val codecs // ru.ttraum.kotsql/ConnectionConfig.codecs|{}codecs[0]
+        final fun <get-codecs>(): ru.ttraum.kotsql/CodecRegistry // ru.ttraum.kotsql/ConnectionConfig.codecs.<get-codecs>|<get-codecs>(){}[0]
+    final val connectTimeoutMillis // ru.ttraum.kotsql/ConnectionConfig.connectTimeoutMillis|{}connectTimeoutMillis[0]
+        final fun <get-connectTimeoutMillis>(): kotlin/Long // ru.ttraum.kotsql/ConnectionConfig.connectTimeoutMillis.<get-connectTimeoutMillis>|<get-connectTimeoutMillis>(){}[0]
+    final val database // ru.ttraum.kotsql/ConnectionConfig.database|{}database[0]
+        final fun <get-database>(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.database.<get-database>|<get-database>(){}[0]
+    final val host // ru.ttraum.kotsql/ConnectionConfig.host|{}host[0]
+        final fun <get-host>(): kotlin/String // ru.ttraum.kotsql/ConnectionConfig.host.<get-host>|<get-host>(){}[0]
+    final val loadBalanceHosts // ru.ttraum.kotsql/ConnectionConfig.loadBalanceHosts|{}loadBalanceHosts[0]
+        final fun <get-loadBalanceHosts>(): kotlin/Boolean // ru.ttraum.kotsql/ConnectionConfig.loadBalanceHosts.<get-loadBalanceHosts>|<get-loadBalanceHosts>(){}[0]
+    final val password // ru.ttraum.kotsql/ConnectionConfig.password|{}password[0]
+        final fun <get-password>(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.password.<get-password>|<get-password>(){}[0]
+    final val port // ru.ttraum.kotsql/ConnectionConfig.port|{}port[0]
+        final fun <get-port>(): kotlin/Int? // ru.ttraum.kotsql/ConnectionConfig.port.<get-port>|<get-port>(){}[0]
+    final val properties // ru.ttraum.kotsql/ConnectionConfig.properties|{}properties[0]
+        final fun <get-properties>(): kotlin.collections/Map<kotlin/String, kotlin/String> // ru.ttraum.kotsql/ConnectionConfig.properties.<get-properties>|<get-properties>(){}[0]
+    final val scheme // ru.ttraum.kotsql/ConnectionConfig.scheme|{}scheme[0]
+        final fun <get-scheme>(): kotlin/String // ru.ttraum.kotsql/ConnectionConfig.scheme.<get-scheme>|<get-scheme>(){}[0]
+    final val servers // ru.ttraum.kotsql/ConnectionConfig.servers|{}servers[0]
+        final fun <get-servers>(): kotlin.collections/List<ru.ttraum.kotsql/ServerAddress> // ru.ttraum.kotsql/ConnectionConfig.servers.<get-servers>|<get-servers>(){}[0]
+    final val socketTimeoutMillis // ru.ttraum.kotsql/ConnectionConfig.socketTimeoutMillis|{}socketTimeoutMillis[0]
+        final fun <get-socketTimeoutMillis>(): kotlin/Long // ru.ttraum.kotsql/ConnectionConfig.socketTimeoutMillis.<get-socketTimeoutMillis>|<get-socketTimeoutMillis>(){}[0]
+    final val targetServerType // ru.ttraum.kotsql/ConnectionConfig.targetServerType|{}targetServerType[0]
+        final fun <get-targetServerType>(): ru.ttraum.kotsql/TargetServerType // ru.ttraum.kotsql/ConnectionConfig.targetServerType.<get-targetServerType>|<get-targetServerType>(){}[0]
+    final val tlsCertPath // ru.ttraum.kotsql/ConnectionConfig.tlsCertPath|{}tlsCertPath[0]
+        final fun <get-tlsCertPath>(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.tlsCertPath.<get-tlsCertPath>|<get-tlsCertPath>(){}[0]
+    final val tlsKeyPath // ru.ttraum.kotsql/ConnectionConfig.tlsKeyPath|{}tlsKeyPath[0]
+        final fun <get-tlsKeyPath>(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.tlsKeyPath.<get-tlsKeyPath>|<get-tlsKeyPath>(){}[0]
+    final val tlsMode // ru.ttraum.kotsql/ConnectionConfig.tlsMode|{}tlsMode[0]
+        final fun <get-tlsMode>(): ru.ttraum.kotsql/TlsMode // ru.ttraum.kotsql/ConnectionConfig.tlsMode.<get-tlsMode>|<get-tlsMode>(){}[0]
+    final val tlsRootCertPath // ru.ttraum.kotsql/ConnectionConfig.tlsRootCertPath|{}tlsRootCertPath[0]
+        final fun <get-tlsRootCertPath>(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.tlsRootCertPath.<get-tlsRootCertPath>|<get-tlsRootCertPath>(){}[0]
+    final val user // ru.ttraum.kotsql/ConnectionConfig.user|{}user[0]
+        final fun <get-user>(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.user.<get-user>|<get-user>(){}[0]
+
+    final fun component1(): kotlin/String // ru.ttraum.kotsql/ConnectionConfig.component1|component1(){}[0]
+    final fun component10(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.component10|component10(){}[0]
+    final fun component11(): kotlin/Long // ru.ttraum.kotsql/ConnectionConfig.component11|component11(){}[0]
+    final fun component12(): kotlin/Long // ru.ttraum.kotsql/ConnectionConfig.component12|component12(){}[0]
+    final fun component13(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.component13|component13(){}[0]
+    final fun component14(): kotlin.collections/Map<kotlin/String, kotlin/String> // ru.ttraum.kotsql/ConnectionConfig.component14|component14(){}[0]
+    final fun component15(): ru.ttraum.kotsql/CodecRegistry // ru.ttraum.kotsql/ConnectionConfig.component15|component15(){}[0]
+    final fun component16(): kotlin.collections/List<ru.ttraum.kotsql/ServerAddress> // ru.ttraum.kotsql/ConnectionConfig.component16|component16(){}[0]
+    final fun component17(): ru.ttraum.kotsql/TargetServerType // ru.ttraum.kotsql/ConnectionConfig.component17|component17(){}[0]
+    final fun component18(): kotlin/Boolean // ru.ttraum.kotsql/ConnectionConfig.component18|component18(){}[0]
+    final fun component2(): kotlin/String // ru.ttraum.kotsql/ConnectionConfig.component2|component2(){}[0]
+    final fun component3(): kotlin/Int? // ru.ttraum.kotsql/ConnectionConfig.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.component4|component4(){}[0]
+    final fun component5(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.component5|component5(){}[0]
+    final fun component6(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.component6|component6(){}[0]
+    final fun component7(): ru.ttraum.kotsql/TlsMode // ru.ttraum.kotsql/ConnectionConfig.component7|component7(){}[0]
+    final fun component8(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.component8|component8(){}[0]
+    final fun component9(): kotlin/String? // ru.ttraum.kotsql/ConnectionConfig.component9|component9(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/Int? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., ru.ttraum.kotsql/TlsMode = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/Long = ..., kotlin/Long = ..., kotlin/String? = ..., kotlin.collections/Map<kotlin/String, kotlin/String> = ..., ru.ttraum.kotsql/CodecRegistry = ..., kotlin.collections/List<ru.ttraum.kotsql/ServerAddress> = ..., ru.ttraum.kotsql/TargetServerType = ..., kotlin/Boolean = ...): ru.ttraum.kotsql/ConnectionConfig // ru.ttraum.kotsql/ConnectionConfig.copy|copy(kotlin.String;kotlin.String;kotlin.Int?;kotlin.String?;kotlin.String?;kotlin.String?;ru.ttraum.kotsql.TlsMode;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.Long;kotlin.Long;kotlin.String?;kotlin.collections.Map<kotlin.String,kotlin.String>;ru.ttraum.kotsql.CodecRegistry;kotlin.collections.List<ru.ttraum.kotsql.ServerAddress>;ru.ttraum.kotsql.TargetServerType;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/ConnectionConfig.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/ConnectionConfig.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/ConnectionConfig.toString|toString(){}[0]
+    final fun withProperties(kotlin.collections/Map<kotlin/String, kotlin/String>): ru.ttraum.kotsql/ConnectionConfig // ru.ttraum.kotsql/ConnectionConfig.withProperties|withProperties(kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/ConnectionConfig.Companion|null[0]
+        final fun parse(kotlin/String): ru.ttraum.kotsql/ConnectionConfig // ru.ttraum.kotsql/ConnectionConfig.Companion.parse|parse(kotlin.String){}[0]
+        final fun parseServers(kotlin/String): kotlin.collections/List<ru.ttraum.kotsql/ServerAddress> // ru.ttraum.kotsql/ConnectionConfig.Companion.parseServers|parseServers(kotlin.String){}[0]
+    }
+}
+
+final class ru.ttraum.kotsql/ExecuteOptions { // ru.ttraum.kotsql/ExecuteOptions|null[0]
+    constructor <init>(kotlin/Int = ...) // ru.ttraum.kotsql/ExecuteOptions.<init>|<init>(kotlin.Int){}[0]
+
+    final val fetchSize // ru.ttraum.kotsql/ExecuteOptions.fetchSize|{}fetchSize[0]
+        final fun <get-fetchSize>(): kotlin/Int // ru.ttraum.kotsql/ExecuteOptions.fetchSize.<get-fetchSize>|<get-fetchSize>(){}[0]
+
+    final fun component1(): kotlin/Int // ru.ttraum.kotsql/ExecuteOptions.component1|component1(){}[0]
+    final fun copy(kotlin/Int = ...): ru.ttraum.kotsql/ExecuteOptions // ru.ttraum.kotsql/ExecuteOptions.copy|copy(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/ExecuteOptions.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/ExecuteOptions.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/ExecuteOptions.toString|toString(){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/ExecuteOptions.Companion|null[0]
+        final val DEFAULT // ru.ttraum.kotsql/ExecuteOptions.Companion.DEFAULT|{}DEFAULT[0]
+            final fun <get-DEFAULT>(): ru.ttraum.kotsql/ExecuteOptions // ru.ttraum.kotsql/ExecuteOptions.Companion.DEFAULT.<get-DEFAULT>|<get-DEFAULT>(){}[0]
+    }
+}
+
+final class ru.ttraum.kotsql/MetadataQuery { // ru.ttraum.kotsql/MetadataQuery|null[0]
+    constructor <init>(kotlin/String, kotlin.collections/List<kotlin/Any?> = ...) // ru.ttraum.kotsql/MetadataQuery.<init>|<init>(kotlin.String;kotlin.collections.List<kotlin.Any?>){}[0]
+
+    final val params // ru.ttraum.kotsql/MetadataQuery.params|{}params[0]
+        final fun <get-params>(): kotlin.collections/List<kotlin/Any?> // ru.ttraum.kotsql/MetadataQuery.params.<get-params>|<get-params>(){}[0]
+    final val sql // ru.ttraum.kotsql/MetadataQuery.sql|{}sql[0]
+        final fun <get-sql>(): kotlin/String // ru.ttraum.kotsql/MetadataQuery.sql.<get-sql>|<get-sql>(){}[0]
+
+    final fun component1(): kotlin/String // ru.ttraum.kotsql/MetadataQuery.component1|component1(){}[0]
+    final fun component2(): kotlin.collections/List<kotlin/Any?> // ru.ttraum.kotsql/MetadataQuery.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin.collections/List<kotlin/Any?> = ...): ru.ttraum.kotsql/MetadataQuery // ru.ttraum.kotsql/MetadataQuery.copy|copy(kotlin.String;kotlin.collections.List<kotlin.Any?>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/MetadataQuery.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/MetadataQuery.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/MetadataQuery.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/ServerAddress { // ru.ttraum.kotsql/ServerAddress|null[0]
+    constructor <init>(kotlin/String, kotlin/Int? = ...) // ru.ttraum.kotsql/ServerAddress.<init>|<init>(kotlin.String;kotlin.Int?){}[0]
+
+    final val host // ru.ttraum.kotsql/ServerAddress.host|{}host[0]
+        final fun <get-host>(): kotlin/String // ru.ttraum.kotsql/ServerAddress.host.<get-host>|<get-host>(){}[0]
+    final val port // ru.ttraum.kotsql/ServerAddress.port|{}port[0]
+        final fun <get-port>(): kotlin/Int? // ru.ttraum.kotsql/ServerAddress.port.<get-port>|<get-port>(){}[0]
+
+    final fun component1(): kotlin/String // ru.ttraum.kotsql/ServerAddress.component1|component1(){}[0]
+    final fun component2(): kotlin/Int? // ru.ttraum.kotsql/ServerAddress.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/Int? = ...): ru.ttraum.kotsql/ServerAddress // ru.ttraum.kotsql/ServerAddress.copy|copy(kotlin.String;kotlin.Int?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/ServerAddress.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/ServerAddress.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/ServerAddress.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/ServerInfo { // ru.ttraum.kotsql/ServerInfo|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/Int, kotlin/Int) // ru.ttraum.kotsql/ServerInfo.<init>|<init>(kotlin.String;kotlin.String;kotlin.Int;kotlin.Int){}[0]
+
+    final val majorVersion // ru.ttraum.kotsql/ServerInfo.majorVersion|{}majorVersion[0]
+        final fun <get-majorVersion>(): kotlin/Int // ru.ttraum.kotsql/ServerInfo.majorVersion.<get-majorVersion>|<get-majorVersion>(){}[0]
+    final val minorVersion // ru.ttraum.kotsql/ServerInfo.minorVersion|{}minorVersion[0]
+        final fun <get-minorVersion>(): kotlin/Int // ru.ttraum.kotsql/ServerInfo.minorVersion.<get-minorVersion>|<get-minorVersion>(){}[0]
+    final val productName // ru.ttraum.kotsql/ServerInfo.productName|{}productName[0]
+        final fun <get-productName>(): kotlin/String // ru.ttraum.kotsql/ServerInfo.productName.<get-productName>|<get-productName>(){}[0]
+    final val version // ru.ttraum.kotsql/ServerInfo.version|{}version[0]
+        final fun <get-version>(): kotlin/String // ru.ttraum.kotsql/ServerInfo.version.<get-version>|<get-version>(){}[0]
+
+    final fun component1(): kotlin/String // ru.ttraum.kotsql/ServerInfo.component1|component1(){}[0]
+    final fun component2(): kotlin/String // ru.ttraum.kotsql/ServerInfo.component2|component2(){}[0]
+    final fun component3(): kotlin/Int // ru.ttraum.kotsql/ServerInfo.component3|component3(){}[0]
+    final fun component4(): kotlin/Int // ru.ttraum.kotsql/ServerInfo.component4|component4(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/Int = ..., kotlin/Int = ...): ru.ttraum.kotsql/ServerInfo // ru.ttraum.kotsql/ServerInfo.copy|copy(kotlin.String;kotlin.String;kotlin.Int;kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/ServerInfo.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/ServerInfo.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/ServerInfo.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/SqlBatchException : ru.ttraum.kotsql/SqlException { // ru.ttraum.kotsql/SqlBatchException|null[0]
+    constructor <init>(kotlin/LongArray, ru.ttraum.kotsql/SqlException) // ru.ttraum.kotsql/SqlBatchException.<init>|<init>(kotlin.LongArray;ru.ttraum.kotsql.SqlException){}[0]
+
+    final val updateCounts // ru.ttraum.kotsql/SqlBatchException.updateCounts|{}updateCounts[0]
+        final fun <get-updateCounts>(): kotlin/LongArray // ru.ttraum.kotsql/SqlBatchException.updateCounts.<get-updateCounts>|<get-updateCounts>(){}[0]
+}
+
+final class ru.ttraum.kotsql/SqlDecimal { // ru.ttraum.kotsql/SqlDecimal|null[0]
+    constructor <init>(kotlin/String) // ru.ttraum.kotsql/SqlDecimal.<init>|<init>(kotlin.String){}[0]
+
+    final val text // ru.ttraum.kotsql/SqlDecimal.text|{}text[0]
+        final fun <get-text>(): kotlin/String // ru.ttraum.kotsql/SqlDecimal.text.<get-text>|<get-text>(){}[0]
+
+    final fun component1(): kotlin/String // ru.ttraum.kotsql/SqlDecimal.component1|component1(){}[0]
+    final fun copy(kotlin/String = ...): ru.ttraum.kotsql/SqlDecimal // ru.ttraum.kotsql/SqlDecimal.copy|copy(kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/SqlDecimal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/SqlDecimal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/SqlDecimal.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/SqlErrorDetails { // ru.ttraum.kotsql/SqlErrorDetails|null[0]
+    constructor <init>(ru.ttraum.kotsql/ConstraintViolation? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/Int? = ..., kotlin/String? = ..., kotlin/String? = ...) // ru.ttraum.kotsql/SqlErrorDetails.<init>|<init>(ru.ttraum.kotsql.ConstraintViolation?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.Int?;kotlin.String?;kotlin.String?){}[0]
+
+    final val column // ru.ttraum.kotsql/SqlErrorDetails.column|{}column[0]
+        final fun <get-column>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.column.<get-column>|<get-column>(){}[0]
+    final val constraint // ru.ttraum.kotsql/SqlErrorDetails.constraint|{}constraint[0]
+        final fun <get-constraint>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.constraint.<get-constraint>|<get-constraint>(){}[0]
+    final val dataType // ru.ttraum.kotsql/SqlErrorDetails.dataType|{}dataType[0]
+        final fun <get-dataType>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.dataType.<get-dataType>|<get-dataType>(){}[0]
+    final val detail // ru.ttraum.kotsql/SqlErrorDetails.detail|{}detail[0]
+        final fun <get-detail>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.detail.<get-detail>|<get-detail>(){}[0]
+    final val hint // ru.ttraum.kotsql/SqlErrorDetails.hint|{}hint[0]
+        final fun <get-hint>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.hint.<get-hint>|<get-hint>(){}[0]
+    final val position // ru.ttraum.kotsql/SqlErrorDetails.position|{}position[0]
+        final fun <get-position>(): kotlin/Int? // ru.ttraum.kotsql/SqlErrorDetails.position.<get-position>|<get-position>(){}[0]
+    final val routine // ru.ttraum.kotsql/SqlErrorDetails.routine|{}routine[0]
+        final fun <get-routine>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.routine.<get-routine>|<get-routine>(){}[0]
+    final val schema // ru.ttraum.kotsql/SqlErrorDetails.schema|{}schema[0]
+        final fun <get-schema>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.schema.<get-schema>|<get-schema>(){}[0]
+    final val severity // ru.ttraum.kotsql/SqlErrorDetails.severity|{}severity[0]
+        final fun <get-severity>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.severity.<get-severity>|<get-severity>(){}[0]
+    final val table // ru.ttraum.kotsql/SqlErrorDetails.table|{}table[0]
+        final fun <get-table>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.table.<get-table>|<get-table>(){}[0]
+    final val violation // ru.ttraum.kotsql/SqlErrorDetails.violation|{}violation[0]
+        final fun <get-violation>(): ru.ttraum.kotsql/ConstraintViolation? // ru.ttraum.kotsql/SqlErrorDetails.violation.<get-violation>|<get-violation>(){}[0]
+    final val where // ru.ttraum.kotsql/SqlErrorDetails.where|{}where[0]
+        final fun <get-where>(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.where.<get-where>|<get-where>(){}[0]
+
+    final fun component1(): ru.ttraum.kotsql/ConstraintViolation? // ru.ttraum.kotsql/SqlErrorDetails.component1|component1(){}[0]
+    final fun component10(): kotlin/Int? // ru.ttraum.kotsql/SqlErrorDetails.component10|component10(){}[0]
+    final fun component11(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component11|component11(){}[0]
+    final fun component12(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component12|component12(){}[0]
+    final fun component2(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component4|component4(){}[0]
+    final fun component5(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component5|component5(){}[0]
+    final fun component6(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component6|component6(){}[0]
+    final fun component7(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component7|component7(){}[0]
+    final fun component8(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component8|component8(){}[0]
+    final fun component9(): kotlin/String? // ru.ttraum.kotsql/SqlErrorDetails.component9|component9(){}[0]
+    final fun copy(ru.ttraum.kotsql/ConstraintViolation? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/Int? = ..., kotlin/String? = ..., kotlin/String? = ...): ru.ttraum.kotsql/SqlErrorDetails // ru.ttraum.kotsql/SqlErrorDetails.copy|copy(ru.ttraum.kotsql.ConstraintViolation?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.Int?;kotlin.String?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/SqlErrorDetails.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/SqlErrorDetails.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/SqlErrorDetails.toString|toString(){}[0]
+
+    final object Companion { // ru.ttraum.kotsql/SqlErrorDetails.Companion|null[0]
+        final val NONE // ru.ttraum.kotsql/SqlErrorDetails.Companion.NONE|{}NONE[0]
+            final fun <get-NONE>(): ru.ttraum.kotsql/SqlErrorDetails // ru.ttraum.kotsql/SqlErrorDetails.Companion.NONE.<get-NONE>|<get-NONE>(){}[0]
+    }
+}
+
+final class ru.ttraum.kotsql/SqlOffsetDateTime { // ru.ttraum.kotsql/SqlOffsetDateTime|null[0]
+    constructor <init>(kotlinx.datetime/LocalDateTime, kotlinx.datetime/UtcOffset) // ru.ttraum.kotsql/SqlOffsetDateTime.<init>|<init>(kotlinx.datetime.LocalDateTime;kotlinx.datetime.UtcOffset){}[0]
+
+    final val dateTime // ru.ttraum.kotsql/SqlOffsetDateTime.dateTime|{}dateTime[0]
+        final fun <get-dateTime>(): kotlinx.datetime/LocalDateTime // ru.ttraum.kotsql/SqlOffsetDateTime.dateTime.<get-dateTime>|<get-dateTime>(){}[0]
+    final val offset // ru.ttraum.kotsql/SqlOffsetDateTime.offset|{}offset[0]
+        final fun <get-offset>(): kotlinx.datetime/UtcOffset // ru.ttraum.kotsql/SqlOffsetDateTime.offset.<get-offset>|<get-offset>(){}[0]
+
+    final fun component1(): kotlinx.datetime/LocalDateTime // ru.ttraum.kotsql/SqlOffsetDateTime.component1|component1(){}[0]
+    final fun component2(): kotlinx.datetime/UtcOffset // ru.ttraum.kotsql/SqlOffsetDateTime.component2|component2(){}[0]
+    final fun copy(kotlinx.datetime/LocalDateTime = ..., kotlinx.datetime/UtcOffset = ...): ru.ttraum.kotsql/SqlOffsetDateTime // ru.ttraum.kotsql/SqlOffsetDateTime.copy|copy(kotlinx.datetime.LocalDateTime;kotlinx.datetime.UtcOffset){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/SqlOffsetDateTime.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/SqlOffsetDateTime.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/SqlOffsetDateTime.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/SqlOffsetTime { // ru.ttraum.kotsql/SqlOffsetTime|null[0]
+    constructor <init>(kotlinx.datetime/LocalTime, kotlinx.datetime/UtcOffset) // ru.ttraum.kotsql/SqlOffsetTime.<init>|<init>(kotlinx.datetime.LocalTime;kotlinx.datetime.UtcOffset){}[0]
+
+    final val offset // ru.ttraum.kotsql/SqlOffsetTime.offset|{}offset[0]
+        final fun <get-offset>(): kotlinx.datetime/UtcOffset // ru.ttraum.kotsql/SqlOffsetTime.offset.<get-offset>|<get-offset>(){}[0]
+    final val time // ru.ttraum.kotsql/SqlOffsetTime.time|{}time[0]
+        final fun <get-time>(): kotlinx.datetime/LocalTime // ru.ttraum.kotsql/SqlOffsetTime.time.<get-time>|<get-time>(){}[0]
+
+    final fun component1(): kotlinx.datetime/LocalTime // ru.ttraum.kotsql/SqlOffsetTime.component1|component1(){}[0]
+    final fun component2(): kotlinx.datetime/UtcOffset // ru.ttraum.kotsql/SqlOffsetTime.component2|component2(){}[0]
+    final fun copy(kotlinx.datetime/LocalTime = ..., kotlinx.datetime/UtcOffset = ...): ru.ttraum.kotsql/SqlOffsetTime // ru.ttraum.kotsql/SqlOffsetTime.copy|copy(kotlinx.datetime.LocalTime;kotlinx.datetime.UtcOffset){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/SqlOffsetTime.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/SqlOffsetTime.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/SqlOffsetTime.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/SqlSyntax { // ru.ttraum.kotsql/SqlSyntax|null[0]
+    constructor <init>(kotlin/String = ..., kotlin/Boolean = ..., ru.ttraum.kotsql/BackslashEscapes = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // ru.ttraum.kotsql/SqlSyntax.<init>|<init>(kotlin.String;kotlin.Boolean;ru.ttraum.kotsql.BackslashEscapes;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+
+    final val backslashEscapes // ru.ttraum.kotsql/SqlSyntax.backslashEscapes|{}backslashEscapes[0]
+        final fun <get-backslashEscapes>(): ru.ttraum.kotsql/BackslashEscapes // ru.ttraum.kotsql/SqlSyntax.backslashEscapes.<get-backslashEscapes>|<get-backslashEscapes>(){}[0]
+    final val bracketIdentifiers // ru.ttraum.kotsql/SqlSyntax.bracketIdentifiers|{}bracketIdentifiers[0]
+        final fun <get-bracketIdentifiers>(): kotlin/Boolean // ru.ttraum.kotsql/SqlSyntax.bracketIdentifiers.<get-bracketIdentifiers>|<get-bracketIdentifiers>(){}[0]
+    final val dashCommentNeedsSpace // ru.ttraum.kotsql/SqlSyntax.dashCommentNeedsSpace|{}dashCommentNeedsSpace[0]
+        final fun <get-dashCommentNeedsSpace>(): kotlin/Boolean // ru.ttraum.kotsql/SqlSyntax.dashCommentNeedsSpace.<get-dashCommentNeedsSpace>|<get-dashCommentNeedsSpace>(){}[0]
+    final val dollarQuotedStrings // ru.ttraum.kotsql/SqlSyntax.dollarQuotedStrings|{}dollarQuotedStrings[0]
+        final fun <get-dollarQuotedStrings>(): kotlin/Boolean // ru.ttraum.kotsql/SqlSyntax.dollarQuotedStrings.<get-dollarQuotedStrings>|<get-dollarQuotedStrings>(){}[0]
+    final val hashComments // ru.ttraum.kotsql/SqlSyntax.hashComments|{}hashComments[0]
+        final fun <get-hashComments>(): kotlin/Boolean // ru.ttraum.kotsql/SqlSyntax.hashComments.<get-hashComments>|<get-hashComments>(){}[0]
+    final val nestedComments // ru.ttraum.kotsql/SqlSyntax.nestedComments|{}nestedComments[0]
+        final fun <get-nestedComments>(): kotlin/Boolean // ru.ttraum.kotsql/SqlSyntax.nestedComments.<get-nestedComments>|<get-nestedComments>(){}[0]
+    final val quotes // ru.ttraum.kotsql/SqlSyntax.quotes|{}quotes[0]
+        final fun <get-quotes>(): kotlin/String // ru.ttraum.kotsql/SqlSyntax.quotes.<get-quotes>|<get-quotes>(){}[0]
+
+    final fun opaqueEnd(kotlin/String, kotlin/Int): kotlin/Int // ru.ttraum.kotsql/SqlSyntax.opaqueEnd|opaqueEnd(kotlin.String;kotlin.Int){}[0]
+}
+
+final class ru.ttraum.kotsql/StatementDescription { // ru.ttraum.kotsql/StatementDescription|null[0]
+    constructor <init>(kotlin.collections/List<ru.ttraum.kotsql/SqlType>, kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo>) // ru.ttraum.kotsql/StatementDescription.<init>|<init>(kotlin.collections.List<ru.ttraum.kotsql.SqlType>;kotlin.collections.List<ru.ttraum.kotsql.ColumnInfo>){}[0]
+
+    final val columns // ru.ttraum.kotsql/StatementDescription.columns|{}columns[0]
+        final fun <get-columns>(): kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo> // ru.ttraum.kotsql/StatementDescription.columns.<get-columns>|<get-columns>(){}[0]
+    final val parameterTypes // ru.ttraum.kotsql/StatementDescription.parameterTypes|{}parameterTypes[0]
+        final fun <get-parameterTypes>(): kotlin.collections/List<ru.ttraum.kotsql/SqlType> // ru.ttraum.kotsql/StatementDescription.parameterTypes.<get-parameterTypes>|<get-parameterTypes>(){}[0]
+
+    final fun component1(): kotlin.collections/List<ru.ttraum.kotsql/SqlType> // ru.ttraum.kotsql/StatementDescription.component1|component1(){}[0]
+    final fun component2(): kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo> // ru.ttraum.kotsql/StatementDescription.component2|component2(){}[0]
+    final fun copy(kotlin.collections/List<ru.ttraum.kotsql/SqlType> = ..., kotlin.collections/List<ru.ttraum.kotsql/ColumnInfo> = ...): ru.ttraum.kotsql/StatementDescription // ru.ttraum.kotsql/StatementDescription.copy|copy(kotlin.collections.List<ru.ttraum.kotsql.SqlType>;kotlin.collections.List<ru.ttraum.kotsql.ColumnInfo>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/StatementDescription.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/StatementDescription.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/StatementDescription.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/TranslatedSql { // ru.ttraum.kotsql/TranslatedSql|null[0]
+    constructor <init>(kotlin/String, kotlin/Int) // ru.ttraum.kotsql/TranslatedSql.<init>|<init>(kotlin.String;kotlin.Int){}[0]
+
+    final val parameterCount // ru.ttraum.kotsql/TranslatedSql.parameterCount|{}parameterCount[0]
+        final fun <get-parameterCount>(): kotlin/Int // ru.ttraum.kotsql/TranslatedSql.parameterCount.<get-parameterCount>|<get-parameterCount>(){}[0]
+    final val sql // ru.ttraum.kotsql/TranslatedSql.sql|{}sql[0]
+        final fun <get-sql>(): kotlin/String // ru.ttraum.kotsql/TranslatedSql.sql.<get-sql>|<get-sql>(){}[0]
+
+    final fun component1(): kotlin/String // ru.ttraum.kotsql/TranslatedSql.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // ru.ttraum.kotsql/TranslatedSql.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/Int = ...): ru.ttraum.kotsql/TranslatedSql // ru.ttraum.kotsql/TranslatedSql.copy|copy(kotlin.String;kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/TranslatedSql.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/TranslatedSql.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/TranslatedSql.toString|toString(){}[0]
+}
+
+final class ru.ttraum.kotsql/TypedNull { // ru.ttraum.kotsql/TypedNull|null[0]
+    constructor <init>(ru.ttraum.kotsql/SqlType) // ru.ttraum.kotsql/TypedNull.<init>|<init>(ru.ttraum.kotsql.SqlType){}[0]
+
+    final val type // ru.ttraum.kotsql/TypedNull.type|{}type[0]
+        final fun <get-type>(): ru.ttraum.kotsql/SqlType // ru.ttraum.kotsql/TypedNull.type.<get-type>|<get-type>(){}[0]
+
+    final fun component1(): ru.ttraum.kotsql/SqlType // ru.ttraum.kotsql/TypedNull.component1|component1(){}[0]
+    final fun copy(ru.ttraum.kotsql/SqlType = ...): ru.ttraum.kotsql/TypedNull // ru.ttraum.kotsql/TypedNull.copy|copy(ru.ttraum.kotsql.SqlType){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql/TypedNull.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql/TypedNull.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql/TypedNull.toString|toString(){}[0]
+}
+
+open class ru.ttraum.kotsql/ColumnInfo { // ru.ttraum.kotsql/ColumnInfo|null[0]
+    constructor <init>(kotlin/String, ru.ttraum.kotsql/SqlType, kotlin/String, kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ..., kotlin/Boolean? = ..., kotlin/Boolean = ..., ru.ttraum.kotsql/SqlCodec<*>? = ...) // ru.ttraum.kotsql/ColumnInfo.<init>|<init>(kotlin.String;ru.ttraum.kotsql.SqlType;kotlin.String;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Boolean?;kotlin.Boolean;ru.ttraum.kotsql.SqlCodec<*>?){}[0]
+
+    final val codec // ru.ttraum.kotsql/ColumnInfo.codec|{}codec[0]
+        final fun <get-codec>(): ru.ttraum.kotsql/SqlCodec<*>? // ru.ttraum.kotsql/ColumnInfo.codec.<get-codec>|<get-codec>(){}[0]
+    final val name // ru.ttraum.kotsql/ColumnInfo.name|{}name[0]
+        final fun <get-name>(): kotlin/String // ru.ttraum.kotsql/ColumnInfo.name.<get-name>|<get-name>(){}[0]
+    final val nativeTypeId // ru.ttraum.kotsql/ColumnInfo.nativeTypeId|{}nativeTypeId[0]
+        final fun <get-nativeTypeId>(): kotlin/Int // ru.ttraum.kotsql/ColumnInfo.nativeTypeId.<get-nativeTypeId>|<get-nativeTypeId>(){}[0]
+    final val nativeTypeName // ru.ttraum.kotsql/ColumnInfo.nativeTypeName|{}nativeTypeName[0]
+        final fun <get-nativeTypeName>(): kotlin/String // ru.ttraum.kotsql/ColumnInfo.nativeTypeName.<get-nativeTypeName>|<get-nativeTypeName>(){}[0]
+    final val nullable // ru.ttraum.kotsql/ColumnInfo.nullable|{}nullable[0]
+        final fun <get-nullable>(): kotlin/Boolean? // ru.ttraum.kotsql/ColumnInfo.nullable.<get-nullable>|<get-nullable>(){}[0]
+    final val precision // ru.ttraum.kotsql/ColumnInfo.precision|{}precision[0]
+        final fun <get-precision>(): kotlin/Int // ru.ttraum.kotsql/ColumnInfo.precision.<get-precision>|<get-precision>(){}[0]
+    final val scale // ru.ttraum.kotsql/ColumnInfo.scale|{}scale[0]
+        final fun <get-scale>(): kotlin/Int // ru.ttraum.kotsql/ColumnInfo.scale.<get-scale>|<get-scale>(){}[0]
+    final val type // ru.ttraum.kotsql/ColumnInfo.type|{}type[0]
+        final fun <get-type>(): ru.ttraum.kotsql/SqlType // ru.ttraum.kotsql/ColumnInfo.type.<get-type>|<get-type>(){}[0]
+    final val unsigned // ru.ttraum.kotsql/ColumnInfo.unsigned|{}unsigned[0]
+        final fun <get-unsigned>(): kotlin/Boolean // ru.ttraum.kotsql/ColumnInfo.unsigned.<get-unsigned>|<get-unsigned>(){}[0]
+}
+
+open class ru.ttraum.kotsql/SqlException : kotlin/Exception { // ru.ttraum.kotsql/SqlException|null[0]
+    constructor <init>(kotlin/String, kotlin/String? = ..., kotlin/Int = ..., ru.ttraum.kotsql/SqlErrorKind = ..., kotlin/Throwable? = ..., ru.ttraum.kotsql/SqlErrorDetails = ...) // ru.ttraum.kotsql/SqlException.<init>|<init>(kotlin.String;kotlin.String?;kotlin.Int;ru.ttraum.kotsql.SqlErrorKind;kotlin.Throwable?;ru.ttraum.kotsql.SqlErrorDetails){}[0]
+
+    final val details // ru.ttraum.kotsql/SqlException.details|{}details[0]
+        final fun <get-details>(): ru.ttraum.kotsql/SqlErrorDetails // ru.ttraum.kotsql/SqlException.details.<get-details>|<get-details>(){}[0]
+    final val kind // ru.ttraum.kotsql/SqlException.kind|{}kind[0]
+        final fun <get-kind>(): ru.ttraum.kotsql/SqlErrorKind // ru.ttraum.kotsql/SqlException.kind.<get-kind>|<get-kind>(){}[0]
+    final val sqlState // ru.ttraum.kotsql/SqlException.sqlState|{}sqlState[0]
+        final fun <get-sqlState>(): kotlin/String? // ru.ttraum.kotsql/SqlException.sqlState.<get-sqlState>|<get-sqlState>(){}[0]
+    final val vendorCode // ru.ttraum.kotsql/SqlException.vendorCode|{}vendorCode[0]
+        final fun <get-vendorCode>(): kotlin/Int // ru.ttraum.kotsql/SqlException.vendorCode.<get-vendorCode>|<get-vendorCode>(){}[0]
+}
+
+final object ru.ttraum.kotsql.spi/Drivers { // ru.ttraum.kotsql.spi/Drivers|null[0]
+    final fun find(kotlin/String): ru.ttraum.kotsql.spi/SqlDriver? // ru.ttraum.kotsql.spi/Drivers.find|find(kotlin.String){}[0]
+    final fun register(ru.ttraum.kotsql.spi/SqlDriver) // ru.ttraum.kotsql.spi/Drivers.register|register(ru.ttraum.kotsql.spi.SqlDriver){}[0]
+    final fun require(kotlin/String): ru.ttraum.kotsql.spi/SqlDriver // ru.ttraum.kotsql.spi/Drivers.require|require(kotlin.String){}[0]
+}
+
+final fun (kotlin/Throwable).ru.ttraum.kotsql/sqlErrorDetails(): ru.ttraum.kotsql/SqlErrorDetails? // ru.ttraum.kotsql/sqlErrorDetails|sqlErrorDetails@kotlin.Throwable(){}[0]
+final fun (ru.ttraum.kotsql/SqlConnection).ru.ttraum.kotsql/query(kotlin/String, kotlin.collections/List<kotlin/Any?> = ..., kotlin/Int = ...): kotlinx.coroutines.flow/Flow<ru.ttraum.kotsql/SqlRow> // ru.ttraum.kotsql/query|query@ru.ttraum.kotsql.SqlConnection(kotlin.String;kotlin.collections.List<kotlin.Any?>;kotlin.Int){}[0]
+final fun ru.ttraum.kotsql.spi/generatedKeyRows(kotlin.collections/List<kotlin/Long>): ru.ttraum.kotsql.spi/ListRows // ru.ttraum.kotsql.spi/generatedKeyRows|generatedKeyRows(kotlin.collections.List<kotlin.Long>){}[0]
+final suspend fun (ru.ttraum.kotsql/SqlConnection).ru.ttraum.kotsql/update(kotlin/String, kotlin.collections/List<kotlin/Any?> = ...): kotlin/Long // ru.ttraum.kotsql/update|update@ru.ttraum.kotsql.SqlConnection(kotlin.String;kotlin.collections.List<kotlin.Any?>){}[0]
+final suspend fun <#A: kotlin/Any?> (ru.ttraum.kotsql/SqlConnection).ru.ttraum.kotsql/transaction(ru.ttraum.kotsql/IsolationLevel? = ..., kotlin.coroutines/SuspendFunction1<ru.ttraum.kotsql/SqlConnection, #A>): #A // ru.ttraum.kotsql/transaction|transaction@ru.ttraum.kotsql.SqlConnection(ru.ttraum.kotsql.IsolationLevel?;kotlin.coroutines.SuspendFunction1<ru.ttraum.kotsql.SqlConnection,0:0>){0§<kotlin.Any?>}[0]
+final suspend fun ru.ttraum.kotsql/connect(kotlin/String, ru.ttraum.kotsql/CodecRegistry = ...): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql/connect|connect(kotlin.String;ru.ttraum.kotsql.CodecRegistry){}[0]

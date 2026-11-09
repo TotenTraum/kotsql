@@ -28,7 +28,7 @@ public class GenerateJdbcBases {
         return null;
     }
     static void emit(StringBuilder sb, Class<?> iface, String cls, boolean metadataDefaults, Set<Class<?>> skipFrom) {
-        sb.append("abstract class ").append(cls).append(" : ").append(iface.getCanonicalName()).append(" {\n");
+        sb.append("internal abstract class ").append(cls).append(" : ").append(iface.getCanonicalName()).append(" {\n");
         List<Method> ms = new ArrayList<>(List.of(iface.getMethods()));
         ms.sort(Comparator.comparing(Method::getName).thenComparing(m -> Arrays.toString(m.getParameterTypes())));
         Set<String> seen = new HashSet<>();
@@ -55,7 +55,7 @@ public class GenerateJdbcBases {
     }
     /** What CallableStatement adds to PreparedStatement, as defaults that a subclass of a statement can leave in place. */
     static void emitDefaults(StringBuilder sb) {
-        sb.append("interface CallableDefaults : java.sql.CallableStatement {\n");
+        sb.append("internal interface CallableDefaults : java.sql.CallableStatement {\n");
         List<Method> ms = new ArrayList<>(List.of(java.sql.CallableStatement.class.getDeclaredMethods()));
         ms.sort(Comparator.comparing(Method::getName).thenComparing(m -> Arrays.toString(m.getParameterTypes())));
         for (Method m : ms) {

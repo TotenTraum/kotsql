@@ -1,5 +1,6 @@
 package ru.ttraum.kotsql.transport
 
+import ru.ttraum.kotsql.InternalKotsqlApi
 import ru.ttraum.kotsql.ConnectionConfig
 import ru.ttraum.kotsql.SqlConnection
 import ru.ttraum.kotsql.SqlErrorKind
@@ -14,7 +15,8 @@ import ru.ttraum.kotsql.TargetServerType
  * @param open opens a connection to the one server of the given configuration
  * @param roleQuery a query with a single value that is true, or non-zero, on a read-only server
  */
-suspend fun <C : SqlConnection> connectToSuitableServer(config: ConnectionConfig, roleQuery: String, open: suspend (ConnectionConfig) -> C): C {
+@InternalKotsqlApi
+public suspend fun <C : SqlConnection> connectToSuitableServer(config: ConnectionConfig, roleQuery: String, open: suspend (ConnectionConfig) -> C): C {
     val target = config.targetServerType
     if (config.alternateServers.isEmpty() && target == TargetServerType.ANY) return open(config)
 

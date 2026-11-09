@@ -1,0 +1,61 @@
+// Klib ABI Dump
+// Targets: [linuxArm64, linuxX64, macosArm64, mingwX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <ru.ttraum.kotsql:kotsql-transport>
+abstract fun interface ru.ttraum.kotsql.transport/TransportFactory { // ru.ttraum.kotsql.transport/TransportFactory|null[0]
+    abstract suspend fun connect(kotlin/String, kotlin/Int, kotlin/Long): ru.ttraum.kotsql.transport/Transport // ru.ttraum.kotsql.transport/TransportFactory.connect|connect(kotlin.String;kotlin.Int;kotlin.Long){}[0]
+}
+
+abstract interface ru.ttraum.kotsql.transport/NetworkSqlDriver : ru.ttraum.kotsql.spi/SqlDriver { // ru.ttraum.kotsql.transport/NetworkSqlDriver|null[0]
+    abstract suspend fun connect(ru.ttraum.kotsql/ConnectionConfig, ru.ttraum.kotsql.transport/TransportFactory): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.transport/NetworkSqlDriver.connect|connect(ru.ttraum.kotsql.ConnectionConfig;ru.ttraum.kotsql.transport.TransportFactory){}[0]
+    open suspend fun connect(ru.ttraum.kotsql/ConnectionConfig): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.transport/NetworkSqlDriver.connect|connect(ru.ttraum.kotsql.ConnectionConfig){}[0]
+}
+
+abstract interface ru.ttraum.kotsql.transport/Transport { // ru.ttraum.kotsql.transport/Transport|null[0]
+    abstract val isSecure // ru.ttraum.kotsql.transport/Transport.isSecure|{}isSecure[0]
+        abstract fun <get-isSecure>(): kotlin/Boolean // ru.ttraum.kotsql.transport/Transport.isSecure.<get-isSecure>|<get-isSecure>(){}[0]
+    open val tlsServerEndPoint // ru.ttraum.kotsql.transport/Transport.tlsServerEndPoint|{}tlsServerEndPoint[0]
+        open fun <get-tlsServerEndPoint>(): kotlin/ByteArray? // ru.ttraum.kotsql.transport/Transport.tlsServerEndPoint.<get-tlsServerEndPoint>|<get-tlsServerEndPoint>(){}[0]
+
+    abstract fun setReadTimeout(kotlin/Long) // ru.ttraum.kotsql.transport/Transport.setReadTimeout|setReadTimeout(kotlin.Long){}[0]
+    abstract suspend fun close() // ru.ttraum.kotsql.transport/Transport.close|close(){}[0]
+    abstract suspend fun flush() // ru.ttraum.kotsql.transport/Transport.flush|flush(){}[0]
+    abstract suspend fun read(kotlin/ByteArray, kotlin/Int, kotlin/Int): kotlin/Int // ru.ttraum.kotsql.transport/Transport.read|read(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+    abstract suspend fun startTls(ru.ttraum.kotsql.transport/TlsOptions) // ru.ttraum.kotsql.transport/Transport.startTls|startTls(ru.ttraum.kotsql.transport.TlsOptions){}[0]
+    abstract suspend fun write(kotlin/ByteArray, kotlin/Int, kotlin/Int) // ru.ttraum.kotsql.transport/Transport.write|write(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+}
+
+final class ru.ttraum.kotsql.transport/TlsOptions { // ru.ttraum.kotsql.transport/TlsOptions|null[0]
+    constructor <init>(ru.ttraum.kotsql/TlsMode, kotlin/String, kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...) // ru.ttraum.kotsql.transport/TlsOptions.<init>|<init>(ru.ttraum.kotsql.TlsMode;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+
+    final val certPath // ru.ttraum.kotsql.transport/TlsOptions.certPath|{}certPath[0]
+        final fun <get-certPath>(): kotlin/String? // ru.ttraum.kotsql.transport/TlsOptions.certPath.<get-certPath>|<get-certPath>(){}[0]
+    final val keyPath // ru.ttraum.kotsql.transport/TlsOptions.keyPath|{}keyPath[0]
+        final fun <get-keyPath>(): kotlin/String? // ru.ttraum.kotsql.transport/TlsOptions.keyPath.<get-keyPath>|<get-keyPath>(){}[0]
+    final val mode // ru.ttraum.kotsql.transport/TlsOptions.mode|{}mode[0]
+        final fun <get-mode>(): ru.ttraum.kotsql/TlsMode // ru.ttraum.kotsql.transport/TlsOptions.mode.<get-mode>|<get-mode>(){}[0]
+    final val rootCertPath // ru.ttraum.kotsql.transport/TlsOptions.rootCertPath|{}rootCertPath[0]
+        final fun <get-rootCertPath>(): kotlin/String? // ru.ttraum.kotsql.transport/TlsOptions.rootCertPath.<get-rootCertPath>|<get-rootCertPath>(){}[0]
+    final val serverName // ru.ttraum.kotsql.transport/TlsOptions.serverName|{}serverName[0]
+        final fun <get-serverName>(): kotlin/String // ru.ttraum.kotsql.transport/TlsOptions.serverName.<get-serverName>|<get-serverName>(){}[0]
+
+    final fun component1(): ru.ttraum.kotsql/TlsMode // ru.ttraum.kotsql.transport/TlsOptions.component1|component1(){}[0]
+    final fun component2(): kotlin/String // ru.ttraum.kotsql.transport/TlsOptions.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // ru.ttraum.kotsql.transport/TlsOptions.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // ru.ttraum.kotsql.transport/TlsOptions.component4|component4(){}[0]
+    final fun component5(): kotlin/String? // ru.ttraum.kotsql.transport/TlsOptions.component5|component5(){}[0]
+    final fun copy(ru.ttraum.kotsql/TlsMode = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): ru.ttraum.kotsql.transport/TlsOptions // ru.ttraum.kotsql.transport/TlsOptions.copy|copy(ru.ttraum.kotsql.TlsMode;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // ru.ttraum.kotsql.transport/TlsOptions.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // ru.ttraum.kotsql.transport/TlsOptions.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // ru.ttraum.kotsql.transport/TlsOptions.toString|toString(){}[0]
+}
+
+final val ru.ttraum.kotsql.transport/tlsOptions // ru.ttraum.kotsql.transport/tlsOptions|@ru.ttraum.kotsql.ConnectionConfig{}tlsOptions[0]
+    final fun (ru.ttraum.kotsql/ConnectionConfig).<get-tlsOptions>(): ru.ttraum.kotsql.transport/TlsOptions // ru.ttraum.kotsql.transport/tlsOptions.<get-tlsOptions>|<get-tlsOptions>@ru.ttraum.kotsql.ConnectionConfig(){}[0]
+
+final suspend fun (ru.ttraum.kotsql.spi/SqlDriver).ru.ttraum.kotsql.transport/connectVia(ru.ttraum.kotsql/ConnectionConfig, ru.ttraum.kotsql.transport/TransportFactory): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.transport/connectVia|connectVia@ru.ttraum.kotsql.spi.SqlDriver(ru.ttraum.kotsql.ConnectionConfig;ru.ttraum.kotsql.transport.TransportFactory){}[0]
+final suspend fun ru.ttraum.kotsql.transport/connect(kotlin/String, ru.ttraum.kotsql.transport/TransportFactory, ru.ttraum.kotsql/CodecRegistry = ...): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.transport/connect|connect(kotlin.String;ru.ttraum.kotsql.transport.TransportFactory;ru.ttraum.kotsql.CodecRegistry){}[0]

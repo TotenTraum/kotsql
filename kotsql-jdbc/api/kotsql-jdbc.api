@@ -1,0 +1,38 @@
+public final class ru/ttraum/kotsql/jdbc/KotsqlDataSource : javax/sql/DataSource {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lru/ttraum/kotsql/CodecRegistry;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lru/ttraum/kotsql/CodecRegistry;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getCodecs ()Lru/ttraum/kotsql/CodecRegistry;
+	public fun getConnection ()Ljava/sql/Connection;
+	public fun getConnection (Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;
+	public fun getLogWriter ()Ljava/io/PrintWriter;
+	public fun getLoginTimeout ()I
+	public fun getParentLogger ()Ljava/util/logging/Logger;
+	public final fun getPassword ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public final fun getUser ()Ljava/lang/String;
+	public fun isWrapperFor (Ljava/lang/Class;)Z
+	public final fun setCodecs (Lru/ttraum/kotsql/CodecRegistry;)V
+	public fun setLogWriter (Ljava/io/PrintWriter;)V
+	public fun setLoginTimeout (I)V
+	public final fun setPassword (Ljava/lang/String;)V
+	public final fun setUrl (Ljava/lang/String;)V
+	public final fun setUser (Ljava/lang/String;)V
+	public fun unwrap (Ljava/lang/Class;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/jdbc/KotsqlJdbcDriver : java/sql/Driver {
+	public static final field Companion Lru/ttraum/kotsql/jdbc/KotsqlJdbcDriver$Companion;
+	public fun <init> ()V
+	public fun acceptsURL (Ljava/lang/String;)Z
+	public fun connect (Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;
+	public fun getMajorVersion ()I
+	public fun getMinorVersion ()I
+	public fun getParentLogger ()Ljava/util/logging/Logger;
+	public fun getPropertyInfo (Ljava/lang/String;Ljava/util/Properties;)[Ljava/sql/DriverPropertyInfo;
+	public fun jdbcCompliant ()Z
+}
+
+public final class ru/ttraum/kotsql/jdbc/KotsqlJdbcDriver$Companion {
+}
+

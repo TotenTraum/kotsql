@@ -1,0 +1,60 @@
+public final class ru/ttraum/kotsql/postgres/HstoreCodec : ru/ttraum/kotsql/SqlCodec {
+	public static final field INSTANCE Lru/ttraum/kotsql/postgres/HstoreCodec;
+	public synthetic fun decode (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun decode (Ljava/lang/Object;)Ljava/util/Map;
+	public synthetic fun encode (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun encode (Ljava/util/Map;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/postgres/PgNotification {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;I)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()I
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;I)Lru/ttraum/kotsql/postgres/PgNotification;
+	public static synthetic fun copy$default (Lru/ttraum/kotsql/postgres/PgNotification;Ljava/lang/String;Ljava/lang/String;IILjava/lang/Object;)Lru/ttraum/kotsql/postgres/PgNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChannel ()Ljava/lang/String;
+	public final fun getPayload ()Ljava/lang/String;
+	public final fun getSenderPid ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class ru/ttraum/kotsql/postgres/PostgresConnection : ru/ttraum/kotsql/SqlConnection {
+	public static final field Companion Lru/ttraum/kotsql/postgres/PostgresConnection$Companion;
+	public static final field MAX_BUFFERED_NOTIFICATIONS I
+	public abstract fun copyIn (Ljava/lang/String;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun copyInRows (Ljava/lang/String;Ljava/util/List;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun copyOut (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun copyOutRows (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun drainNotifications ()Ljava/util/List;
+	public abstract fun notifications ([Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun notify (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun notify$default (Lru/ttraum/kotsql/postgres/PostgresConnection;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/postgres/PostgresConnection$Companion {
+	public static final field MAX_BUFFERED_NOTIFICATIONS I
+}
+
+public final class ru/ttraum/kotsql/postgres/PostgresConnection$DefaultImpls {
+	public static fun getCodecs (Lru/ttraum/kotsql/postgres/PostgresConnection;)Lru/ttraum/kotsql/CodecRegistry;
+	public static synthetic fun notify$default (Lru/ttraum/kotsql/postgres/PostgresConnection;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun unwrap (Lru/ttraum/kotsql/postgres/PostgresConnection;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+}
+
+public final class ru/ttraum/kotsql/postgres/PostgresConnectionKt {
+	public static final fun getPostgres (Lru/ttraum/kotsql/SqlConnection;)Lru/ttraum/kotsql/postgres/PostgresConnection;
+	public static final fun postgresNotifications-exY8QGI (Lkotlin/jvm/functions/Function1;[Ljava/lang/String;JLkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun postgresNotifications-exY8QGI$default (Lkotlin/jvm/functions/Function1;[Ljava/lang/String;JLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public final class ru/ttraum/kotsql/postgres/PostgresDriver : ru/ttraum/kotsql/transport/NetworkSqlDriver {
+	public fun <init> ()V
+	public fun connect (Lru/ttraum/kotsql/ConnectionConfig;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun connect (Lru/ttraum/kotsql/ConnectionConfig;Lru/ttraum/kotsql/transport/TransportFactory;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getDialect ()Lru/ttraum/kotsql/SqlDialect;
+	public fun getSchemes ()Ljava/util/Set;
+}
+

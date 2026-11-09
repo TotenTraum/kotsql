@@ -1,5 +1,6 @@
 package ru.ttraum.kotsql.transport
 
+import ru.ttraum.kotsql.InternalKotsqlApi
 import ru.ttraum.kotsql.SqlException
 import ru.ttraum.kotsql.transport.TlsOptions
 import java.io.ByteArrayInputStream
@@ -19,10 +20,12 @@ import javax.net.ssl.KeyManager
 import javax.net.ssl.KeyManagerFactory
 
 /** A client certificate with what comes with it. */
-class ClientCertificate(val chain: Array<X509Certificate>, val key: PrivateKey)
+@InternalKotsqlApi
+public class ClientCertificate(public val chain: Array<X509Certificate>, public val key: PrivateKey)
 
 /** Loads the client certificate of [options], if it has one, from PEM files. A key protected by a password isn't supported. */
-fun loadClientCertificate(options: TlsOptions): ClientCertificate? {
+@InternalKotsqlApi
+public fun loadClientCertificate(options: TlsOptions): ClientCertificate? {
     val certPath = options.certPath
     val keyPath = options.keyPath
     if (certPath == null && keyPath == null) return null
@@ -73,7 +76,7 @@ private fun pkcs1ToPkcs8(pkcs1: ByteArray): ByteArray {
 }
 
 /** What presents the client certificate of [options] to a server, or null if it has none. */
-fun clientKeyManagers(options: TlsOptions): Array<KeyManager>? {
+internal fun clientKeyManagers(options: TlsOptions): Array<KeyManager>? {
     val certificate = loadClientCertificate(options) ?: return null
     val password = CharArray(0)
     val store = KeyStore.getInstance(KeyStore.getDefaultType()).apply {
@@ -87,7 +90,8 @@ fun clientKeyManagers(options: TlsOptions): Array<KeyManager>? {
  * The `tls-server-end-point` channel binding of RFC 5929: a hash of the server's certificate, by the algorithm of its
  * signature, with SHA-256 in place of anything weaker. Null when that algorithm doesn't name a hash, as for RSASSA-PSS.
  */
-fun tlsServerEndPoint(certificate: Certificate): ByteArray? {
+@InternalKotsqlApi
+public fun tlsServerEndPoint(certificate: Certificate): ByteArray? {
     val signature = (certificate as? X509Certificate)?.sigAlgName?.uppercase() ?: return null
     val digest = when {
         signature.startsWith("SHA512") -> "SHA-512"

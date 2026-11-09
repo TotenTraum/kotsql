@@ -1,6 +1,6 @@
 package ru.ttraum.kotsql
 
-enum class IdentifierCase {
+public enum class IdentifierCase {
     /** Folded to upper case, as the SQL standard says. */
     UPPER,
     LOWER,
@@ -10,9 +10,9 @@ enum class IdentifierCase {
 }
 
 /** How the names of a table can be qualified: what comes before the dot. */
-enum class TableQualifier { SCHEMA, CATALOG, NONE }
+public enum class TableQualifier { SCHEMA, CATALOG, NONE }
 
-enum class BackslashEscapes {
+public enum class BackslashEscapes {
     NEVER,
 
     /** In strings of either quote, but not in a backtick's identifier. */
@@ -29,17 +29,17 @@ enum class BackslashEscapes {
  * @param quotes what opens a quoted string or identifier, which the same character closes and, when doubled, stands for itself
  * @param dashCommentNeedsSpace `--` starts a comment only with whitespace after it, so that `5--1` is an expression
  */
-class SqlSyntax(
-    val quotes: String = "'\"",
-    val bracketIdentifiers: Boolean = false,
-    val backslashEscapes: BackslashEscapes = BackslashEscapes.NEVER,
-    val dollarQuotedStrings: Boolean = false,
-    val nestedComments: Boolean = false,
-    val hashComments: Boolean = false,
-    val dashCommentNeedsSpace: Boolean = false,
+public class SqlSyntax(
+    public val quotes: String = "'\"",
+    public val bracketIdentifiers: Boolean = false,
+    public val backslashEscapes: BackslashEscapes = BackslashEscapes.NEVER,
+    public val dollarQuotedStrings: Boolean = false,
+    public val nestedComments: Boolean = false,
+    public val hashComments: Boolean = false,
+    public val dashCommentNeedsSpace: Boolean = false,
 ) {
     /** The index after the string, quoted identifier or comment that starts at [start], or [start] if none does. */
-    fun opaqueEnd(sql: String, start: Int): Int {
+    public fun opaqueEnd(sql: String, start: Int): Int {
         val n = sql.length
         val c = sql[start]
         return when {
@@ -115,37 +115,37 @@ class SqlSyntax(
  * @param outVariables a procedure's out parameters take session variables, rather than coming back as a row
  * @param tableFunctions a function's result is read as a table, with its out parameters as columns
  */
-class CallSyntax(
-    val procedures: Boolean = true,
-    val procedureLookupSql: String? = null,
-    val outVariables: Boolean = false,
-    val tableFunctions: Boolean = false,
+public class CallSyntax(
+    public val procedures: Boolean = true,
+    public val procedureLookupSql: String? = null,
+    public val outVariables: Boolean = false,
+    public val tableFunctions: Boolean = false,
 ) {
     /** The statement that calls a function with these arguments. */
-    fun functionSql(name: String, arguments: List<String>): String {
+    public fun functionSql(name: String, arguments: List<String>): String {
         val call = "$name(${arguments.joinToString(", ")})"
         return if (tableFunctions) "SELECT * FROM $call" else "SELECT $call"
     }
 }
 
 /** SQL with its positional `?` markers replaced by native ones. */
-data class TranslatedSql(val sql: String, val parameterCount: Int)
+public data class TranslatedSql(val sql: String, val parameterCount: Int)
 
 /** A query answering a metadata question. It returns the columns named by the matching JDBC `DatabaseMetaData` method. */
-data class MetadataQuery(val sql: String, val params: List<Any?> = emptyList())
+public data class MetadataQuery(val sql: String, val params: List<Any?> = emptyList())
 
 /** Queries behind `DatabaseMetaData`. A null result means the database has no such concept: an empty result is reported. */
-interface MetadataQueries {
-    fun catalogs(): MetadataQuery? = null
-    fun schemas(catalog: String?, schemaPattern: String?): MetadataQuery? = null
-    fun tableTypes(): MetadataQuery? = null
-    fun tables(catalog: String?, schemaPattern: String?, tablePattern: String?, types: List<String>?): MetadataQuery? = null
-    fun columns(catalog: String?, schemaPattern: String?, tablePattern: String?, columnPattern: String?): MetadataQuery? = null
-    fun primaryKeys(catalog: String?, schema: String?, table: String): MetadataQuery? = null
-    fun importedKeys(catalog: String?, schema: String?, table: String): MetadataQuery? = null
-    fun exportedKeys(catalog: String?, schema: String?, table: String): MetadataQuery? = null
-    fun indexInfo(catalog: String?, schema: String?, table: String, unique: Boolean): MetadataQuery? = null
-    fun typeInfo(): MetadataQuery? = null
+public interface MetadataQueries {
+    public fun catalogs(): MetadataQuery? = null
+    public fun schemas(catalog: String?, schemaPattern: String?): MetadataQuery? = null
+    public fun tableTypes(): MetadataQuery? = null
+    public fun tables(catalog: String?, schemaPattern: String?, tablePattern: String?, types: List<String>?): MetadataQuery? = null
+    public fun columns(catalog: String?, schemaPattern: String?, tablePattern: String?, columnPattern: String?): MetadataQuery? = null
+    public fun primaryKeys(catalog: String?, schema: String?, table: String): MetadataQuery? = null
+    public fun importedKeys(catalog: String?, schema: String?, table: String): MetadataQuery? = null
+    public fun exportedKeys(catalog: String?, schema: String?, table: String): MetadataQuery? = null
+    public fun indexInfo(catalog: String?, schema: String?, table: String, unique: Boolean): MetadataQuery? = null
+    public fun typeInfo(): MetadataQuery? = null
 }
 
 private val STANDARD_SYNTAX = SqlSyntax()
@@ -155,71 +155,71 @@ private val STANDARD_CALLS = CallSyntax()
  * Everything the JDBC and R2DBC adapters need to know about a database's SQL. Defaults follow the SQL standard, so a
  * new driver overrides only what differs.
  */
-interface SqlDialect {
-    val productName: String
+public interface SqlDialect {
+    public val productName: String
 
     /** Native parameter marker for a 1-based [index]. */
-    fun parameterMarker(index: Int): String
+    public fun parameterMarker(index: Int): String
 
     /** Rewrites JDBC `?` markers to native ones. */
-    fun translatePositional(sql: String): TranslatedSql
+    public fun translatePositional(sql: String): TranslatedSql
 
     /** Number of parameters in SQL that uses native markers. */
-    fun parameterCount(sql: String): Int
+    public fun parameterCount(sql: String): Int
 
     /** The text accepted by [parameterMarker]-based lookups, e.g. `$1` to index 0; null if [name] is not a marker. */
-    fun parameterIndex(name: String): Int?
+    public fun parameterIndex(name: String): Int?
 
     /**
      * The statement to run for generated values to be available, or null if this statement has none. It either returns
      * them as rows, with a clause added, or stays as it is if the driver reports them in [SqlResult.UpdateCount.generatedKeys].
      */
-    fun withGeneratedKeys(sql: String, columns: List<String>): String? = null
+    public fun withGeneratedKeys(sql: String, columns: List<String>): String? = null
 
     /** A JDBC escape function in this database's SQL. Null if it's the same here, as most are. */
-    fun escapeFunction(name: String, arguments: List<String>): String? = null
+    public fun escapeFunction(name: String, arguments: List<String>): String? = null
 
     /** A date, time or timestamp literal of JDBC's escapes, by the type's keyword and the quoted text. */
-    fun temporalLiteral(keyword: String, text: String): String = "$keyword $text"
+    public fun temporalLiteral(keyword: String, text: String): String = "$keyword $text"
 
-    val syntax: SqlSyntax get() = STANDARD_SYNTAX
-    val tableQualifier: TableQualifier get() = TableQualifier.SCHEMA
-    val calls: CallSyntax get() = STANDARD_CALLS
+    public val syntax: SqlSyntax get() = STANDARD_SYNTAX
+    public val tableQualifier: TableQualifier get() = TableQualifier.SCHEMA
+    public val calls: CallSyntax get() = STANDARD_CALLS
 
-    val metadata: MetadataQueries get() = object : MetadataQueries {}
-    val identifierQuote: String get() = "\""
-    val searchStringEscape: String get() = "\\"
-    val defaultIsolation: IsolationLevel get() = IsolationLevel.READ_COMMITTED
+    public val metadata: MetadataQueries get() = object : MetadataQueries {}
+    public val identifierQuote: String get() = "\""
+    public val searchStringEscape: String get() = "\\"
+    public val defaultIsolation: IsolationLevel get() = IsolationLevel.READ_COMMITTED
 
     /** How unquoted identifiers are stored, which tools rely on when looking tables up in the metadata. */
-    val identifierCase: IdentifierCase get() = IdentifierCase.UPPER
+    public val identifierCase: IdentifierCase get() = IdentifierCase.UPPER
 
-    fun quoteIdentifier(name: String): String = identifierQuote + name.replace(identifierQuote, identifierQuote + identifierQuote) + identifierQuote
+    public fun quoteIdentifier(name: String): String = identifierQuote + name.replace(identifierQuote, identifierQuote + identifierQuote) + identifierQuote
 
     /** The statements that start a transaction. More than one where a database can't say it all in one. */
-    fun beginStatements(isolation: IsolationLevel? = null, readOnly: Boolean? = null): List<String> = listOf(
+    public fun beginStatements(isolation: IsolationLevel? = null, readOnly: Boolean? = null): List<String> = listOf(
         buildString {
             append("START TRANSACTION")
             isolation?.let { append(" ISOLATION LEVEL ").append(it.sql) }
             readOnly?.let { append(if (it) " READ ONLY" else " READ WRITE") }
         },
     )
-    fun commitSql(): String = "COMMIT"
-    fun rollbackSql(): String = "ROLLBACK"
-    fun savepointSql(name: String): String = "SAVEPOINT ${quoteIdentifier(name)}"
-    fun releaseSavepointSql(name: String): String = "RELEASE SAVEPOINT ${quoteIdentifier(name)}"
-    fun rollbackToSavepointSql(name: String): String = "ROLLBACK TO SAVEPOINT ${quoteIdentifier(name)}"
+    public fun commitSql(): String = "COMMIT"
+    public fun rollbackSql(): String = "ROLLBACK"
+    public fun savepointSql(name: String): String = "SAVEPOINT ${quoteIdentifier(name)}"
+    public fun releaseSavepointSql(name: String): String = "RELEASE SAVEPOINT ${quoteIdentifier(name)}"
+    public fun rollbackToSavepointSql(name: String): String = "ROLLBACK TO SAVEPOINT ${quoteIdentifier(name)}"
 
     /** Applies to transactions started later in this session. */
-    fun setIsolationSql(level: IsolationLevel): String
-    fun showIsolationSql(): String
-    fun setReadOnlySql(readOnly: Boolean): String
-    fun setStatementTimeoutSql(millis: Long): String?  = null
-    fun setLockTimeoutSql(millis: Long): String? = null
-    fun setSchemaSql(schema: String): String? = null
-    fun currentSchemaSql(): String? = null
-    fun currentCatalogSql(): String? = null
+    public fun setIsolationSql(level: IsolationLevel): String
+    public fun showIsolationSql(): String
+    public fun setReadOnlySql(readOnly: Boolean): String
+    public fun setStatementTimeoutSql(millis: Long): String?  = null
+    public fun setLockTimeoutSql(millis: Long): String? = null
+    public fun setSchemaSql(schema: String): String? = null
+    public fun currentSchemaSql(): String? = null
+    public fun currentCatalogSql(): String? = null
 
     /** Null where a connection can't change catalogs. */
-    fun setCatalogSql(catalog: String): String? = null
+    public fun setCatalogSql(catalog: String): String? = null
 }

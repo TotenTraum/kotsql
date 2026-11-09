@@ -36,11 +36,11 @@ import kotlin.coroutines.resumeWithException
  * Whatever a coroutine does after resuming from [read] runs on the event thread, unless it has a dispatcher of its own. It
  * must not block there: that would hold up the other connections sharing the thread.
  */
-class AsyncSocketTransport private constructor(private val channel: AsynchronousSocketChannel, private val port: Int) : Transport {
+public class AsyncSocketTransport private constructor(private val channel: AsynchronousSocketChannel, private val port: Int) : Transport {
     private val out = ByteWriter(8 * 1024)
     private var readTimeout = 0L
     private var tls: TlsStream? = null
-    override val isSecure get() = tls != null
+    override val isSecure: Boolean get() = tls != null
 
     override fun setReadTimeout(millis: Long) { readTimeout = millis }
 
@@ -49,7 +49,7 @@ class AsyncSocketTransport private constructor(private val channel: Asynchronous
         return stream.read(buffer, offset, length)
     }
 
-    override suspend fun write(buffer: ByteArray, offset: Int, length: Int) = out.bytes(buffer, offset, length)
+    override suspend fun write(buffer: ByteArray, offset: Int, length: Int): Unit = out.bytes(buffer, offset, length)
 
     override suspend fun flush() {
         val data = ByteBuffer.wrap(out.buffer, 0, out.size)
@@ -179,7 +179,7 @@ class AsyncSocketTransport private constructor(private val channel: Asynchronous
         }
     }
 
-    companion object Factory : TransportFactory {
+    public companion object Factory : TransportFactory {
         private val EMPTY: ByteBuffer = ByteBuffer.allocate(0)
 
         /**

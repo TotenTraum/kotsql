@@ -1,0 +1,53 @@
+// Klib ABI Dump
+// Targets: [linuxArm64, linuxX64, macosArm64, mingwX64]
+// Alias: linux => [linuxArm64, linuxX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <ru.ttraum.kotsql:kotsql-transport-ktor>
+final class ru.ttraum.kotsql.ktor/KtorTransport : ru.ttraum.kotsql.transport/Transport { // ru.ttraum.kotsql.ktor/KtorTransport|null[0]
+    final val tlsServerEndPoint // ru.ttraum.kotsql.ktor/KtorTransport.tlsServerEndPoint|{}tlsServerEndPoint[0]
+        final fun <get-tlsServerEndPoint>(): kotlin/ByteArray? // ru.ttraum.kotsql.ktor/KtorTransport.tlsServerEndPoint.<get-tlsServerEndPoint>|<get-tlsServerEndPoint>(){}[0]
+
+    final var isSecure // ru.ttraum.kotsql.ktor/KtorTransport.isSecure|{}isSecure[0]
+        final fun <get-isSecure>(): kotlin/Boolean // ru.ttraum.kotsql.ktor/KtorTransport.isSecure.<get-isSecure>|<get-isSecure>(){}[0]
+
+    final fun setReadTimeout(kotlin/Long) // ru.ttraum.kotsql.ktor/KtorTransport.setReadTimeout|setReadTimeout(kotlin.Long){}[0]
+    final suspend fun close() // ru.ttraum.kotsql.ktor/KtorTransport.close|close(){}[0]
+    final suspend fun flush() // ru.ttraum.kotsql.ktor/KtorTransport.flush|flush(){}[0]
+    final suspend fun read(kotlin/ByteArray, kotlin/Int, kotlin/Int): kotlin/Int // ru.ttraum.kotsql.ktor/KtorTransport.read|read(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+    final suspend fun startTls(ru.ttraum.kotsql.transport/TlsOptions) // ru.ttraum.kotsql.ktor/KtorTransport.startTls|startTls(ru.ttraum.kotsql.transport.TlsOptions){}[0]
+    final suspend fun write(kotlin/ByteArray, kotlin/Int, kotlin/Int) // ru.ttraum.kotsql.ktor/KtorTransport.write|write(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+
+    final object Factory : ru.ttraum.kotsql.transport/TransportFactory { // ru.ttraum.kotsql.ktor/KtorTransport.Factory|null[0]
+        final suspend fun connect(kotlin/String, kotlin/Int, kotlin/Long): ru.ttraum.kotsql.transport/Transport // ru.ttraum.kotsql.ktor/KtorTransport.Factory.connect|connect(kotlin.String;kotlin.Int;kotlin.Long){}[0]
+    }
+}
+
+final val ru.ttraum.kotsql.ktor/DefaultTransport // ru.ttraum.kotsql.ktor/DefaultTransport|{}DefaultTransport[0]
+    final fun <get-DefaultTransport>(): ru.ttraum.kotsql.transport/TransportFactory // ru.ttraum.kotsql.ktor/DefaultTransport.<get-DefaultTransport>|<get-DefaultTransport>(){}[0]
+
+final fun ru.ttraum.kotsql.ktor/connectionPool(kotlin/String, ru.ttraum.kotsql.pool/PoolConfig = ..., ru.ttraum.kotsql/CodecRegistry = ...): ru.ttraum.kotsql.pool/ConnectionPool // ru.ttraum.kotsql.ktor/connectionPool|connectionPool(kotlin.String;ru.ttraum.kotsql.pool.PoolConfig;ru.ttraum.kotsql.CodecRegistry){}[0]
+final suspend fun ru.ttraum.kotsql.ktor/connect(kotlin/String, ru.ttraum.kotsql/CodecRegistry = ...): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.ktor/connect|connect(kotlin.String;ru.ttraum.kotsql.CodecRegistry){}[0]
+
+// Targets: [linux]
+final class ru.ttraum.kotsql.ktor/EpollTransport : ru.ttraum.kotsql.transport/Transport { // ru.ttraum.kotsql.ktor/EpollTransport|null[0]
+    final val tlsServerEndPoint // ru.ttraum.kotsql.ktor/EpollTransport.tlsServerEndPoint|{}tlsServerEndPoint[0]
+        final fun <get-tlsServerEndPoint>(): kotlin/ByteArray? // ru.ttraum.kotsql.ktor/EpollTransport.tlsServerEndPoint.<get-tlsServerEndPoint>|<get-tlsServerEndPoint>(){}[0]
+
+    final var isSecure // ru.ttraum.kotsql.ktor/EpollTransport.isSecure|{}isSecure[0]
+        final fun <get-isSecure>(): kotlin/Boolean // ru.ttraum.kotsql.ktor/EpollTransport.isSecure.<get-isSecure>|<get-isSecure>(){}[0]
+
+    final fun setReadTimeout(kotlin/Long) // ru.ttraum.kotsql.ktor/EpollTransport.setReadTimeout|setReadTimeout(kotlin.Long){}[0]
+    final suspend fun close() // ru.ttraum.kotsql.ktor/EpollTransport.close|close(){}[0]
+    final suspend fun flush() // ru.ttraum.kotsql.ktor/EpollTransport.flush|flush(){}[0]
+    final suspend fun read(kotlin/ByteArray, kotlin/Int, kotlin/Int): kotlin/Int // ru.ttraum.kotsql.ktor/EpollTransport.read|read(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+    final suspend fun startTls(ru.ttraum.kotsql.transport/TlsOptions) // ru.ttraum.kotsql.ktor/EpollTransport.startTls|startTls(ru.ttraum.kotsql.transport.TlsOptions){}[0]
+    final suspend fun write(kotlin/ByteArray, kotlin/Int, kotlin/Int) // ru.ttraum.kotsql.ktor/EpollTransport.write|write(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+
+    final object Factory : ru.ttraum.kotsql.transport/TransportFactory { // ru.ttraum.kotsql.ktor/EpollTransport.Factory|null[0]
+        final suspend fun connect(kotlin/String, kotlin/Int, kotlin/Long): ru.ttraum.kotsql.transport/Transport // ru.ttraum.kotsql.ktor/EpollTransport.Factory.connect|connect(kotlin.String;kotlin.Int;kotlin.Long){}[0]
+    }
+}

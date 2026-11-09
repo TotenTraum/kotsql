@@ -1,10 +1,10 @@
 package ru.ttraum.kotsql
 
 /** Database-independent classification of an error, derived from SQLSTATE where possible. */
-enum class SqlErrorKind { CONNECTION, AUTHENTICATION, SYNTAX, PERMISSION, INTEGRITY, DATA, ROLLBACK, TIMEOUT, UNSUPPORTED, OTHER;
+public enum class SqlErrorKind { CONNECTION, AUTHENTICATION, SYNTAX, PERMISSION, INTEGRITY, DATA, ROLLBACK, TIMEOUT, UNSUPPORTED, OTHER;
 
-    companion object {
-        fun ofSqlState(state: String?): SqlErrorKind = when {
+    public companion object {
+        public fun ofSqlState(state: String?): SqlErrorKind = when {
             state == null || state.length < 2 -> OTHER
             state == "57014" || state == "70100" -> TIMEOUT
             state == "42501" -> PERMISSION
@@ -23,7 +23,7 @@ enum class SqlErrorKind { CONNECTION, AUTHENTICATION, SYNTAX, PERMISSION, INTEGR
 }
 
 /** Which kind of integrity constraint a statement violated. */
-enum class ConstraintViolation { UNIQUE, FOREIGN_KEY, NOT_NULL, CHECK, EXCLUSION }
+public enum class ConstraintViolation { UNIQUE, FOREIGN_KEY, NOT_NULL, CHECK, EXCLUSION }
 
 /**
  * What the database said about an error, apart from the message. Everything is optional: what is available depends on the
@@ -35,7 +35,7 @@ enum class ConstraintViolation { UNIQUE, FOREIGN_KEY, NOT_NULL, CHECK, EXCLUSION
  * @param constraint the constraint's or the unique index's name
  * @param position where in the SQL the error is, as a 1-based character position
  */
-data class SqlErrorDetails(
+public data class SqlErrorDetails(
     val violation: ConstraintViolation? = null,
     val constraint: String? = null,
     val schema: String? = null,
@@ -49,18 +49,18 @@ data class SqlErrorDetails(
     val where: String? = null,
     val routine: String? = null,
 ) {
-    companion object { val NONE = SqlErrorDetails() }
+    public companion object { public val NONE: SqlErrorDetails = SqlErrorDetails() }
 }
 
-open class SqlException(
+public open class SqlException(
     message: String,
-    val sqlState: String? = null,
-    val vendorCode: Int = 0,
-    val kind: SqlErrorKind = SqlErrorKind.ofSqlState(sqlState),
+    public val sqlState: String? = null,
+    public val vendorCode: Int = 0,
+    public val kind: SqlErrorKind = SqlErrorKind.ofSqlState(sqlState),
     cause: Throwable? = null,
-    val details: SqlErrorDetails = SqlErrorDetails.NONE,
+    public val details: SqlErrorDetails = SqlErrorDetails.NONE,
 ) : Exception(message, cause)
 
 /** A batch failed. [updateCounts] holds the counts of the items that ran before the failure. */
-class SqlBatchException(val updateCounts: LongArray, cause: SqlException) :
+public class SqlBatchException(public val updateCounts: LongArray, cause: SqlException) :
     SqlException(cause.message ?: "Batch failed", cause.sqlState, cause.vendorCode, cause.kind, cause, cause.details)

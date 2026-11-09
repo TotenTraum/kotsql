@@ -24,10 +24,10 @@ import javax.net.ssl.X509TrustManager
  * Blocking transport on `java.net.Socket`. Its "suspending" calls never suspend, as [runUnsuspended] requires.
  * It parks rather than pins virtual threads.
  */
-class SocketTransport private constructor(private var socket: Socket) : Transport {
+public class SocketTransport private constructor(private var socket: Socket) : Transport {
     private var input: InputStream = socket.getInputStream()
     private var output: OutputStream = socket.getOutputStream().buffered(16 * 1024)
-    override var isSecure = false
+    override var isSecure: Boolean = false
         private set
 
     override fun setReadTimeout(millis: Long) { socket.soTimeout = millis.coerceAtMost(Int.MAX_VALUE.toLong()).toInt() }
@@ -37,8 +37,8 @@ class SocketTransport private constructor(private var socket: Socket) : Transpor
             throw SqlException("Timed out waiting for the server", "08006", cause = e)
         }
 
-    override suspend fun write(buffer: ByteArray, offset: Int, length: Int) = output.write(buffer, offset, length)
-    override suspend fun flush() = output.flush()
+    override suspend fun write(buffer: ByteArray, offset: Int, length: Int): Unit = output.write(buffer, offset, length)
+    override suspend fun flush(): Unit = output.flush()
 
     override var tlsServerEndPoint: ByteArray? = null
         private set
@@ -64,7 +64,7 @@ class SocketTransport private constructor(private var socket: Socket) : Transpor
 
     override suspend fun close() { runCatching { socket.close() } }
 
-    companion object Factory : TransportFactory {
+    public companion object Factory : TransportFactory {
         override suspend fun connect(host: String, port: Int, connectTimeoutMillis: Long): Transport {
             val socket = Socket()
             try {
@@ -79,7 +79,7 @@ class SocketTransport private constructor(private var socket: Socket) : Transpor
         }
 
         /** The JVM's TLS setup for [options]; also used by other JVM transports. */
-        fun sslContext(options: TlsOptions): SSLContext = SSLContext.getInstance("TLS").apply {
+        public fun sslContext(options: TlsOptions): SSLContext = SSLContext.getInstance("TLS").apply {
             init(clientKeyManagers(options), arrayOf(trustManager(options)), null)
         }
 
@@ -101,7 +101,7 @@ class SocketTransport private constructor(private var socket: Socket) : Transpor
             }
         }
 
-        fun trustManager(options: TlsOptions): TrustManager = when (options.mode) {
+        public fun trustManager(options: TlsOptions): TrustManager = when (options.mode) {
             TlsMode.VERIFY_CA, TlsMode.VERIFY_FULL -> {
                 val store = options.rootCertPath?.let(::loadRootCertificates)
                 TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())

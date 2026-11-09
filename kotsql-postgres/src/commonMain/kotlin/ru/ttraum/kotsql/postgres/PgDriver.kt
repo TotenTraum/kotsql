@@ -7,7 +7,7 @@ import ru.ttraum.kotsql.transport.NetworkSqlDriver
 import ru.ttraum.kotsql.transport.TransportFactory
 import ru.ttraum.kotsql.transport.connectToSuitableServer
 
-class PostgresDriver : NetworkSqlDriver {
+public class PostgresDriver : NetworkSqlDriver {
     override val schemes: Set<String> = setOf("postgresql", "postgres")
     override val dialect: SqlDialect get() = PgDialect
     override suspend fun connect(config: ConnectionConfig, transports: TransportFactory): SqlConnection =

@@ -33,7 +33,7 @@ internal const val DRIVER_NAME = "kotsql JDBC"
 internal const val DRIVER_VERSION = "0.1.0"
 
 /** JDBC entry point for every kotsql driver. URLs look like `jdbc:kotsql:postgresql://host:5432/db?sslmode=require`. */
-class KotsqlJdbcDriver : Driver {
+public class KotsqlJdbcDriver : Driver {
     override fun acceptsURL(url: String?): Boolean = url != null && url.startsWith(URL_PREFIX)
 
     override fun connect(url: String?, info: Properties?): Connection? = connect(url, info, CodecRegistry.Global)
@@ -49,23 +49,23 @@ class KotsqlJdbcDriver : Driver {
     }
 
     override fun getPropertyInfo(url: String?, info: Properties?): Array<DriverPropertyInfo> = emptyArray()
-    override fun getMajorVersion() = 0
-    override fun getMinorVersion() = 1
-    override fun jdbcCompliant() = false
+    override fun getMajorVersion(): Int = 0
+    override fun getMinorVersion(): Int = 1
+    override fun jdbcCompliant(): Boolean = false
     override fun getParentLogger(): Logger = throw SQLFeatureNotSupportedException("getParentLogger")
 
-    companion object {
+    public companion object {
         init { DriverManager.registerDriver(KotsqlJdbcDriver()) }
     }
 }
 
 /** A plain, unpooled `DataSource`. Wrap it in a pool such as HikariCP for production use. */
-class KotsqlDataSource(
-    var url: String = "",
-    var user: String? = null,
-    var password: String? = null,
+public class KotsqlDataSource(
+    public var url: String = "",
+    public var user: String? = null,
+    public var password: String? = null,
     /** The codecs for this data source's connections. `DriverManager` can only use the global ones. */
-    var codecs: CodecRegistry = CodecRegistry.Global,
+    public var codecs: CodecRegistry = CodecRegistry.Global,
 ) : DataSource {
     private var logWriter: PrintWriter? = null
     private var loginTimeout = 0
@@ -78,13 +78,13 @@ class KotsqlDataSource(
         if (loginTimeout > 0) props["connectTimeout"] = (loginTimeout * 1000L).toString()
         return KotsqlJdbcDriver().connect(url, props, codecs) ?: throw SQLException("Not a kotsql URL: $url", "08001")
     }
-    override fun getLogWriter() = logWriter
+    override fun getLogWriter(): java.io.PrintWriter? = logWriter
     override fun setLogWriter(out: PrintWriter?) { logWriter = out }
     override fun setLoginTimeout(seconds: Int) { loginTimeout = seconds }
-    override fun getLoginTimeout() = loginTimeout
+    override fun getLoginTimeout(): Int = loginTimeout
     override fun getParentLogger(): Logger = throw SQLFeatureNotSupportedException("getParentLogger")
     override fun <T : Any?> unwrap(iface: Class<T>): T = if (iface.isInstance(this)) iface.cast(this) else throw SQLException("Not a wrapper of $iface")
-    override fun isWrapperFor(iface: Class<*>) = iface.isInstance(this)
+    override fun isWrapperFor(iface: Class<*>): Boolean = iface.isInstance(this)
 }
 
 internal fun unsupported(what: String): Nothing = throw SQLFeatureNotSupportedException("$what is not supported")

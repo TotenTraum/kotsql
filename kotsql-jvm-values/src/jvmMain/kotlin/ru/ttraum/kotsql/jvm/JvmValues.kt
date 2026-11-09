@@ -1,5 +1,6 @@
 package ru.ttraum.kotsql.jvm
 
+import ru.ttraum.kotsql.InternalKotsqlApi
 import ru.ttraum.kotsql.SqlDecimal
 import ru.ttraum.kotsql.SqlException
 import ru.ttraum.kotsql.SqlOffsetDateTime
@@ -32,9 +33,10 @@ import kotlin.uuid.toJavaUuid
 import kotlin.uuid.toKotlinUuid
 
 /** Conversion between Java types, as used by JDBC and R2DBC, and the canonical types of [SqlRow]. */
-object JvmValues {
+@InternalKotsqlApi
+public object JvmValues {
     /** Converts a Java parameter value to its canonical type. */
-    fun toCanonical(value: Any?): Any? = when (value) {
+    public fun toCanonical(value: Any?): Any? = when (value) {
         null, is Boolean, is Byte, is Short, is Int, is Long, is Float, is Double, is String, is ByteArray,
         is SqlDecimal, is SqlOffsetTime, is SqlOffsetDateTime, is TypedNull -> value
         is BigDecimal -> SqlDecimal(value.toPlainString())
@@ -74,10 +76,10 @@ object JvmValues {
      * The value of an INTEGER column as JDBC and R2DBC give it by default: an Integer. A database whose integers are all of
      * 64 bits, as SQLite's, says INTEGER for those that fit, and a larger one later in the column stays a Long.
      */
-    fun integer(value: Any?): Any? = if (value is Long && value in Int.MIN_VALUE..Int.MAX_VALUE) value.toInt() else value
+    public fun integer(value: Any?): Any? = if (value is Long && value in Int.MIN_VALUE..Int.MAX_VALUE) value.toInt() else value
 
     /** Converts a canonical value to the natural Java type (`java.time`, `BigDecimal`, `UUID`, ...). */
-    fun toJava(value: Any?): Any? = when (value) {
+    public fun toJava(value: Any?): Any? = when (value) {
         is SqlDecimal -> decimal(value)
         is kotlinx.datetime.LocalDate -> value.toJavaLocalDate()
         is kotlinx.datetime.LocalTime -> value.toJavaLocalTime()
@@ -91,7 +93,7 @@ object JvmValues {
 
     /** Converts a canonical value to [target], applying the conversions JDBC and R2DBC expect. */
     @Suppress("UNCHECKED_CAST")
-    fun <T> convert(value: Any?, target: Class<T>): T? {
+    public fun <T> convert(value: Any?, target: Class<T>): T? {
         if (value == null) return null
         val boxed: Class<*> = if (target.isPrimitive) (target as Class<Any>).kotlin.javaObjectType else target
         val jv = toJava(value)
@@ -159,7 +161,7 @@ object JvmValues {
     )
 
     /** Whether [text] is a date and time with no offset, which a time zone has to be taken from elsewhere for. */
-    fun isLocalDateTimeText(text: String): Boolean = runCatching { parseTemporal(text) }.getOrNull() is LocalDateTime
+    public fun isLocalDateTimeText(text: String): Boolean = runCatching { parseTemporal(text) }.getOrNull() is LocalDateTime
 
     /** Dates and times held as text, as they are where the database has no type for them. */
     private fun parseTemporal(text: String): Any {

@@ -81,6 +81,9 @@ jobs:
           key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
       # No Docker on these runners: the tests that need a server skip themselves, and SQLite, the fuzzing and the rest run.
       - run: ./gradlew macosArm64Test --continue
+      # Here, where every target compiles, so the dumps of all of them are compared.
+      - name: Public API against the dumps in api/
+        run: ./gradlew checkKotlinAbi
 
   windows:
     name: mingwX64 on Windows, with the runner's PostgreSQL

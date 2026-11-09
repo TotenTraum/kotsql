@@ -51,14 +51,14 @@ internal class SocketStream(
 }
 
 /** Non-blocking transport on ktor sockets, for every platform. */
-class KtorTransport private constructor(internal val socket: Socket, private val lease: SelectorPool.Lease) : Transport {
+public class KtorTransport private constructor(internal val socket: Socket, private val lease: SelectorPool.Lease) : Transport {
     private val plain = SocketStream(socket)
     private var stream: ByteStream = plain
     private var readTimeout = 0L
 
     /** Owns TLS background work, which must outlive the coroutine that happened to open the connection. */
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    override var isSecure = false
+    override var isSecure: Boolean = false
         private set
 
     override val tlsServerEndPoint: ByteArray? get() = stream.tlsServerEndPoint
@@ -72,8 +72,8 @@ class KtorTransport private constructor(internal val socket: Socket, private val
             ?: throw SqlException("Timed out waiting for the server", "08006")
     }
 
-    override suspend fun write(buffer: ByteArray, offset: Int, length: Int) = stream.write(buffer, offset, length)
-    override suspend fun flush() = stream.flush()
+    override suspend fun write(buffer: ByteArray, offset: Int, length: Int): Unit = stream.write(buffer, offset, length)
+    override suspend fun flush(): Unit = stream.flush()
 
     override suspend fun startTls(options: TlsOptions) {
         stream.flush()
@@ -90,7 +90,7 @@ class KtorTransport private constructor(internal val socket: Socket, private val
         }
     }
 
-    companion object Factory : TransportFactory {
+    public companion object Factory : TransportFactory {
         internal val selectors by lazy { SelectorPool(socketsPerSelector) }
         private const val CONNECT_ATTEMPTS = 3
 
@@ -141,11 +141,11 @@ internal fun isIpLiteral(host: String): Boolean =
     ':' in host || Regex("""\d{1,3}(\.\d{1,3}){3}""").matches(host)
 
 /** The fastest non-blocking transport for this platform that has shown to work: epoll on Linux, ktor sockets elsewhere. */
-expect val DefaultTransport: TransportFactory
+public expect val DefaultTransport: TransportFactory
 
 /** Connects with [DefaultTransport]. On non-JVM targets, register the driver first with `Drivers.register`. */
-suspend fun connect(url: String, codecs: CodecRegistry = CodecRegistry.Global): SqlConnection = ru.ttraum.kotsql.transport.connect(url, DefaultTransport, codecs)
+public suspend fun connect(url: String, codecs: CodecRegistry = CodecRegistry.Global): SqlConnection = ru.ttraum.kotsql.transport.connect(url, DefaultTransport, codecs)
 
 /** A pool of connections to [url], over [DefaultTransport]. */
-fun connectionPool(url: String, config: PoolConfig = PoolConfig(), codecs: CodecRegistry = CodecRegistry.Global) =
+public fun connectionPool(url: String, config: PoolConfig = PoolConfig(), codecs: CodecRegistry = CodecRegistry.Global): ConnectionPool =
     ConnectionPool({ connect(url, codecs) }, config)

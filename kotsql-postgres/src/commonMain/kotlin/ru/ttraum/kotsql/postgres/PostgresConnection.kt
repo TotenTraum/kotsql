@@ -9,12 +9,12 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /** A message from `NOTIFY`. */
-data class PgNotification(val channel: String, val payload: String, val senderPid: Int)
+public data class PgNotification(val channel: String, val payload: String, val senderPid: Int)
 
 /**
  * What only PostgreSQL has. Reach it from any connection of this driver with [postgres], also through a pool.
  */
-interface PostgresConnection : SqlConnection {
+public interface PostgresConnection : SqlConnection {
     /**
      * Runs a `COPY ... FROM STDIN` and sends it [data], in chunks that needn't follow row boundaries. Returns the number of rows.
      *
@@ -22,23 +22,23 @@ interface PostgresConnection : SqlConnection {
      * complaints, such as about a malformed row, can only be noticed when all the data has been sent. [sql] must be a COPY
      * from STDIN: anything else fails, but only after the server has run it.
      */
-    suspend fun copyIn(sql: String, data: Flow<ByteArray>): Long
+    public suspend fun copyIn(sql: String, data: Flow<ByteArray>): Long
 
     /**
      * Runs a `COPY ... TO STDOUT` and emits its data, one row per chunk in text and CSV formats. If collection stops early, the
      * statement is cancelled on the server, and the connection goes on.
      */
-    fun copyOut(sql: String): Flow<ByteArray>
+    public fun copyOut(sql: String): Flow<ByteArray>
 
     /**
      * Loads rows into [table], much faster than inserting them. Values are those accepted as parameters, including with codecs.
      * The table and column names are quoted, so they're taken exactly as given, which leaves no room for a schema: use
      * [copyIn] for that. Returns the number of rows.
      */
-    suspend fun copyInRows(table: String, columns: List<String>, rows: Flow<List<Any?>>): Long
+    public suspend fun copyInRows(table: String, columns: List<String>, rows: Flow<List<Any?>>): Long
 
     /** Emits the rows of a table or of a `SELECT`, as `(SELECT ...)`, with each value in the server's text form. */
-    fun copyOutRows(source: String): Flow<List<String?>>
+    public fun copyOutRows(source: String): Flow<List<String?>>
 
     /**
      * Listens on [channels] and emits notifications until collection ends, using this connection for nothing else meanwhile. Those
@@ -47,24 +47,24 @@ interface PostgresConnection : SqlConnection {
      * Interrupting a wait closes the connection, as interrupting any read does, so give this a connection of its own. For one that
      * also survives losing its connection, see [postgresNotifications].
      */
-    fun notifications(vararg channels: String): Flow<PgNotification>
+    public fun notifications(vararg channels: String): Flow<PgNotification>
 
     /** Sends a notification, delivered when the current transaction commits, if there is one. */
-    suspend fun notify(channel: String, payload: String = "")
+    public suspend fun notify(channel: String, payload: String = "")
 
     /**
      * Those received while running statements, oldest first, for a connection that does `LISTEN` by itself between its other work.
      * Up to [MAX_BUFFERED_NOTIFICATIONS] are kept; beyond that the oldest are dropped.
      */
-    fun drainNotifications(): List<PgNotification>
+    public fun drainNotifications(): List<PgNotification>
 
-    companion object {
-        const val MAX_BUFFERED_NOTIFICATIONS = 10_000
+    public companion object {
+        public const val MAX_BUFFERED_NOTIFICATIONS: Int = 10_000
     }
 }
 
 /** This connection's PostgreSQL features. Fails on a connection to another database. */
-val SqlConnection.postgres: PostgresConnection
+public val SqlConnection.postgres: PostgresConnection
     get() = unwrap(PostgresConnection::class) ?: throw SqlException("This is not a PostgreSQL connection", "0A000")
 
 /**
@@ -75,7 +75,7 @@ val SqlConnection.postgres: PostgresConnection
  * [onConnected], called after each connection starts listening, the first included, to catch up with whatever it may have missed.
  * Each failure to connect waits and retries, unless it's about authentication or the like, which won't get better by itself.
  */
-fun postgresNotifications(
+public fun postgresNotifications(
     connect: suspend () -> SqlConnection,
     vararg channels: String,
     reconnectDelay: Duration = 1.seconds,

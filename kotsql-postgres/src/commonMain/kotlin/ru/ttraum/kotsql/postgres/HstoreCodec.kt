@@ -7,7 +7,7 @@ import ru.ttraum.kotsql.SqlCodec
  * `CodecRegistry.Global.register(HstoreCodec)`.
  */
 @Suppress("UNCHECKED_CAST")
-object HstoreCodec : SqlCodec<Map<String, String?>>(Map::class as kotlin.reflect.KClass<Map<String, String?>>, setOf("hstore")) {
+public object HstoreCodec : SqlCodec<Map<String, String?>>(Map::class as kotlin.reflect.KClass<Map<String, String?>>, setOf("hstore")) {
     override fun encode(value: Map<String, String?>): Any = value.entries.joinToString(", ") { (k, v) ->
         quote(k) + "=>" + if (v == null) "NULL" else quote(v)
     }

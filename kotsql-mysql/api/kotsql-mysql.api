@@ -1,0 +1,8 @@
+public final class ru/ttraum/kotsql/mysql/MysqlDriver : ru/ttraum/kotsql/transport/NetworkSqlDriver {
+	public fun <init> ()V
+	public fun connect (Lru/ttraum/kotsql/ConnectionConfig;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun connect (Lru/ttraum/kotsql/ConnectionConfig;Lru/ttraum/kotsql/transport/TransportFactory;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getDialect ()Lru/ttraum/kotsql/SqlDialect;
+	public fun getSchemes ()Ljava/util/Set;
+}
+

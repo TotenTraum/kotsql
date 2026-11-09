@@ -1,0 +1,20 @@
+// Klib ABI Dump
+// Targets: [linuxArm64, linuxX64, macosArm64, mingwX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <ru.ttraum.kotsql:kotsql-sqlite>
+final class ru.ttraum.kotsql.sqlite/SqliteDriver : ru.ttraum.kotsql.spi/SqlDriver { // ru.ttraum.kotsql.sqlite/SqliteDriver|null[0]
+    constructor <init>() // ru.ttraum.kotsql.sqlite/SqliteDriver.<init>|<init>(){}[0]
+
+    final val dialect // ru.ttraum.kotsql.sqlite/SqliteDriver.dialect|{}dialect[0]
+        final fun <get-dialect>(): ru.ttraum.kotsql/SqlDialect // ru.ttraum.kotsql.sqlite/SqliteDriver.dialect.<get-dialect>|<get-dialect>(){}[0]
+    final val schemes // ru.ttraum.kotsql.sqlite/SqliteDriver.schemes|{}schemes[0]
+        final fun <get-schemes>(): kotlin.collections/Set<kotlin/String> // ru.ttraum.kotsql.sqlite/SqliteDriver.schemes.<get-schemes>|<get-schemes>(){}[0]
+
+    final suspend fun connect(ru.ttraum.kotsql/ConnectionConfig): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.sqlite/SqliteDriver.connect|connect(ru.ttraum.kotsql.ConnectionConfig){}[0]
+}
+
+final suspend fun ru.ttraum.kotsql.sqlite/connectSqlite(kotlin/String, ru.ttraum.kotsql/CodecRegistry = ...): ru.ttraum.kotsql/SqlConnection // ru.ttraum.kotsql.sqlite/connectSqlite|connectSqlite(kotlin.String;ru.ttraum.kotsql.CodecRegistry){}[0]

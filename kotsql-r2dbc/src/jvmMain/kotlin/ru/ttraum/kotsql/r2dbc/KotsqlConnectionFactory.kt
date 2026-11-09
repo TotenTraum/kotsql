@@ -31,7 +31,7 @@ import java.time.Duration
 private const val DRIVER = "kotsql"
 
 /** Discovered for URLs like `r2dbc:kotsql:postgresql://user:password@host:5432/db?sslmode=require`. */
-class KotsqlConnectionFactoryProvider : ConnectionFactoryProvider {
+public class KotsqlConnectionFactoryProvider : ConnectionFactoryProvider {
     private val sslMode = Option.valueOf<String>("sslmode")
     private val sslRootCert = Option.valueOf<String>("sslrootcert")
     private val sslCert = Option.valueOf<String>("sslcert")
@@ -46,7 +46,7 @@ class KotsqlConnectionFactoryProvider : ConnectionFactoryProvider {
     override fun supports(options: ConnectionFactoryOptions): Boolean =
         options.getValue(ConnectionFactoryOptions.DRIVER) == DRIVER
 
-    override fun getDriver() = DRIVER
+    override fun getDriver(): String = DRIVER
 
     override fun create(options: ConnectionFactoryOptions): ConnectionFactory {
         val scheme = options.getRequiredValue(ConnectionFactoryOptions.PROTOCOL)?.toString()
@@ -85,11 +85,11 @@ class KotsqlConnectionFactoryProvider : ConnectionFactoryProvider {
     }
 }
 
-class KotsqlConnectionFactory internal constructor(private val driver: SqlDriver, private val config: ConnectionConfig) : ConnectionFactory {
+public class KotsqlConnectionFactory internal constructor(private val driver: SqlDriver, private val config: ConnectionConfig) : ConnectionFactory {
     override fun create(): Publisher<out Connection> = one {
         R2dbcConnection(translating { driver.connectVia(config, AsyncSocketTransport) })
     }
-    override fun getMetadata() = ConnectionFactoryMetadata { driver.dialect.productName }
+    override fun getMetadata(): ConnectionFactoryMetadata = ConnectionFactoryMetadata { driver.dialect.productName }
 }
 
 /**

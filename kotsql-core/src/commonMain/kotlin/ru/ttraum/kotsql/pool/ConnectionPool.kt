@@ -67,7 +67,7 @@ private class SpinLock {
  * @param resetTimeout how long returning a connection may take, for its rollback. Past that it's closed, not kept
  * @param onConnect runs on each new connection, for session settings. If it fails, the connection is closed
  */
-data class PoolConfig(
+public data class PoolConfig(
     val maxSize: Int = 10,
     val minSize: Int = 0,
     val acquireTimeout: Duration = 30.seconds,
@@ -85,7 +85,7 @@ data class PoolConfig(
 }
 
 /** A snapshot, for monitoring. */
-data class PoolStats(val inUse: Int, val idle: Int, val waiting: Int, val created: Int, val discarded: Int)
+public data class PoolStats(val inUse: Int, val idle: Int, val waiting: Int, val created: Int, val discarded: Int)
 
 /**
  * Connections shared between coroutines, each used by one holder at a time, for any driver. Needs a transport that doesn't
@@ -99,7 +99,7 @@ data class PoolStats(val inUse: Int, val idle: Int, val waiting: Int, val create
  * pool.transaction { update("UPDATE accounts SET balance = balance - 1") }
  * ```
  */
-class ConnectionPool(private val connector: suspend () -> SqlConnection, val config: PoolConfig = PoolConfig()) {
+public class ConnectionPool(private val connector: suspend () -> SqlConnection, public val config: PoolConfig = PoolConfig()) {
     private class Idle(val connection: SqlConnection, val createdAt: TimeSource.Monotonic.ValueTimeMark, val idleSince: TimeSource.Monotonic.ValueTimeMark)
 
     /** Fair, and handles a cancelled wait by itself. Holders of a permit are those in [acquire] or holding a connection. */
@@ -119,7 +119,7 @@ class ConnectionPool(private val connector: suspend () -> SqlConnection, val con
     private val maintenanceStarted = AtomicInt(0)
 
     /** Runs [block] with a connection, and returns the connection however it ends. */
-    suspend fun <T> withConnection(block: suspend SqlConnection.() -> T): T {
+    public suspend fun <T> withConnection(block: suspend SqlConnection.() -> T): T {
         val connection = acquire()
         try {
             return connection.block()
@@ -129,21 +129,21 @@ class ConnectionPool(private val connector: suspend () -> SqlConnection, val con
     }
 
     /** Runs [block] in a transaction: commits when it returns, rolls back when it throws. */
-    suspend fun <T> transaction(isolation: IsolationLevel? = null, block: suspend SqlConnection.() -> T): T =
+    public suspend fun <T> transaction(isolation: IsolationLevel? = null, block: suspend SqlConnection.() -> T): T =
         withConnection { transaction(isolation, block) }
 
     /** Streams a query's rows, holding a connection for as long as the collection lasts. */
-    fun query(sql: String, params: List<Any?> = emptyList(), fetchSize: Int = 0): Flow<SqlRow> = flow {
+    public fun query(sql: String, params: List<Any?> = emptyList(), fetchSize: Int = 0): Flow<SqlRow> = flow {
         withConnection { query(sql, params, fetchSize).collect { emit(it) } }
     }
 
-    suspend fun update(sql: String, params: List<Any?> = emptyList()): Long = withConnection { update(sql, params) }
+    public suspend fun update(sql: String, params: List<Any?> = emptyList()): Long = withConnection { update(sql, params) }
 
     /**
      * Waits for a connection. Prefer [withConnection], since this one must be returned with [PooledConnection.close], or its
      * place in the pool is lost for good.
      */
-    suspend fun acquire(): PooledConnection {
+    public suspend fun acquire(): PooledConnection {
         startMaintenance()
         immediately()?.let { return it }
         // Kept out here because a cancellation can arrive while the result is on its way back from the timeout's scope,
@@ -315,10 +315,10 @@ class ConnectionPool(private val connector: suspend () -> SqlConnection, val con
     }
 
     /** What's in the pool right now. Idle connections aren't locked for this, so the numbers may be a moment apart. */
-    suspend fun stats() = PoolStats(inUse.load(), lock.locked { idle.size }, waiting.load(), created.load(), discarded.load())
+    public suspend fun stats(): PoolStats = PoolStats(inUse.load(), lock.locked { idle.size }, waiting.load(), created.load(), discarded.load())
 
     /** Closes idle connections, and the ones in use when they return. Later and waiting calls of [acquire] fail. */
-    suspend fun close() {
+    public suspend fun close() {
         val all = lock.locked {
             if (closed) return
             closed = true
@@ -333,7 +333,7 @@ class ConnectionPool(private val connector: suspend () -> SqlConnection, val con
  * A connection on loan from a [ConnectionPool]. After [close] returns it to the pool this object is useless, and in particular
  * can't reach whoever holds the connection next.
  */
-class PooledConnection internal constructor(
+public class PooledConnection internal constructor(
     private val connection: SqlConnection,
     private val pool: ConnectionPool,
     private val createdAt: TimeSource.Monotonic.ValueTimeMark,
@@ -352,7 +352,7 @@ class PooledConnection internal constructor(
 
     override val dialect: SqlDialect get() = connection.dialect
     override val serverInfo: ServerInfo get() = connection.serverInfo
-    override val codecs get() = connection.codecs
+    override val codecs: ru.ttraum.kotsql.CodecRegistry get() = connection.codecs
 
     /** Reaches a driver's own interface, which is good only for as long as this is held. */
     override fun <T : Any> unwrap(type: KClass<T>): T? {

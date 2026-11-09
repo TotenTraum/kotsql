@@ -17,16 +17,16 @@ import kotlinx.datetime.LocalTime
  *   With none, a column only becomes a [T] when asked for one, with [SqlRow.get] or `getObject(i, Class)`. That suits a type
  *   that's stored as an ordinary one, and MySQL's `ENUM`, which has no name of its own.
  */
-abstract class SqlCodec<T : Any>(val type: KClass<T>, val typeNames: Set<String> = emptySet()) {
+public abstract class SqlCodec<T : Any>(public val type: KClass<T>, public val typeNames: Set<String> = emptySet()) {
     /** The canonical value to send as a parameter. */
-    abstract fun encode(value: T): Any
+    public abstract fun encode(value: T): Any
 
     /** The object for a canonical value, which is never null. Throwing here reports the column's value as not convertible. */
-    abstract fun decode(value: Any): T
+    public abstract fun decode(value: Any): T
 
-    companion object {
+    public companion object {
         /** A codec from two functions. */
-        inline fun <reified T : Any> of(
+        public inline fun <reified T : Any> of(
             vararg typeNames: String,
             crossinline encode: (T) -> Any,
             crossinline decode: (Any) -> T,
@@ -39,7 +39,7 @@ abstract class SqlCodec<T : Any>(val type: KClass<T>, val typeNames: Set<String>
          * An enum class stored by the names of its constants. Give the name of a PostgreSQL enum type for its columns to decode
          * by themselves. Enum parameters need no codec: they're sent by name in any case.
          */
-        inline fun <reified E : Enum<E>> enum(vararg typeNames: String): SqlCodec<E> = of(
+        public inline fun <reified E : Enum<E>> enum(vararg typeNames: String): SqlCodec<E> = of(
             *typeNames,
             encode = { it.name },
             decode = { value ->
@@ -52,7 +52,7 @@ abstract class SqlCodec<T : Any>(val type: KClass<T>, val typeNames: Set<String>
 }
 
 /** A set of codecs, safe to read and add to from any thread. Drivers take theirs from [ConnectionConfig.codecs]. */
-class CodecRegistry(vararg codecs: SqlCodec<*>) {
+public class CodecRegistry(vararg codecs: SqlCodec<*>) {
     private class Index(val all: List<SqlCodec<*>>) {
         val byClass = all.associateBy { it.type }
         val byTypeName = all.flatMap { codec -> codec.typeNames.map { it.lowercase() to codec } }.toMap()
@@ -60,10 +60,10 @@ class CodecRegistry(vararg codecs: SqlCodec<*>) {
 
     private val index = AtomicReference(Index(codecs.toList()))
 
-    val isEmpty: Boolean get() = index.load().all.isEmpty()
+    public val isEmpty: Boolean get() = index.load().all.isEmpty()
 
     /** Adds a codec, which takes precedence over one for the same class or database type. Connections see it at once. */
-    fun register(codec: SqlCodec<*>): CodecRegistry {
+    public fun register(codec: SqlCodec<*>): CodecRegistry {
         while (true) {
             val current = index.load()
             val replaced = current.all.filter { it.type != codec.type } + codec
@@ -72,14 +72,14 @@ class CodecRegistry(vararg codecs: SqlCodec<*>) {
     }
 
     /** The codec that decodes a column of this database type by itself. */
-    fun forTypeName(name: String): SqlCodec<*>? {
+    public fun forTypeName(name: String): SqlCodec<*>? {
         val current = index.load()
         return if (current.all.isEmpty()) null else current.byTypeName[name.lowercase()]
     }
 
     /** The codec registered for exactly this class. */
     @Suppress("UNCHECKED_CAST")
-    fun <T : Any> forClass(type: KClass<T>): SqlCodec<T>? = index.load().byClass[type] as SqlCodec<T>?
+    public fun <T : Any> forClass(type: KClass<T>): SqlCodec<T>? = index.load().byClass[type] as SqlCodec<T>?
 
     @Suppress("UNCHECKED_CAST")
     private fun forValue(value: Any): SqlCodec<Any>? {
@@ -89,15 +89,15 @@ class CodecRegistry(vararg codecs: SqlCodec<*>) {
     }
 
     /** What to send for a parameter: a codec's canonical value, an enum's name, or the value itself. Lists go by element. */
-    fun encode(value: Any?): Any? = when (value) {
+    public fun encode(value: Any?): Any? = when (value) {
         null, is String, is Long, is Int, is Boolean -> value
         is List<*> -> value.map(::encode)
         else -> forValue(value)?.encode(value) ?: if (value is Enum<*>) value.name else value
     }
 
-    companion object {
+    public companion object {
         /** What connections use unless told otherwise, and all that `DriverManager` and `ConnectionFactories` can offer. */
-        val Global = CodecRegistry()
+        public val Global: CodecRegistry = CodecRegistry()
     }
 }
 

@@ -14,22 +14,22 @@ import ru.ttraum.kotsql.SqlException
  * Write the connection as ordinary suspending code that takes no locks or dispatchers of its own: the JDBC adapter runs it
  * without suspending at all (see [runUnsuspended]).
  */
-interface SqlDriver {
+public interface SqlDriver {
     /** URL schemes handled by the driver, e.g. `postgresql`. */
-    val schemes: Set<String>
-    val dialect: SqlDialect
-    suspend fun connect(config: ConnectionConfig): SqlConnection
+    public val schemes: Set<String>
+    public val dialect: SqlDialect
+    public suspend fun connect(config: ConnectionConfig): SqlConnection
 }
 
-object Drivers {
+public object Drivers {
     private val explicit = ArrayList<SqlDriver>()
 
-    fun register(driver: SqlDriver) { explicit += driver }
+    public fun register(driver: SqlDriver) { explicit += driver }
 
-    fun find(scheme: String): SqlDriver? =
+    public fun find(scheme: String): SqlDriver? =
         (explicit + discoverPlatformDrivers()).firstOrNull { scheme in it.schemes }
 
-    fun require(scheme: String): SqlDriver = find(scheme)
+    public fun require(scheme: String): SqlDriver = find(scheme)
         ?: throw SqlException("No kotsql driver registered for '$scheme'", "08001")
 }
 
