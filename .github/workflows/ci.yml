@@ -108,10 +108,11 @@ jobs:
       # as the TLS tests expect, so that they run on Windows itself and not only under Wine.
       - name: Enable TLS in PostgreSQL
         run: |
+          # Git Bash would take /CN=... for a path and rewrite it; the leading // keeps it as it is.
           data=$(cygpath -u "$PGDATA")
           openssl req -x509 -newkey rsa:2048 -nodes -keyout "$data/server.key" -out "$data/server.crt" \
-            -subj /CN=localhost -addext subjectAltName=DNS:localhost -days 2
-          openssl req -x509 -newkey rsa:2048 -nodes -keyout /dev/null -out "$RUNNER_TEMP/other.pem" -subj /CN=unrelated -days 2
+            -subj //CN=localhost -addext subjectAltName=DNS:localhost -days 2
+          openssl req -x509 -newkey rsa:2048 -nodes -keyout /dev/null -out "$RUNNER_TEMP/other.pem" -subj //CN=unrelated -days 2
           cp "$data/server.crt" "$RUNNER_TEMP/root.pem"
           echo "ssl = on" >> "$data/postgresql.conf"
           {

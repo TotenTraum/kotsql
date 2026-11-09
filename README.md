@@ -149,7 +149,7 @@ Building the `macosArm64` target needs a full Xcode, because of the OpenSSL bind
 - On macOS and Windows the Kotlin client uses ktor's sockets, which don't scale with connections the way `EpollTransport` does
   on Linux. On macOS they are built on one `pselect` thread and can't use descriptors above 1024; a `kqueue` counterpart of
   `EpollTransport` is yet to be written. On Windows one of ktor's selectors watches at most 63 sockets, so `KtorTransport`
-  spreads them over as many selectors as it takes, 48 to each, with a thread for each selector.
+  spreads them over as many selectors as it takes, 32 to each, with a thread for each selector.
 - Not implemented: password-protected client keys,
   a `CallableStatement`'s parameters by name, batches of calls.
 - An updatable JDBC result set takes a plain query of one table with a primary key, whose columns it has to select, and holds

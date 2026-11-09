@@ -125,8 +125,12 @@ if [ "${KOTSQL_TEST_WINE:-}" = 1 ]; then
   ./gradlew :kotsql-transport-ktor:linkDebugTestMingwX64 -q
   docker build -q -t kotsql-wine --platform linux/amd64 - >/dev/null <<'DOCKERFILE'
 FROM debian:stable-slim
+# The prefix in full, with the crypto providers that OpenSSL seeds from through CryptoAPI: without them every TLS connection
+# fails with "entropy source strength too weak". wineboot returns before the registry is written, hence the wait.
 RUN apt-get -o Acquire::Retries=3 update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -qq -y --no-install-recommends wine64 \
- && rm -rf /var/lib/apt/lists/* && WINEDEBUG=-all /usr/lib/wine/wine64 wineboot --init 2>/dev/null || true
+ && rm -rf /var/lib/apt/lists/* \
+ && WINEDEBUG=-all /usr/lib/wine/wine64 wineboot -u >/dev/null 2>&1 && /usr/lib/wine/wineserver -w \
+ && grep -qF 'Cryptography\\Defaults\\Provider' /root/.wine/system.reg
 DOCKERFILE
   ./gradlew :kotsql-sqlite:linkDebugTestMingwX64 -q
   out=$(docker run --rm --platform linux/amd64 -e WINEDEBUG=-all -w /tmp -v "$PWD/kotsql-sqlite/build/bin/mingwX64/debugTest:/t:ro" \
