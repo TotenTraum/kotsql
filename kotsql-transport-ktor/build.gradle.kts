@@ -8,7 +8,10 @@ kotlin {
     listOf(macosArm64(), linuxX64(), linuxArm64(), mingwX64()).forEach { target ->
         target.compilations.getByName("main").cinterops.create("openssl")
     }
-    mingwX64().compilations.getByName("test").cinterops.create("psapi")
+    mingwX64().compilations.getByName("test").cinterops.apply {
+        create("psapi")
+        create("bcrypt")
+    }
     // POSIX sockets on Linux and macOS, Winsock on Windows.
     applyDefaultHierarchyTemplate {
         common {

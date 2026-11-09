@@ -21,7 +21,8 @@ class OpenSslVersionTest {
     /** Guards against a transitive dependency bringing in an older build than the one in the version catalog. */
     @Test fun linksTheExpectedOpenSsl() {
         val version = OpenSSL_version(0)!!.toKString()
-        println("Linked with $version")
+        // OPENSSL_CPU_INFO: the CPU features OpenSSL found, which decide the code it runs. For when it fails on one machine only.
+        println("Linked with $version; ${OpenSSL_version(9)?.toKString()}")
         assertTrue(version.startsWith("OpenSSL 3.6.5"), version)
     }
 }

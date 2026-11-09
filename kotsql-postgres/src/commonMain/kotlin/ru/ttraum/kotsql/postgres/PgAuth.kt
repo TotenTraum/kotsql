@@ -15,12 +15,24 @@ import kotlin.io.encoding.Base64
 
 private val provider get() = CryptographyProvider.Default
 
+/**
+ * Runs the cryptography of the authentication. Its failure is this client's, as when the platform's crypto library won't
+ * work, and must not pass for a malformed message from the server, which is what the reader would otherwise make of it.
+ */
+private inline fun <T> computing(block: () -> T): T = try {
+    block()
+} catch (e: SqlException) {
+    throw e
+} catch (e: Exception) {
+    throw SqlException("Cannot compute the authentication response: ${e.message}", "08001", cause = e)
+}
+
 /** `md5(md5(password + user) + salt)`, as the legacy `md5` method prescribes. */
 @OptIn(DelicateCryptographyApi::class)
-internal fun md5Password(user: String, password: String, salt: ByteArray): String {
+internal fun md5Password(user: String, password: String, salt: ByteArray): String = computing {
     val md5 = provider.get(MD5).hasher()
     val inner = md5.hashBlocking((password + user).encodeToByteArray()).toHex()
-    return "md5" + md5.hashBlocking(inner.encodeToByteArray() + salt).toHex()
+    "md5" + md5.hashBlocking(inner.encodeToByteArray() + salt).toHex()
 }
 
 internal const val SCRAM_SHA_256 = "SCRAM-SHA-256"
@@ -50,12 +62,15 @@ internal class ScramClient(
         val iterations = attrs['i']?.toIntOrNull()?.takeIf { it > 0 } ?: fail("invalid iteration count")
         if (!nonce.startsWith(clientNonce) || nonce.length == clientNonce.length) fail("server nonce does not extend the client's")
 
-        val salted = provider.get(PBKDF2)
-            .secretDerivation(SHA256, iterations, 32.bytes, Base64.decode(saltText))
-            .deriveSecretBlocking(saslPrep(password).encodeToByteArray())
-            .let { it.toByteArray() }
+        val salt = Base64.decode(saltText)
+        val salted = computing {
+            provider.get(PBKDF2)
+                .secretDerivation(SHA256, iterations, 32.bytes, salt)
+                .deriveSecretBlocking(saslPrep(password).encodeToByteArray())
+                .let { it.toByteArray() }
+        }
         val clientKey = hmac(salted, "Client Key".encodeToByteArray())
-        val storedKey = provider.get(SHA256).hasher().hashBlocking(clientKey)
+        val storedKey = computing { provider.get(SHA256).hasher().hashBlocking(clientKey) }
         val withoutProof = "c=${Base64.encode(gs2Header.encodeToByteArray() + (bindingData ?: ByteArray(0)))},r=$nonce"
         val authMessage = "$clientFirstBare,$serverFirst,$withoutProof".encodeToByteArray()
         val clientSignature = hmac(storedKey, authMessage)
@@ -78,13 +93,15 @@ internal class ScramClient(
     private fun fail(reason: String): Nothing =
         throw SqlException("SCRAM authentication failed: $reason", "28000", kind = SqlErrorKind.AUTHENTICATION)
 
-    private fun hmac(key: ByteArray, data: ByteArray): ByteArray = provider.get(HMAC)
-        .keyDecoder(SHA256)
-        .decodeFromByteArrayBlocking(HMAC.Key.Format.RAW, key)
-        .signatureGenerator()
-        .generateSignatureBlocking(data)
+    private fun hmac(key: ByteArray, data: ByteArray): ByteArray = computing {
+        provider.get(HMAC)
+            .keyDecoder(SHA256)
+            .decodeFromByteArrayBlocking(HMAC.Key.Format.RAW, key)
+            .signatureGenerator()
+            .generateSignatureBlocking(data)
+    }
 
     private companion object {
-        fun newNonce(): String = Base64.encode(CryptographyRandom.nextBytes(18))
+        fun newNonce(): String = computing { Base64.encode(CryptographyRandom.nextBytes(18)) }
     }
 }

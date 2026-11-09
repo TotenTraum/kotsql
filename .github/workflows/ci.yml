@@ -104,16 +104,43 @@ jobs:
         with:
           path: ~/.konan
           key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
-      # The image has PostgreSQL installed but stopped, with the password in PGPASSWORD. No TLS there, so the TLS
-      # tests skip themselves; under Wine in client-linux they run against a server that has it.
+      # The image has PostgreSQL installed but stopped, its paths in PGDATA and PGBIN. TLS with a certificate for localhost,
+      # as the TLS tests expect, so that they run on Windows itself and not only under Wine.
+      - name: Enable TLS in PostgreSQL
+        run: |
+          data=$(cygpath -u "$PGDATA")
+          openssl req -x509 -newkey rsa:2048 -nodes -keyout "$data/server.key" -out "$data/server.crt" \
+            -subj /CN=localhost -addext subjectAltName=DNS:localhost -days 2
+          openssl req -x509 -newkey rsa:2048 -nodes -keyout /dev/null -out "$RUNNER_TEMP/other.pem" -subj /CN=unrelated -days 2
+          cp "$data/server.crt" "$RUNNER_TEMP/root.pem"
+          echo "ssl = on" >> "$data/postgresql.conf"
+          {
+            echo "KOTSQL_TEST_TLS_ROOT=$(cygpath -m "$RUNNER_TEMP/root.pem")"
+            echo "KOTSQL_TEST_TLS_OTHER_ROOT=$(cygpath -m "$RUNNER_TEMP/other.pem")"
+          } >> "$GITHUB_ENV"
       - name: Start PostgreSQL
         shell: pwsh
         run: |
           $service = Get-Service -Name postgresql*
           Set-Service -InputObject $service -Status running -StartupType automatic
+      # The user and database the TLS tests log in to, and the roles of the SCRAM tests, as TestServers.kt creates them.
+      - name: Create the test roles
+        env:
+          PGPASSWORD: root
+        run: |
+          "$(cygpath -u "$PGBIN")/psql" -h localhost -U postgres -v ON_ERROR_STOP=1 -q <<'SQL'
+          CREATE ROLE kotsql LOGIN SUPERUSER PASSWORD 'kotsql';
+          CREATE DATABASE kotsql OWNER kotsql;
+          CREATE ROLE kotsql_prep LOGIN PASSWORD U&'pa\00ADss\00A0word';
+          CREATE ROLE kotsql_nfkc LOGIN PASSWORD U&'caf\00E9';
+          SQL
       - run: ./gradlew mingwX64Test --continue
         env:
-          KOTSQL_TEST_URL: postgresql://postgres:root@localhost:5432/postgres?sslmode=disable
+          KOTSQL_TEST_URL: postgresql://kotsql:kotsql@localhost:5432/kotsql?sslmode=disable
+          KOTSQL_TEST_SCRAM_URL: postgresql://kotsql:kotsql@localhost:5432/kotsql
+          KOTSQL_TEST_TLS_PORT: 5432
+          KOTSQL_TEST_TLS_OTHER_HOST: 127.0.0.1
+          KOTSQL_TEST_NFKC: 1
       - if: failure()
         uses: actions/upload-artifact@v4
         with:

@@ -1,0 +1,6 @@
+# Windows' own random number generator, which OpenSSL seeds from. For a test that tells a broken environment from a bug.
+# Declared here rather than from bcrypt.h, which hides it behind version and partition macros.
+package = ru.ttraum.kotsql.ktor.bcrypt
+linkerOpts.mingw = -lbcrypt
+---
+long BCryptGenRandom(void *algorithm, unsigned char *buffer, unsigned long size, unsigned long flags);

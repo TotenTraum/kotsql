@@ -22,7 +22,7 @@ import ru.ttraum.kotsql.ktor.openssl.BIO_s_mem
 import ru.ttraum.kotsql.ktor.openssl.BIO_write
 import ru.ttraum.kotsql.ktor.openssl.ERR_clear_error
 import ru.ttraum.kotsql.ktor.openssl.ERR_error_string_n
-import ru.ttraum.kotsql.ktor.openssl.ERR_get_error
+import ru.ttraum.kotsql.ktor.openssl.ERR_get_error_all
 import ru.ttraum.kotsql.ktor.openssl.SSL
 import ru.ttraum.kotsql.ktor.openssl.SSL_CTX
 import ru.ttraum.kotsql.ktor.openssl.SSL_CTX_ctrl
@@ -51,6 +51,8 @@ import ru.ttraum.kotsql.ktor.openssl.X509_free
 import ru.ttraum.kotsql.ktor.openssl.X509_verify_cert_error_string
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.CPointerVar
+import kotlinx.cinterop.set
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.UByteVar
@@ -333,14 +335,30 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
         return true
     }
 
-    private fun lastError(): String {
-        val code = ERR_get_error()
-        if (code.toULong() == 0uL) return "unknown error"
-        return memScoped {
-            val text = allocArray<ByteVar>(256)
-            ERR_error_string_n(code, text, 256u.convert())
-            text.toKString()
+    /**
+     * Every error that OpenSSL has queued, oldest first, with where it arose: the first is often only the consequence. With
+     * the code in hex too, as its text can be missing.
+     */
+    private fun lastError(): String = memScoped {
+        val file = alloc<CPointerVar<ByteVar>>()
+        val line = alloc<IntVar>()
+        val function = alloc<CPointerVar<ByteVar>>()
+        val data = alloc<CPointerVar<ByteVar>>()
+        val flags = alloc<IntVar>()
+        val text = allocArray<ByteVar>(256)
+        val errors = buildList {
+            while (size < 16) {
+                val code = ERR_get_error_all(file.ptr, line.ptr, function.ptr, data.ptr, flags.ptr).toULong()
+                if (code == 0uL) break
+                text[0] = 0
+                ERR_error_string_n(code.convert(), text, 256u.convert())
+                val where = file.value?.toKString()?.substringAfterLast('/')?.substringAfterLast('\\')?.let { " at $it:${line.value}" } ?: ""
+                val inFunction = function.value?.toKString()?.takeIf { it.isNotEmpty() }?.let { " in $it" } ?: ""
+                val detail = data.value?.toKString()?.takeIf { it.isNotEmpty() }?.let { " ($it)" } ?: ""
+                add("${text.toKString().ifEmpty { "error" }} [0x${code.toString(16)}]$where$inFunction$detail")
+            }
         }
+        errors.joinToString("; ").ifEmpty { "no error queued by OpenSSL" }
     }
 
     private fun tlsError(what: String) = SqlException("$what: ${lastError()}", "08001")
