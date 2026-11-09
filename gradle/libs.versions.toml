@@ -1,5 +1,6 @@
 [versions]
 kotlin = "2.4.21"
+publishPlugin = "0.37.0"
 coroutines = "1.11.0"
 datetime = "0.8.0"
 ktor = "3.6.1"
@@ -58,3 +59,4 @@ reactor-core = { module = "io.projectreactor:reactor-core", version = "3.7.12" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+publish = { id = "com.vanniktech.maven.publish", version.ref = "publishPlugin" }

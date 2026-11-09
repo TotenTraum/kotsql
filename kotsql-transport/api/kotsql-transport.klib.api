@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <ru.ttraum.kotsql:kotsql-transport>
+// Library unique name: <ru.ttraum:kotsql-transport>
 abstract fun interface ru.ttraum.kotsql.transport/TransportFactory { // ru.ttraum.kotsql.transport/TransportFactory|null[0]
     abstract suspend fun connect(kotlin/String, kotlin/Int, kotlin/Long): ru.ttraum.kotsql.transport/Transport // ru.ttraum.kotsql.transport/TransportFactory.connect|connect(kotlin.String;kotlin.Int;kotlin.Long){}[0]
 }

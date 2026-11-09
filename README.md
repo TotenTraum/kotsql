@@ -341,6 +341,21 @@ marked `@InternalKotsqlApi`: using it outside kotsql takes an opt-in, it may cha
 the dumps. The SPI for adding a database (`SqlDriver`, `SqlDialect`, `NetworkSqlDriver`, `Transport`, `ListRows` and the
 rest) is public API like the rest.
 
+## Publishing
+
+The libraries are published to Maven Central as `ru.ttraum:<module>`, such as `ru.ttraum:kotsql-postgres:0.1.0`, with the
+[vanniktech Maven Publish plugin](https://github.com/vanniktech/gradle-maven-publish-plugin). The group, version and project
+URL are in `gradle.properties`, the POM and signing in the root `build.gradle.kts`.
+
+```bash
+./gradlew publishAllToMavenLocal
+./gradlew publishAllToMavenCentral
+```
+
+The first needs nothing and signs only when a key is configured. The second needs `mavenCentralUsername`,
+`mavenCentralPassword` and a signing key in `~/.gradle/gradle.properties`. Run it on a Mac: only there do all the targets
+build, macOS among them, and Maven Central takes a release in one piece.
+
 ## License
 
 [Apache License 2.0](LICENSE).

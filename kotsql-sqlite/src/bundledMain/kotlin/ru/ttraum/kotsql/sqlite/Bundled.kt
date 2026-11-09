@@ -5,7 +5,8 @@ import androidx.sqlite.SQLiteException
 import androidx.sqlite.SQLiteStatement
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 
-private val ERROR_FORMAT = Regex("""^Error code: (\d+)(?:, message: (.*))?$""", RegexOption.DOT_MATCHES_ALL)
+// [\s\S] rather than DOT_MATCHES_ALL, which code shared by the JVM and native targets doesn't have: a message can span lines.
+private val ERROR_FORMAT = Regex("""^Error code: (\d+)(?:, message: ([\s\S]*))?$""")
 
 /** androidx.sqlite puts SQLite's code into the message: `Error code: 19, message: UNIQUE constraint failed: t.a`. */
 private inline fun <T> guarded(block: () -> T): T = try {

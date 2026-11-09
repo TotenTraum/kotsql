@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <ru.ttraum.kotsql:kotsql-core>
+// Library unique name: <ru.ttraum:kotsql-core>
 open annotation class ru.ttraum.kotsql/InternalKotsqlApi : kotlin/Annotation { // ru.ttraum.kotsql/InternalKotsqlApi|null[0]
     constructor <init>() // ru.ttraum.kotsql/InternalKotsqlApi.<init>|<init>(){}[0]
 }

@@ -1,4 +1,9 @@
-plugins { alias(libs.plugins.kotlin.multiplatform) }
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.publish)
+}
+
+description = "kotsql: the common API (SqlConnection, SqlCursor, SqlRow), the SPI for drivers, codecs and the connection pool"
 
 kotlin {
     jvmToolchain(17)

@@ -6,7 +6,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <ru.ttraum.kotsql:kotsql-transport-ktor>
+// Library unique name: <ru.ttraum:kotsql-transport-ktor>
 final class ru.ttraum.kotsql.ktor/KtorTransport : ru.ttraum.kotsql.transport/Transport { // ru.ttraum.kotsql.ktor/KtorTransport|null[0]
     final val tlsServerEndPoint // ru.ttraum.kotsql.ktor/KtorTransport.tlsServerEndPoint|{}tlsServerEndPoint[0]
         final fun <get-tlsServerEndPoint>(): kotlin/ByteArray? // ru.ttraum.kotsql.ktor/KtorTransport.tlsServerEndPoint.<get-tlsServerEndPoint>|<get-tlsServerEndPoint>(){}[0]

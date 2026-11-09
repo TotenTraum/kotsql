@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <ru.ttraum.kotsql:kotsql-sqlite>
+// Library unique name: <ru.ttraum:kotsql-sqlite>
 final class ru.ttraum.kotsql.sqlite/SqliteDriver : ru.ttraum.kotsql.spi/SqlDriver { // ru.ttraum.kotsql.sqlite/SqliteDriver|null[0]
     constructor <init>() // ru.ttraum.kotsql.sqlite/SqliteDriver.<init>|<init>(){}[0]
 

@@ -1,7 +1,12 @@
 import java.net.URI
 import java.security.MessageDigest
 
-plugins { alias(libs.plugins.kotlin.multiplatform) }
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.publish)
+}
+
+description = "kotsql: SQLite driver for Kotlin Multiplatform, embedded"
 
 // The version that androidx.sqlite bundles, so that every platform has the same SQLite.
 val sqliteAmalgamation = "sqlite-amalgamation-3500100"

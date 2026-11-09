@@ -1,4 +1,9 @@
-plugins { alias(libs.plugins.kotlin.multiplatform) }
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.publish)
+}
+
+description = "kotsql: JDBC driver over any kotsql driver"
 
 kotlin {
     jvmToolchain(17)

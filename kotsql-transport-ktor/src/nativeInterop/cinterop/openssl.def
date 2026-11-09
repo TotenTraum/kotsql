@@ -66,3 +66,16 @@ void ERR_error_string_n(unsigned long e, char *buf, size_t len);
 int RAND_status(void);
 int RAND_bytes(unsigned char *buf, int num);
 unsigned long ERR_get_error_all(const char **file, int *line, const char **func, const char **data, int *flags);
+
+// C's long is 64 bits on Linux and macOS but 32 on Windows, which the Kotlin code shared by all of them can't use: these
+// take and give int instead. The values fit: the controls used here, verification results and OpenSSL 3's error codes.
+static inline int kotsql_ctx_ctrl(SSL_CTX *ctx, int cmd, int larg, void *parg) { return (int) SSL_CTX_ctrl(ctx, cmd, larg, parg); }
+static inline int kotsql_ssl_ctrl(SSL *ssl, int cmd, int larg, void *parg) { return (int) SSL_ctrl(ssl, cmd, larg, parg); }
+static inline int kotsql_verify_result(const SSL *ssl) { return (int) SSL_get_verify_result(ssl); }
+static inline const char *kotsql_verify_error_string(int result) { return X509_verify_cert_error_string(result); }
+static inline unsigned int kotsql_next_error(char *text, size_t size, const char **file, int *line, const char **func, const char **data) {
+    int flags;
+    unsigned long code = ERR_get_error_all(file, line, func, data, &flags);
+    if (code != 0) ERR_error_string_n(code, text, size);
+    return (unsigned int) code;
+}

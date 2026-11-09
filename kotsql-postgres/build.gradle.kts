@@ -1,4 +1,9 @@
-plugins { alias(libs.plugins.kotlin.multiplatform) }
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.publish)
+}
+
+description = "kotsql: PostgreSQL driver for Kotlin Multiplatform, on its wire protocol"
 
 kotlin {
     jvmToolchain(17)

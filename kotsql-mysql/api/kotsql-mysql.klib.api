@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <ru.ttraum.kotsql:kotsql-mysql>
+// Library unique name: <ru.ttraum:kotsql-mysql>
 final class ru.ttraum.kotsql.mysql/MysqlDriver : ru.ttraum.kotsql.transport/NetworkSqlDriver { // ru.ttraum.kotsql.mysql/MysqlDriver|null[0]
     constructor <init>() // ru.ttraum.kotsql.mysql/MysqlDriver.<init>|<init>(){}[0]
 

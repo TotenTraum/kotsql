@@ -1,8 +1,16 @@
-plugins { alias(libs.plugins.kotlin.multiplatform) apply false }
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SourcesJar
+
+plugins {
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.publish) apply false
+}
 
 allprojects {
-    group = "ru.ttraum.kotsql"
-    version = "0.1.0-SNAPSHOT"
+    group = providers.gradleProperty("buildInfo.group").get()
+    version = providers.gradleProperty("buildInfo.version").get()
 }
 
 /** The modules that are published: their public API is declared on purpose and checked against a dump of it. */
@@ -68,3 +76,68 @@ val checkModuleBoundaries by tasks.registering {
 }
 
 subprojects { tasks.matching { it.name == "check" }.configureEach { dependsOn(checkModuleBoundaries) } }
+
+// Maven Central publishing for every module that applies the publish plugin, which are the libraries.
+//   ./gradlew publishAllToMavenLocal      — local check, no credentials needed
+//   ./gradlew publishAllToMavenCentral    — needs credentials in ~/.gradle/gradle.properties
+// Apple targets build only on macOS, so publish from a Mac to get every target in one release.
+subprojects {
+    plugins.withId("com.vanniktech.maven.publish") {
+        val projectUrl = providers.gradleProperty("buildInfo.url").get()
+
+        extensions.configure<MavenPublishBaseExtension> {
+            coordinates(group.toString(), project.name, version.toString())
+
+            pom {
+                name.set(project.name)
+                description.set(providers.provider { project.description })
+                url.set(projectUrl)
+
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+
+                scm {
+                    url.set(projectUrl)
+                    connection.set("scm:git:git://${projectUrl.removePrefix("https://")}.git")
+                    developerConnection.set("scm:git:ssh://git@${projectUrl.removePrefix("https://")}.git")
+                }
+
+                developers {
+                    developer {
+                        id.set("ttraum")
+                        name.set("Azim Usmanov")
+                        url.set("https://github.com/ttraum/")
+                    }
+                }
+            }
+
+            plugins.withId("org.jetbrains.kotlin.multiplatform") {
+                configure(KotlinMultiplatform(javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
+            }
+
+            publishToMavenCentral()
+
+            // Sign only when a key is configured, so publishToMavenLocal works on any machine.
+            // Maven Central rejects unsigned artifacts, so a release still requires the key.
+            val hasSigningKey = providers.gradleProperty("signingInMemoryKey").isPresent ||
+                providers.gradleProperty("signing.keyId").isPresent
+            if (hasSigningKey) signAllPublications()
+        }
+    }
+}
+
+tasks.register("publishAllToMavenLocal") {
+    group = "publishing"
+    description = "Publishes every library to the local Maven repository."
+    dependsOn(libraries.map { ":$it:publishToMavenLocal" })
+}
+tasks.register("publishAllToMavenCentral") {
+    group = "publishing"
+    description = "Publishes and releases every library to Maven Central."
+    dependsOn(libraries.map { ":$it:publishAndReleaseToMavenCentral" })
+}

@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <ru.ttraum.kotsql:kotsql-postgres>
+// Library unique name: <ru.ttraum:kotsql-postgres>
 abstract interface ru.ttraum.kotsql.postgres/PostgresConnection : ru.ttraum.kotsql/SqlConnection { // ru.ttraum.kotsql.postgres/PostgresConnection|null[0]
     abstract fun copyOut(kotlin/String): kotlinx.coroutines.flow/Flow<kotlin/ByteArray> // ru.ttraum.kotsql.postgres/PostgresConnection.copyOut|copyOut(kotlin.String){}[0]
     abstract fun copyOutRows(kotlin/String): kotlinx.coroutines.flow/Flow<kotlin.collections/List<kotlin/String?>> // ru.ttraum.kotsql.postgres/PostgresConnection.copyOutRows|copyOutRows(kotlin.String){}[0]

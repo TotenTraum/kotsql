@@ -1,6 +1,11 @@
 import java.time.Duration
 
-plugins { alias(libs.plugins.kotlin.multiplatform) }
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.publish)
+}
+
+description = "kotsql: non-blocking sockets and TLS for every platform, on ktor, epoll and OpenSSL"
 
 kotlin {
     jvmToolchain(17)

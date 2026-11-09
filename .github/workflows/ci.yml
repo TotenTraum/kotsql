@@ -84,6 +84,9 @@ jobs:
       # Here, where every target compiles, so the dumps of all of them are compared.
       - name: Public API against the dumps in api/
         run: ./gradlew checkKotlinAbi
+      # Every target's artifacts, as a release would make them, without credentials or signing.
+      - name: Publishing
+        run: ./gradlew publishAllToMavenLocal
 
   windows:
     name: mingwX64 on Windows, with the runner's PostgreSQL

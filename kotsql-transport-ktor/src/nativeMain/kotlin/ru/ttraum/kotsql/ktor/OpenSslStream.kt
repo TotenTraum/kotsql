@@ -21,23 +21,23 @@ import ru.ttraum.kotsql.ktor.openssl.BIO_read
 import ru.ttraum.kotsql.ktor.openssl.BIO_s_mem
 import ru.ttraum.kotsql.ktor.openssl.BIO_write
 import ru.ttraum.kotsql.ktor.openssl.ERR_clear_error
-import ru.ttraum.kotsql.ktor.openssl.ERR_error_string_n
-import ru.ttraum.kotsql.ktor.openssl.ERR_get_error_all
+import ru.ttraum.kotsql.ktor.openssl.kotsql_ctx_ctrl
+import ru.ttraum.kotsql.ktor.openssl.kotsql_next_error
+import ru.ttraum.kotsql.ktor.openssl.kotsql_ssl_ctrl
+import ru.ttraum.kotsql.ktor.openssl.kotsql_verify_error_string
+import ru.ttraum.kotsql.ktor.openssl.kotsql_verify_result
 import ru.ttraum.kotsql.ktor.openssl.SSL
 import ru.ttraum.kotsql.ktor.openssl.SSL_CTX
-import ru.ttraum.kotsql.ktor.openssl.SSL_CTX_ctrl
 import ru.ttraum.kotsql.ktor.openssl.SSL_CTX_free
 import ru.ttraum.kotsql.ktor.openssl.SSL_CTX_load_verify_file
 import ru.ttraum.kotsql.ktor.openssl.SSL_CTX_new
 import ru.ttraum.kotsql.ktor.openssl.SSL_CTX_set_default_verify_paths
 import ru.ttraum.kotsql.ktor.openssl.SSL_CTX_set_verify
-import ru.ttraum.kotsql.ktor.openssl.SSL_ctrl
 import ru.ttraum.kotsql.ktor.openssl.SSL_do_handshake
 import ru.ttraum.kotsql.ktor.openssl.SSL_free
 import ru.ttraum.kotsql.ktor.openssl.SSL_get0_param
 import ru.ttraum.kotsql.ktor.openssl.SSL_get1_peer_certificate
 import ru.ttraum.kotsql.ktor.openssl.SSL_get_error
-import ru.ttraum.kotsql.ktor.openssl.SSL_get_verify_result
 import ru.ttraum.kotsql.ktor.openssl.SSL_new
 import ru.ttraum.kotsql.ktor.openssl.SSL_read
 import ru.ttraum.kotsql.ktor.openssl.SSL_set1_host
@@ -48,7 +48,6 @@ import ru.ttraum.kotsql.ktor.openssl.SSL_write
 import ru.ttraum.kotsql.ktor.openssl.TLS_client_method
 import ru.ttraum.kotsql.ktor.openssl.X509_VERIFY_PARAM_set1_ip_asc
 import ru.ttraum.kotsql.ktor.openssl.X509_free
-import ru.ttraum.kotsql.ktor.openssl.X509_verify_cert_error_string
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
@@ -80,12 +79,11 @@ private const val SSL_ERROR_WANT_READ = 2
 private const val SSL_ERROR_WANT_WRITE = 3
 private const val SSL_ERROR_ZERO_RETURN = 6
 private const val SSL_CTRL_SET_TLSEXT_HOSTNAME = 55
-// C's long is 64 bits on Linux and macOS but 32 on Windows, so the values that go into one are converted where they are used.
-private const val TLSEXT_NAMETYPE_HOST_NAME = 0L
+private const val TLSEXT_NAMETYPE_HOST_NAME = 0
 private const val SSL_CTRL_SET_MIN_PROTO_VERSION = 123
-private const val TLS1_2_VERSION = 0x0303L
+private const val TLS1_2_VERSION = 0x0303
 private const val X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS = 4u
-private const val X509_V_OK = 0L
+private const val X509_V_OK = 0
 private const val SSL_FILETYPE_PEM = 1
 private const val NID_MD5 = 4
 private const val NID_SHA1 = 64
@@ -164,7 +162,7 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
     }
 
     private fun configureContext() {
-        if (SSL_CTX_ctrl(ctx, SSL_CTRL_SET_MIN_PROTO_VERSION, TLS1_2_VERSION.convert(), null).toLong() != 1L) throw tlsError("Cannot set the TLS version")
+        if (kotsql_ctx_ctrl(ctx, SSL_CTRL_SET_MIN_PROTO_VERSION, TLS1_2_VERSION, null) != 1) throw tlsError("Cannot set the TLS version")
         loadClientCertificate()
         when (options.mode) {
             // PREFER and REQUIRE encrypt without authenticating the server, by definition of those modes.
@@ -196,7 +194,7 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
         val isIp = isIpLiteral(host)
         // Server Name Indication takes no IP addresses.
         if (!isIp) memScoped {
-            if (SSL_ctrl(session, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_HOST_NAME.convert(), host.cstr.ptr).toLong() != 1L) {
+            if (kotsql_ssl_ctrl(session, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_HOST_NAME, host.cstr.ptr) != 1) {
                 throw tlsError("Cannot set the server name")
             }
         }
@@ -252,8 +250,8 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
     }
 
     private fun handshakeFailure(): String {
-        val verify = SSL_get_verify_result(ssl)
-        val reason = if (verify.toLong() != X509_V_OK) "certificate verification failed: " + X509_verify_cert_error_string(verify)?.toKString() else lastError()
+        val verify = kotsql_verify_result(ssl)
+        val reason = if (verify != X509_V_OK) "certificate verification failed: " + kotsql_verify_error_string(verify)?.toKString() else lastError()
         return "TLS handshake failed: $reason"
     }
 
@@ -263,9 +261,9 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
         val certificate = SSL_get1_peer_certificate(ssl)
             ?: throw SqlException("TLS handshake failed: the server sent no certificate", "08001")
         X509_free(certificate)
-        val verify = SSL_get_verify_result(ssl)
-        if (verify.toLong() != X509_V_OK) {
-            throw SqlException("TLS handshake failed: certificate verification failed: " + X509_verify_cert_error_string(verify)?.toKString(), "08001")
+        val verify = kotsql_verify_result(ssl)
+        if (verify != X509_V_OK) {
+            throw SqlException("TLS handshake failed: certificate verification failed: " + kotsql_verify_error_string(verify)?.toKString(), "08001")
         }
     }
 
@@ -344,14 +342,12 @@ internal class OpenSslStream(private val inner: ByteStream, private val options:
         val line = alloc<IntVar>()
         val function = alloc<CPointerVar<ByteVar>>()
         val data = alloc<CPointerVar<ByteVar>>()
-        val flags = alloc<IntVar>()
         val text = allocArray<ByteVar>(256)
         val errors = buildList {
             while (size < 16) {
-                val code = ERR_get_error_all(file.ptr, line.ptr, function.ptr, data.ptr, flags.ptr).toULong()
-                if (code == 0uL) break
                 text[0] = 0
-                ERR_error_string_n(code.convert(), text, 256u.convert())
+                val code = kotsql_next_error(text, 256u.convert(), file.ptr, line.ptr, function.ptr, data.ptr)
+                if (code == 0u) break
                 val where = file.value?.toKString()?.substringAfterLast('/')?.substringAfterLast('\\')?.let { " at $it:${line.value}" } ?: ""
                 val inFunction = function.value?.toKString()?.takeIf { it.isNotEmpty() }?.let { " in $it" } ?: ""
                 val detail = data.value?.toKString()?.takeIf { it.isNotEmpty() }?.let { " ($it)" } ?: ""
